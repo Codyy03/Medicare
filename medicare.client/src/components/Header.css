@@ -1,0 +1,116 @@
+:root {
+    --primary-light: #4da3ff;
+    --primary-dark: #004080;
+}
+
+/* Topbar */
+.topbar {
+    background-color: var(--primary-light);
+    font-size: 14px;
+    padding: 0.4rem 0;
+}
+
+.topbar.bg-primary {
+    background-color: rgb(74, 189, 215) !important;
+}
+
+/* Logo */
+.navbar-brand img {
+    display: block;
+    object-fit: contain;
+    vertical-align: middle;
+}
+
+/* Slogan */
+.slogan {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.slogan .fw-bold {
+    font-size: 15px;
+    color: #ffffff;
+}
+
+.slogan .tagline {
+    font-size: 13px;
+    color: #e6f0ff;
+}
+
+/* Social media */
+.topbar a {
+    text-decoration: none;
+    color: #ffffff;
+}
+
+.topbar a:hover {
+    color: #e6f0ff;
+}
+
+/* Search */
+.topbar .form-control {
+    max-width: 180px;
+}
+
+/* Menu */
+.navbar-light .navbar-nav .nav-link {
+    font-size: 20px;
+    color: var(--primary-dark);
+    transition: color 0.2s ease, border-color 0.2s ease;
+    font-weight: 500;
+}
+
+.navbar-light .navbar-nav .nav-link:hover {
+    font-weight: bold;
+    color: var(--primary-dark);
+    border-top: 3px solid var(--primary-light);
+    padding-top: 6px;
+}
+
+.navbar-light .navbar-nav .nav-link.active {
+    font-weight: 600;
+    color: var(--primary-dark);
+    border-top: 3px solid var(--primary-light);
+    padding-top: 6px;
+}
+/* Search style */
+.search-form .form-control {
+    border-radius: 20px;
+    padding-left: 12px;
+    border: 1px solid #ccc;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-form .form-control:focus {
+    border-color: #4da3ff;
+    box-shadow: 0 0 5px rgba(77, 163, 255, 0.5);
+}
+
+/* Przycisk z lup¹ */
+.search-btn {
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.search-btn i {
+    font-size: 1rem;
+    color: #333;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.search-btn:hover {
+    background-color: #4da3ff;
+    transform: scale(1.05);
+}
+
+.search-btn:hover i {
+    color: white;
+    transform: scale(1.2);
+}
