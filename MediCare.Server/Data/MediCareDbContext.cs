@@ -129,7 +129,7 @@ namespace MediCare.Server.Data
             modelBuilder.Entity<Specialization>().HasData(
                new Specialization { ID = 1, SpecializationName = "Cardiologist", SpecializationDescription = "Specialist in heart diseases" },
                new Specialization { ID = 2, SpecializationName = "Orthopedic Surgeon", SpecializationDescription = "Specialist in musculoskeletal system injuries and disorders" },
-               new Specialization { ID = 3, SpecializationName = "Dermatologist", SpecializationDescription = "Specialist in skin conditions" }
+               new Specialization { ID = 3, SpecializationName = "8", SpecializationDescription = "Specialist in skin conditions" }
             );
         }
 

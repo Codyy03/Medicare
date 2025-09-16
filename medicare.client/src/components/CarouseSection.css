@@ -1,4 +1,4 @@
 .carousel-item img {
     width: 70%;
-    object-fit: cover; /* przyciêcie bez zniekszta³ceñ */
+    object-fit: cover;
 }

@@ -15,13 +15,13 @@ function CarouselSection() {
 
           <div className="carousel-inner">
               <div className="carousel-item active">
-                  <img src="/slide1.jpg" className="d-block w-100" alt="..." />
+                  <img src="/slide1.png" className="d-block w-100" alt="..." />
               </div>
               <div className="carousel-item">
-                  <img src="/slide2.jpg" className="d-block w-100" alt="..." />
+                  <img src="/slide2.png" className="d-block w-100" alt="..." />
               </div>
               <div className="carousel-item">
-                  <img src="/slide3.jpg" className="d-block w-100" alt="..." />
+                  <img src="/slide3.png" className="d-block w-100" alt="..." />
               </div>
           </div>
 
