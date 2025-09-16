@@ -3,6 +3,7 @@ using System;
 using MediCare.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MediCare.Server.Migrations
 {
     [DbContext(typeof(MediCareDbContext))]
-    partial class MediCareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250916141103_AddHighlightAndLinkToSpecialization")]
+    partial class AddHighlightAndLinkToSpecialization
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -303,7 +306,7 @@ namespace MediCare.Server.Migrations
                             Link = "#",
                             SpecializationDescription = "Specialist in skin conditions",
                             SpecializationHighlight = "Healthy skin starts here comprehensive dermatological treatments for all ages.",
-                            SpecializationName = "Dermatologist"
+                            SpecializationName = "8"
                         });
                 });
 
