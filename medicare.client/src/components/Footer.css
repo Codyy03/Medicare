@@ -1,0 +1,34 @@
+.footer h5, .footer h6 {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.footer a {
+  color: #333;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+.footer, .info {
+    color: dimgray !important;
+}
+.info:hover{
+    color:var(--primary-dark) !important;
+} 
+.footer .social-icons a {
+  font-size: 1.4rem;
+  margin: 0 8px;
+  color: #0d47a1;
+  transition: color 0.3s ease;
+}
+
+.footer .social-icons a:hover {
+  color: #1976d2;
+}
+
+.footer-bottom {
+  font-size: 0.9rem;
+  color: #666;
+}

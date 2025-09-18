@@ -1,0 +1,13 @@
+.about-us h2 {
+    font-weight: 700;
+    color: dimgray;
+}
+
+.about-us p {
+    font-size: 1.1rem;
+    color: #555;
+    line-height: 1.6;
+}
+.about-us {
+    box-shadow: 0 5px 6px -2px rgba(0, 0, 0, 0.1);
+}

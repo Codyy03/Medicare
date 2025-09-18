@@ -1,9 +1,23 @@
 import { NavLink } from "react-router-dom";
+import { useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './Header.css';
 
 export default function Header() {
+    useEffect(() => {
+        const updatePadding = () => {
+            const header = document.querySelector("header");
+            if (header) {
+                document.body.style.paddingTop = header.offsetHeight + "px";
+            }
+        };
+
+        updatePadding(); // ustaw od razu po za³adowaniu
+        window.addEventListener("resize", updatePadding); // reaguj na zmianê rozmiaru okna
+
+        return () => window.removeEventListener("resize", updatePadding);
+    }, []);
     const socials = ["facebook", "twitter", "instagram"];
 
     return (

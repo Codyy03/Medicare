@@ -30,9 +30,8 @@
   transform: scale(1.05);
 }
 
-.news-card  small
-{
-    font-size:18px
+.news-card small {
+    font-size: 18px
 }
 
 .news-card .card-body a {

@@ -2,6 +2,27 @@
     --primary-light: #4da3ff;
     --primary-dark: #004080;
 }
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1050;
+}
+
+body {
+    padding-top: 120px; /* desktop */
+}
+
+@media (max-width: 768px) {
+    body {
+        padding-top: 160px; /* mobile */
+    }
+}
+
+header {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
 
 /* Topbar */
 .topbar {
@@ -87,7 +108,7 @@
     box-shadow: 0 0 5px rgba(77, 163, 255, 0.5);
 }
 
-/* Przycisk z lup¹ */
+/* button search */
 .search-btn {
     border-radius: 50%;
     width: 32px;
