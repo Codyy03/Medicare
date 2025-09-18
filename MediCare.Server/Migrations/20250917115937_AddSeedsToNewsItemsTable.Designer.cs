@@ -3,6 +3,7 @@ using System;
 using MediCare.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MediCare.Server.Migrations
 {
     [DbContext(typeof(MediCareDbContext))]
-    partial class MediCareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250917115937_AddSeedsToNewsItemsTable")]
+    partial class AddSeedsToNewsItemsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -159,7 +162,7 @@ namespace MediCare.Server.Migrations
                             ID = 1,
                             Date = new DateTime(2025, 10, 5, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Join us for a free blood pressure check and consultation with our cardiology team.",
-                            ImageURL = "https://i.ibb.co/k2hBfcpL/blood-pressure.jpg",
+                            ImageURL = "",
                             Title = "Free Blood Pressure Screening"
                         },
                         new

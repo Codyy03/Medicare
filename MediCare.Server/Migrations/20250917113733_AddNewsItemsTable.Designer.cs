@@ -3,6 +3,7 @@ using System;
 using MediCare.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MediCare.Server.Migrations
 {
     [DbContext(typeof(MediCareDbContext))]
-    partial class MediCareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250917113733_AddNewsItemsTable")]
+    partial class AddNewsItemsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -152,40 +155,6 @@ namespace MediCare.Server.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("NewsItems");
-
-                    b.HasData(
-                        new
-                        {
-                            ID = 1,
-                            Date = new DateTime(2025, 10, 5, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Join us for a free blood pressure check and consultation with our cardiology team.",
-                            ImageURL = "https://i.ibb.co/k2hBfcpL/blood-pressure.jpg",
-                            Title = "Free Blood Pressure Screening"
-                        },
-                        new
-                        {
-                            ID = 2,
-                            Date = new DateTime(2025, 11, 12, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Get your flu shot before the season starts. No appointment needed.",
-                            ImageURL = "https://i.ibb.co/BHxNtvLj/vaccination.jpg",
-                            Title = "Flu Vaccination Campaign"
-                        },
-                        new
-                        {
-                            ID = 3,
-                            Date = new DateTime(2025, 9, 25, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Learn how to prepare balanced meals with our nutritionist. Free entry.",
-                            ImageURL = "https://i.ibb.co/HTVch19N/healthy-eating.jpg",
-                            Title = "Healthy Eating Workshop"
-                        },
-                        new
-                        {
-                            ID = 4,
-                            Date = new DateTime(2025, 11, 14, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Educational lectures and free glucose testing for all visitors.",
-                            ImageURL = "https://i.ibb.co/1VTGg5c/diabetes.jpg",
-                            Title = "World Diabetes Day Awareness"
-                        });
                 });
 
             modelBuilder.Entity("MediCare.Server.Entities.Patient", b =>

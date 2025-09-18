@@ -12,6 +12,7 @@ namespace MediCare.Server.Data
         public DbSet<Visit> Visits { get; set; }
         public DbSet<VisitStatus> VisitStatuses { get; set; }
         public DbSet<Room> Rooms { get; set; }
+        public DbSet<NewsItem> NewsItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -28,6 +29,7 @@ namespace MediCare.Server.Data
             RoomsSeeds(modelBuilder);
             DoctorsSeeds(modelBuilder);
             PatientsSeeds(modelBuilder);
+            NewsSeeds(modelBuilder);
 
             SpecializationRelationships(modelBuilder);
 
@@ -127,20 +129,26 @@ namespace MediCare.Server.Data
         void SpecializationsSeeds(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Specialization>().HasData(
-               new Specialization { ID = 1,
-                   SpecializationName = "Cardiologist", 
+               new Specialization
+               {
+                   ID = 1,
+                   SpecializationName = "Cardiologist",
                    SpecializationDescription = "Specialist in heart diseases",
                    SpecializationHighlight = "Protect your heart with expert cardiovascular care and diagnostics.",
                    Link = "#"
                },
-               new Specialization { ID = 2, 
-                   SpecializationName = "Orthopedic Surgeon", 
+               new Specialization
+               {
+                   ID = 2,
+                   SpecializationName = "Orthopedic Surgeon",
                    SpecializationDescription = "Specialist in musculoskeletal system injuries and disorders",
                    SpecializationHighlight = "Restore mobility and strength with advanced orthopedic solutions",
                    Link = "#"
                },
-               new Specialization { ID = 3, 
-                   SpecializationName = "Dermatologist", 
+               new Specialization
+               {
+                   ID = 3,
+                   SpecializationName = "Dermatologist",
                    SpecializationDescription = "Specialist in skin conditions",
                    SpecializationHighlight = "Healthy skin starts here comprehensive dermatological treatments for all ages.",
                    Link = "#"
@@ -230,6 +238,44 @@ namespace MediCare.Server.Data
                     Email = "sarah.williams@example.com",
                     PhoneNumber = "555333444",
                     PasswordHash = "AQAAAAIAAYagAAAAELo4ftbkWmWkCzg4YbZhATzJFIRg6s7HBY322tgk4mquh9bHdQy3NraDhJLvnhjJEQ==" // doctor1
+                }
+            );
+        }
+
+        void NewsSeeds(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<NewsItem>().HasData(
+                new NewsItem
+                {
+                    ID = 1,
+                    Title = "Free Blood Pressure Screening",
+                    Description = "Join us for a free blood pressure check and consultation with our cardiology team.",
+                    ImageURL = "https://i.ibb.co/k2hBfcpL/blood-pressure.jpg",
+                    Date = new DateTime(2025, 10, 5, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new NewsItem
+                {
+                    ID = 2,
+                    Title = "Flu Vaccination Campaign",
+                    Description = "Get your flu shot before the season starts. No appointment needed.",
+                    ImageURL = "https://i.ibb.co/BHxNtvLj/vaccination.jpg",
+                    Date = new DateTime(2025, 11, 12, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new NewsItem
+                {
+                    ID = 3,
+                    Title = "Healthy Eating Workshop",
+                    Description = "Learn how to prepare balanced meals with our nutritionist. Free entry.",
+                    ImageURL = "https://i.ibb.co/HTVch19N/healthy-eating.jpg",
+                    Date = new DateTime(2025, 9, 25, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new NewsItem
+                {
+                    ID = 4,
+                    Title = "World Diabetes Day Awareness",
+                    Description = "Educational lectures and free glucose testing for all visitors.",
+                    ImageURL = "https://i.ibb.co/1VTGg5c/diabetes.jpg",
+                    Date = new DateTime(2025, 11, 14, 0, 0, 0, DateTimeKind.Utc)
                 }
             );
         }

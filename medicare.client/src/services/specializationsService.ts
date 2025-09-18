@@ -1,9 +1,9 @@
 export async function getSpecializations(){
-    const responce = await fetch("https://localhost:7014/api/specializations/highlights");
+    const response = await fetch("https://localhost:7014/api/specializations/highlights");
 
-    if (!responce.ok) {
+    if (!response.ok) {
         throw new Error("Error when downolading specializations");
     }
 
-    return responce.json();
+    return response.json();
 }
