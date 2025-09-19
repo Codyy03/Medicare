@@ -96,7 +96,7 @@ namespace MediCare.Server.Controllers
         /// <returns>
         /// A 204 No Content response if the update is successful; otherwise, an appropriate error response.
         /// </returns>
-        [HttpPut]
+        [HttpPut("{id}")]
         public IActionResult UpdateSpecialization(int id, Specialization specialization)
         {
             if (id != specialization.ID)
@@ -146,9 +146,9 @@ namespace MediCare.Server.Controllers
         /// </summary>
         public class SpecializationHighlightDto
         {
-            public string SpecializationName { get; set; }
-            public string Link { get; set; }
-            public string SpecializationHighlight { get; set; }
+            public string? SpecializationName { get; set; }
+            public string? Link { get; set; }
+            public string? SpecializationHighlight { get; set; }
         }
     }
 }
