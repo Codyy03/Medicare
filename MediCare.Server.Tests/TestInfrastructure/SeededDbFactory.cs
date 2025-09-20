@@ -33,10 +33,16 @@ namespace MediCare.Server.Tests.TestInfrastructure
                 var sp = services.BuildServiceProvider();
                 using var scope = sp.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<MediCareDbContext>();
+                db.Database.EnsureDeleted();
                 db.Database.EnsureCreated();
 
-                db.Specializations.RemoveRange(db.Specializations);
-                db.SaveChanges();
+                db.ChangeTracker.Clear();
+
+                if (db.Specializations.Any())
+                    db.Specializations.RemoveRange(db.Specializations);
+
+                if (db.NewsItems.Any())
+                    db.NewsItems.RemoveRange(db.NewsItems);
 
                 db.Specializations.AddRange(
                     new Specialization
@@ -64,6 +70,40 @@ namespace MediCare.Server.Tests.TestInfrastructure
                         Link = "#"
                     }
                 );
+                db.NewsItems.AddRange(
+                    new NewsItem
+                    {
+                        ID = 1,
+                        Title = "Free Blood Pressure Screening",
+                        Description = "Join us for a free blood pressure check and consultation with our cardiology team.",
+                        ImageURL = "https://i.ibb.co/k2hBfcpL/blood-pressure.jpg",
+                        Date = new DateTime(2025, 10, 5, 0, 0, 0, DateTimeKind.Utc)
+                    },
+                    new NewsItem
+                    {
+                        ID = 2,
+                        Title = "Flu Vaccination Campaign",
+                        Description = "Get your flu shot before the season starts. No appointment needed.",
+                        ImageURL = "https://i.ibb.co/BHxNtvLj/vaccination.jpg",
+                        Date = new DateTime(2025, 11, 12, 0, 0, 0, DateTimeKind.Utc)
+                    },
+                    new NewsItem
+                    {
+                        ID = 3,
+                        Title = "Healthy Eating Workshop",
+                        Description = "Learn how to prepare balanced meals with our nutritionist. Free entry.",
+                        ImageURL = "https://i.ibb.co/HTVch19N/healthy-eating.jpg",
+                        Date = new DateTime(2025, 9, 25, 0, 0, 0, DateTimeKind.Utc)
+                    },
+                    new NewsItem
+                    {
+                        ID = 4,
+                        Title = "World Diabetes Day Awareness",
+                        Description = "Educational lectures and free glucose testing for all visitors.",
+                        ImageURL = "https://i.ibb.co/1VTGg5c/diabetes.jpg",
+                        Date = new DateTime(2025, 11, 14, 0, 0, 0, DateTimeKind.Utc)
+                    }
+                    );
                 db.SaveChanges();
             });
         }

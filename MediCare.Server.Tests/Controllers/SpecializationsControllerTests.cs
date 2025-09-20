@@ -1,30 +1,16 @@
-﻿using MediCare.Server.Data;
-using MediCare.Server.Entities;
+﻿using MediCare.Server.Entities;
 using MediCare.Server.Tests.TestInfrastructure;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
-using Xunit;
 using static MediCare.Server.Controllers.SpecializationsController;
 
 namespace MediCare.Server.Tests.Controllers
 {
     public class SpecializationsControllerTests : IClassFixture<WebApplicationFactory<Program>>
     {
-        readonly WebApplicationFactory<Program> factory;
-        readonly WebApplicationFactory<Program> EmptyTestDb;
-
-        public SpecializationsControllerTests(WebApplicationFactory<Program> factory)
-        {
-            this.factory = new SeededDbFactory();
-            this.EmptyTestDb = new EmptyDbFactory();
-        }
-
         /// <summary>
         /// Verifies that the /api/specializations endpoint returns a JSON list of specializations
         /// and that each specialization contains all required fields.
@@ -33,7 +19,7 @@ namespace MediCare.Server.Tests.Controllers
         public async Task GetSpecializations_ReturnOk()
         {
             // arrage 
-            var client = factory.CreateClient();
+            var client = new SeededDbFactory().CreateClient();
 
             //act
             var response = await client.GetAsync("/api/specializations");
@@ -67,7 +53,7 @@ namespace MediCare.Server.Tests.Controllers
         public async Task GetSpecialization_Empty()
         {
             // arrage
-            var client = EmptyTestDb.CreateClient();
+            var client = new EmptyDbFactory().CreateClient();
 
             //act
             var response = await client.GetAsync("api/specializations");
@@ -111,7 +97,7 @@ namespace MediCare.Server.Tests.Controllers
         [Fact]
         public async Task GetSpecializationsHightlights_ReturnOk()
         {
-            var client = factory.CreateClient();
+            var client = new SeededDbFactory().CreateClient();
 
             var response = await client.GetAsync("/api/specializations/highlights");
 
@@ -140,8 +126,7 @@ namespace MediCare.Server.Tests.Controllers
         [Fact]
         public async Task CreateSpecialization_ReturnsCreated()
         {
-            var factory = new EmptyDbFactory();
-            var client = factory.CreateClient();
+            var client = new EmptyDbFactory().CreateClient();
 
             var newSpec = new Specialization
             {
@@ -163,8 +148,7 @@ namespace MediCare.Server.Tests.Controllers
         [Fact]
         public async Task UpdateSpecialization_ReturnsNoContent()
         {
-            var factory = new SeededDbFactory();
-            var client = factory.CreateClient();
+            var client = new SeededDbFactory().CreateClient();
 
             var list = await client.GetFromJsonAsync<List<Specialization>>("/api/specializations");
             Assert.NotNull(list);
@@ -184,8 +168,7 @@ namespace MediCare.Server.Tests.Controllers
         [Fact]
         public async Task DeleteSpecialization_ReturnsNoContent()
         {
-            var factory = new SeededDbFactory();
-            var client = factory.CreateClient();
+            var client = new SeededDbFactory().CreateClient();
 
             var list = await client.GetFromJsonAsync<List<Specialization>>("/api/specializations");
             Assert.NotNull(list);
