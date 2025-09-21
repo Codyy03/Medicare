@@ -3,7 +3,7 @@ import Layout from "./layout/Layout";
 import MinimalLayout from "./layout/MinimalLayout";
 import PatientsPage from "./pages/PatientsPage";
 import ClientPage from "./pages/ClientPanel";
-import AboutUs from "./pages/AboutUs";
+import AboutUs from "./pages/AboutUs/AboutUs";
 import './App.css';
 
 function App() {

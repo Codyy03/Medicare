@@ -2,6 +2,7 @@
     --primary-light: #4da3ff;
     --primary-dark: #004080;
 }
+
 header {
   position: fixed;
   top: 0;
@@ -95,13 +96,17 @@ header {
     border-top: 3px solid var(--primary-light);
     padding-top: 6px;
 }
-/* Pokazuje dropdown przy najechaniu */
+
 .nav-item.dropdown:hover .dropdown-menu.show-on-hover {
   display: block;
-  margin-top: 0; /* usuwa opóŸnienie */
+  margin-top: 0;
+}
+.dropdown-item.active,
+.dropdown-item:active {
+    background-color: white !important; /* lub transparent */
+    color: var(--primary-dark) !important;
 }
 
-/* Styl przesuwania tekstu */
 .hover-slide {
   transition: all 0.3s ease;
   padding-left: 1rem;
@@ -111,9 +116,8 @@ header {
 
 .hover-slide:hover {
   background-color:var(--primary-light);
-  padding-left: 1.5rem; /* lekkie przesuniêcie tekstu w prawo */
+  padding-left: 1.5rem;
 }
-
 
 /* Search style */
 .search-form .form-control {
