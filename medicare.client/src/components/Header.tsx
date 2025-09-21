@@ -13,8 +13,8 @@ export default function Header() {
             }
         };
 
-        updatePadding(); // ustaw od razu po za³adowaniu
-        window.addEventListener("resize", updatePadding); // reaguj na zmianê rozmiaru okna
+        updatePadding();
+        window.addEventListener("resize", updatePadding);
 
         return () => window.removeEventListener("resize", updatePadding);
     }, []);
@@ -85,9 +85,25 @@ export default function Header() {
 
                 <div className="collapse navbar-collapse" id="mainNavbar">
                     <ul className="navbar-nav mx-auto">
-                        <li className="nav-item">
-                            <NavLink className="nav-link" to="/about">About us</NavLink>
+                        <li className="nav-item dropdown">
+                            <div className="nav-link dropdown-toggle" id="infoDropdown">
+                                Info
+                            </div>
+                            <ul className="dropdown-menu show-on-hover" aria-labelledby="infoDropdown">
+                                <li>
+                                    <NavLink className="dropdown-item hover-slide" to="/aboutUs">
+                                        About us
+                                    </NavLink>
+                                </li>
+                                <li>
+                                    <NavLink className="dropdown-item hover-slide" to="/contact">
+                                        Contact
+                                    </NavLink>
+                                </li>
+                            </ul>
                         </li>
+
+
                         <li className="nav-item">
                             <NavLink className="nav-link" to="/doctors">Doctors</NavLink>
                         </li>

@@ -95,6 +95,26 @@ header {
     border-top: 3px solid var(--primary-light);
     padding-top: 6px;
 }
+/* Pokazuje dropdown przy najechaniu */
+.nav-item.dropdown:hover .dropdown-menu.show-on-hover {
+  display: block;
+  margin-top: 0; /* usuwa opóŸnienie */
+}
+
+/* Styl przesuwania tekstu */
+.hover-slide {
+  transition: all 0.3s ease;
+  padding-left: 1rem;
+  font-weight:bold;
+  color:dimgray;
+}
+
+.hover-slide:hover {
+  background-color:var(--primary-light);
+  padding-left: 1.5rem; /* lekkie przesuniêcie tekstu w prawo */
+}
+
+
 /* Search style */
 .search-form .form-control {
     border-radius: 20px;

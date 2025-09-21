@@ -3,7 +3,7 @@ import Header from "../components/Header";
 import CarouselSection from "../components/CarouselSection";
 import Tests from "../components/Tests";
 import News from "../components/News";
-import AboutUs from "../components/AbousUs";
+import AboutUs from "../components/AbousUsSection";
 import Footer from "../components/Footer";
 
 export default function Layout() {
