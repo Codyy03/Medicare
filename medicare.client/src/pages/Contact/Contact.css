@@ -1,0 +1,118 @@
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.contact-container {
+  font-family: Arial, sans-serif;
+  width: 100%;
+}
+.contact-content h1
+{
+    font-weight:bold;
+}
+/* HERO */
+.contact-hero {
+  position: relative;
+  background: url("https://i.ibb.co/7JgcKtw9/contact.jpg") center center no-repeat;
+  background-size: cover;
+  color: white;
+  text-align: center;
+  padding: 6rem 1rem;
+}
+
+.contact-main {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  padding: 2rem 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Nag³ówki w sekcji kontaktu */
+.contact-info h2,
+.contact-form h2 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #006699;
+  margin-bottom: 0.75rem;
+}
+
+/* Bloki informacji */
+.contact-block {
+  border-left: 4px solid #006699;
+  padding-left: 1rem;
+}
+
+.contact-title {
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: #006699;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+
+.contact-block p {
+  margin: 0.25rem 0;
+  font-size: 0.95rem;
+}
+
+/* Formularz – mniejszy i wyœrodkowany */
+.contact-form {
+  max-width: 350px; /* ograniczenie szerokoœci */
+  width: 100%;
+}
+
+.contact-form form {
+  display: flex;
+  flex-direction: column;
+}
+
+.contact-form input,
+.contact-form textarea {
+  margin-bottom: 0.75rem; /* mniejszy odstêp */
+  padding: 0.6rem; /* by³o 0.75rem – mniejsze pola */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+
+.contact-form button {
+  background-color: #006699;
+  color: white;
+  padding: 0.6rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background-color 0.2s ease;
+}
+
+.contact-form button:hover {
+  background-color: #004d66;
+}
+
+
+.contact-map-section {
+  padding: 3rem 1rem;
+  background-color: #f8f9fa;
+  text-align: center;
+}
+
+.map-title {
+  color: #006699;
+  font-weight:bold;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.map-wrapper {
+  max-width: 1000px;
+  margin: 0 auto;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
