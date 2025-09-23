@@ -57,7 +57,7 @@ function News() {
                 ))}
             </div>
             <div className="mt-4">
-                <Link to="/news" className="btn-anim">
+                <Link to="/allnews" className="btn-anim">
                     <span>More news &gt;</span>  
                 </Link>
             </div>

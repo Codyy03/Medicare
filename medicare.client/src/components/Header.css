@@ -103,7 +103,7 @@ header {
 }
 .dropdown-item.active,
 .dropdown-item:active {
-    background-color: white !important; /* lub transparent */
+    background-color: white !important;
     color: var(--primary-dark) !important;
 }
 

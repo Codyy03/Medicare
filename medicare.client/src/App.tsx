@@ -5,6 +5,7 @@ import PatientsPage from "./pages/PatientsPage";
 import ClientPage from "./pages/ClientPanel";
 import AboutUs from "./pages/AboutUs/AboutUs";
 import Contact from "./pages/Contact/Contact";
+import AllNews from "./pages/AllNews/AllNews";
 import './App.css';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
                 </Route>
                 <Route path="/aboutUs" element={<MinimalLayout ><AboutUs /> </MinimalLayout>} />
                 <Route path="/contact" element={<MinimalLayout> <Contact /> </MinimalLayout>} />
+                <Route path="/allNews" element={<MinimalLayout> <AllNews /> </MinimalLayout>} />
             </Routes>
         </BrowserRouter>
     );

@@ -32,16 +32,16 @@ html, body {
   margin: 0 auto;
 }
 
-/* Nag³ówki w sekcji kontaktu */
+/* Headings in the contact section*/
 .contact-info h2,
 .contact-form h2 {
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   font-weight: bold;
   color: #006699;
   margin-bottom: 0.75rem;
 }
 
-/* Bloki informacji */
+/* Information blocks */
 .contact-block {
   border-left: 4px solid #006699;
   padding-left: 1rem;
@@ -57,12 +57,11 @@ html, body {
 
 .contact-block p {
   margin: 0.25rem 0;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
 }
 
-/* Formularz – mniejszy i wyœrodkowany */
 .contact-form {
-  max-width: 350px; /* ograniczenie szerokoœci */
+  max-width: 350px; 
   width: 100%;
 }
 
@@ -73,8 +72,8 @@ html, body {
 
 .contact-form input,
 .contact-form textarea {
-  margin-bottom: 0.75rem; /* mniejszy odstêp */
-  padding: 0.6rem; /* by³o 0.75rem – mniejsze pola */
+  margin-bottom: 0.75rem;
+  padding: 0.6rem;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 0.95rem;
@@ -94,7 +93,6 @@ html, body {
 .contact-form button:hover {
   background-color: #004d66;
 }
-
 
 .contact-map-section {
   padding: 3rem 1rem;

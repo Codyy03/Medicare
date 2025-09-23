@@ -100,6 +100,11 @@ export default function Header() {
                                         Contact
                                     </NavLink>
                                 </li>
+                                <li>
+                                    <NavLink className="dropdown-item hover-slide" to="/allNews">
+                                        News
+                                    </NavLink>
+                                </li>
                             </ul>
                         </li>
 

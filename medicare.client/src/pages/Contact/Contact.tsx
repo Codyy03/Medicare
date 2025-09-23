@@ -23,7 +23,7 @@ export default function Contact() {
                     </div>
                 </div>
 
-                {/* FORMULARZ */}
+                {/* Form */}
                 <div className="contact-form">
                     <h2>SEND US A MESSAGE</h2>
                     <form>
