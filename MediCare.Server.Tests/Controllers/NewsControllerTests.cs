@@ -1,5 +1,6 @@
 ﻿using MediCare.Server.Entities;
 using MediCare.Server.Tests.TestInfrastructure;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 using System.Net.Http.Json;
@@ -94,11 +95,74 @@ namespace MediCare.Server.Tests.Controllers
         }
 
         /// <summary>
+        /// Verifies that retrieving all news items via GET to /api/news/by-date with sort=desc:
+        /// - Returns HTTP 200 OK and JSON content type.
+        /// - Returns a non-null list of news items with valid Title, Description, Date, and ImageURL fields.
+        /// - Ensures the list is sorted in descending order by Date (newest first).
+        /// </summary>
+        [Fact]
+        public async Task GetNewsSorted_ReturnOk()
+        {
+            var clinet = new SeededDbFactory().CreateClient();
+
+            var response = await clinet.GetAsync("/api/news/by-date?sort=desc");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            Assert.Equal("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var news = JsonSerializer.Deserialize<List<NewsItem>>(content,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            Assert.NotNull(news);
+
+            Assert.All(news, n =>
+            {
+                Assert.False(string.IsNullOrEmpty(n.Title));
+                Assert.False(string.IsNullOrEmpty(n.Description));
+                Assert.True(n.Date > DateTime.MinValue);
+                Assert.False(string.IsNullOrEmpty(n.ImageURL));
+            });
+
+            Assert.True(news.SequenceEqual(news.OrderByDescending(n => n.Date)),
+                "News items are not sorted in descending order by Date");
+        }
+
+        /// <summary>
+        /// Verifies that retrieving news items via GET to /api/news/by-date with sort=desc and specific month/year parameters:
+        /// - Returns HTTP 200 OK.
+        /// - Returns a non-null list of news items.
+        /// - Ensures all returned items have the expected month and year values.
+        /// </summary>
+        [Fact]
+        public async Task GetNews_FilterByMonthYear_ReturnsOnlyMatching()
+        {
+            var client = new SeededDbFactory().CreateClient();
+
+            var response = await client.GetAsync("/api/news/by-date?sort=desc&month=9&year=2025");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var content = await response.Content.ReadAsStringAsync();
+            var news = JsonSerializer.Deserialize<List<NewsItem>>(content,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            Assert.NotNull(news);
+            Assert.All(news, n =>
+            {
+                Assert.Equal(9, n.Date.Month);
+                Assert.Equal(2025, n.Date.Year);
+            });
+        }
+
+        /// <summary>
         /// Verifies that creating a new news item via POST to /api/news
         /// returns a 201 Created status when the request is valid.
         /// </summary>
         [Fact]
-        public async void CreateNews_ReturnsCreated()
+        public async Task CreateNews_ReturnsCreated()
         {
             var client = new EmptyDbFactory().CreateClient();
 
@@ -119,7 +183,7 @@ namespace MediCare.Server.Tests.Controllers
         /// returns a 204 NoContent status when the item exists and the request is valid.
         /// </summary>
         [Fact]
-        public async void UpdateNews_ReturnsNoContent()
+        public async Task UpdateNews_ReturnsNoContent()
         {
             var client = new SeededDbFactory().CreateClient();
 
@@ -141,7 +205,7 @@ namespace MediCare.Server.Tests.Controllers
         /// returns a 204 NoContent status when the item exists and is successfully removed.
         /// </summary>
         [Fact]
-        public async Task DeleteSpecialization_ReturnsNoContent()
+        public async Task DeleteNews_ReturnsNoContent()
         {
             var client = new SeededDbFactory().CreateClient();
 
