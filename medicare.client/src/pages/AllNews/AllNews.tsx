@@ -6,6 +6,7 @@ import "./AllNews.css";
 
 export default function AllNews() {
     interface NewsItem {
+        id: number;
         title: string;
         description: string;
         imageURL: string;
@@ -111,22 +112,25 @@ export default function AllNews() {
                                                 {new Date(item.date).toISOString().split("T")[0]}
                                             </small>
                                             <h4 className="card-title mt-2">
-                                                <a href="#" className="text-decoration-none text-dark newsPage-title-link">
+                                                <Link
+                                                    to={`/selectedNews/${item.id}`}
+                                                    className="text-decoration-none text-dark newsPage-title-link"
+                                                >
                                                     {item.title}
-                                                </a>
+                                                </Link>
                                             </h4>
                                             {item.imageURL && (
-                                                <a href="#">
+                                                <Link to={`/selectedNews/${item.id}`}>
                                                     <img
                                                         src={item.imageURL}
                                                         className="card-img-top img-fluid my-3 newsPage-img"
                                                         alt={item.title}
                                                     />
-                                                </a>
+                                                </Link>
                                             )}
-                                            <a href="#" className="newsPage-more-link">
+                                            <Link to={`/selectedNews/${item.id}`} className="newsPage-more-link">
                                                 More &gt;
-                                            </a>
+                                            </Link>
                                         </div>
                                     </div>
                                 </div>

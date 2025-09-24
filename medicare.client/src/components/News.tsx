@@ -6,6 +6,7 @@ import './News.css';
 
 function News() {
     interface NewsItem {
+        id: number;
         title: string;
         description: string;
         imageURL: string;
@@ -35,12 +36,12 @@ function News() {
                                     {new Date(item.date).toISOString().split("T")[0]}
                                 </small>
                                 <h4 className="card-title mt-2">
-                                    <Link to={"#"} className="text-decoration-none text-dark">
+                                    <Link to={`/selectedNews/${item.id}`} className="text-decoration-none text-dark">
                                         {item.title}
                                     </Link>
                                 </h4>
                                 {item.imageURL && (
-                                    <Link to={"#"}>
+                                    <Link to={`/selectedNews/${item.id}`}>
                                         <img
                                             src={item.imageURL}
                                             className="card-img-top img-fluid my-3"
@@ -48,7 +49,7 @@ function News() {
                                         />
                                     </Link>
                                 )}
-                                <Link to={"#"} className="">
+                                <Link to={`/selectedNews/${item.id}`} className="">
                                     More &gt;
                                 </Link>
                             </div>

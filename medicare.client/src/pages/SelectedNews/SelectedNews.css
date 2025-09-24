@@ -1,0 +1,35 @@
+.selectedNews-body{
+    margin-top:50px;
+}
+.selectedNews-body .row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center; /* ¿eby wygl¹da³o jak na screenie */
+}
+
+/* Data ma byæ wy¿ej */
+.selectedNews-date {
+  order: -1; /* przenosi datê nad tytu³ */
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--primary-light); /* np. czerwony akcent jak w Medyku */
+  margin-bottom: 10px;
+}
+
+/* Tytu³ pod dat¹ */
+.selectedNews-title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  margin: 0 0 20px;
+  text-transform: uppercase;
+  line-height: 1.3;
+}
+
+/* Treœæ pod tytu³em */
+.selectedNews-description {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #333;
+  max-width: 800px;
+}

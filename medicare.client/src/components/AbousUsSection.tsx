@@ -15,7 +15,7 @@ function AboutUs() {
                         the highest level of care. Our goal is not only treatment, but also
                         prevention and supporting a healthy lifestyle.
                     </p>
-                    <Link to="/about" className="btn-anim">
+                    <Link to="/aboutUs" className="btn-anim">
                         <span>More &gt;</span>
                     </Link>
                 </div>

@@ -6,6 +6,7 @@ import ClientPage from "./pages/ClientPanel";
 import AboutUs from "./pages/AboutUs/AboutUs";
 import Contact from "./pages/Contact/Contact";
 import AllNews from "./pages/AllNews/AllNews";
+import SelectedNews from "./pages/SelectedNews/SelectedNews";
 import './App.css';
 
 function App() {
@@ -16,11 +17,16 @@ function App() {
                     <Route path="patients" element={<PatientsPage />} />
                     <Route path="client" element={<ClientPage />} />
                 </Route>
-                <Route path="/aboutUs" element={<MinimalLayout ><AboutUs /> </MinimalLayout>} />
-                <Route path="/contact" element={<MinimalLayout> <Contact /> </MinimalLayout>} />
-                <Route path="/allNews" element={<MinimalLayout> <AllNews /> </MinimalLayout>} />
+
+                <Route element={<MinimalLayout />}>
+                    <Route path="/aboutUs" element={<AboutUs />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/allNews" element={<AllNews />} />
+                    <Route path="/selectedNews/:id" element={<SelectedNews />} />
+                </Route>
             </Routes>
         </BrowserRouter>
+
     );
 }
 
