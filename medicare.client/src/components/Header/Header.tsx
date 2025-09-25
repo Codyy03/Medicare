@@ -1,10 +1,12 @@
 import { NavLink } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './Header.css';
 
 export default function Header() {
+    const [showLoginOptions, setShowLoginOptions] = useState(false);
+
     useEffect(() => {
         const updatePadding = () => {
             const header = document.querySelector("header");
@@ -12,12 +14,11 @@ export default function Header() {
                 document.body.style.paddingTop = header.offsetHeight + "px";
             }
         };
-
         updatePadding();
         window.addEventListener("resize", updatePadding);
-
         return () => window.removeEventListener("resize", updatePadding);
     }, []);
+
     const socials = ["facebook", "twitter", "instagram"];
 
     return (
@@ -65,7 +66,6 @@ export default function Header() {
                             </button>
                         </form>
                     </div>
-
                 </div>
             </div>
 
@@ -108,7 +108,6 @@ export default function Header() {
                             </ul>
                         </li>
 
-
                         <li className="nav-item">
                             <NavLink className="nav-link" to="/doctors">Doctors</NavLink>
                         </li>
@@ -116,11 +115,38 @@ export default function Header() {
                             <NavLink className="nav-link" to="/appointments">Appointment</NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink className="nav-link" to="/registration">Registration</NavLink>
+                            <button
+                                className="nav-link login-btn"
+                                onClick={() => setShowLoginOptions(true)}
+                            >
+                                Login
+                            </button>
                         </li>
                     </ul>
                 </div>
             </nav>
+
+            {/*Login overlay – only shows when showLoginOptions = true*/}
+            {showLoginOptions && (
+                <div className="login-overlay">
+                    <div className="login-box">
+                        <button className="close-btn" onClick={() => setShowLoginOptions(false)}>
+                            <i className="bi bi-x-lg"></i>
+                        </button>
+                        <h4 className="mb-4">Who are you:</h4>
+                        <div className="login-choices">
+                            <NavLink to="/login/patient" className="login-choice" onClick={() => setShowLoginOptions(false)}>
+                                <i className="bi bi-person-heart fs-1 mb-2"></i>
+                                Patient
+                            </NavLink>
+                            <NavLink to="/login/doctor" className="login-choice" onClick={() => setShowLoginOptions(false)}>
+                                <i className="bi bi-hospital fs-1 mb-2"></i>
+                                Doctor
+                            </NavLink>
+                        </div>
+                    </div>
+                </div>
+            )}
         </header>
     );
 }

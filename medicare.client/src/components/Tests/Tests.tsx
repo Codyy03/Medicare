@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './Tests.css';
 import { useEffect, useState } from 'react';
-import { getSpecializations } from "../services/specializationsService";
+import { getSpecializations } from "../../services/specializationsService";
 
 interface Specializations {
     specializationName: string;

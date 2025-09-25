@@ -1,0 +1,46 @@
+/* Bazuje na PatientLogin, ale z ciemniejszym akcentem */
+.doctor-login {
+  background: linear-gradient(135deg, #f0f4ff, #ffffff);
+}
+
+.doctor-login .login-box {
+  border-top: 5px solid var(--primary-dark);
+}
+
+.doctor-login .login-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.doctor-login .login-subtitle {
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 25px;
+}
+
+.doctor-login .form-control:focus {
+  border-color: var(--primary-dark);
+  box-shadow: 0 0 6px rgba(0, 64, 128, 0.4);
+}
+
+.doctor-login .btn-dark {
+  background-color: var(--primary-dark);
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.doctor-login .btn-dark:hover {
+  background-color: #002b66;
+}
+
+.doctor-login .btn-outline-dark {
+  border-radius: 8px;
+  font-weight: 500;
+}

@@ -7,6 +7,8 @@ import AboutUs from "./pages/AboutUs/AboutUs";
 import Contact from "./pages/Contact/Contact";
 import AllNews from "./pages/AllNews/AllNews";
 import SelectedNews from "./pages/SelectedNews/SelectedNews";
+import PatientLogin from "./pages/PatientLogin/PatientLogin";
+import DoctorLogin from "./pages/DoctorLogin/DoctorLogin";
 import './App.css';
 
 function App() {
@@ -23,6 +25,9 @@ function App() {
                     <Route path="/contact" element={<Contact />} />
                     <Route path="/allNews" element={<AllNews />} />
                     <Route path="/selectedNews/:id" element={<SelectedNews />} />
+
+                    <Route path="/login/patient" element={<PatientLogin />} />
+                    <Route path="/login/doctor" element={<DoctorLogin />} />
                 </Route>
             </Routes>
         </BrowserRouter>
