@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MediCare.Server.Data;
 using MediCare.Server.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace MediCare.Server.Controllers
 {    
@@ -55,16 +56,37 @@ namespace MediCare.Server.Controllers
         /// <returns>
         /// A 201 Created response containing the newly created patient object.
         /// </returns>
-        [HttpPost]
-        public ActionResult<Patient> CreatePatient(Patient patient)
+        [HttpPost("register")]
+        public async Task<ActionResult> CreatePatient(PatientRegisterDto dto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            if (context.Patients.Any(p => p.PESEL == dto.PESEL))
+                return BadRequest("Passwords have to unique");
+
+            if (context.Patients.Any(p => p.Email == dto.Email))
+                return BadRequest("Email have to unique");
+
+            var hasher = new PasswordHasher<Patient>();
+
+            var patient = new Patient
+            {
+                PESEL = dto.PESEL,
+                Name = dto.Name,
+                Surname = dto.Surname,
+                Birthday = dto.Birthday,
+                Email = dto.Email,
+                PhoneNumber = dto.PhoneNumber,
+                PasswordHash = hasher.HashPassword(null!, dto.Password)
+            };
 
             context.Patients.Add(patient);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetPatient), new { id = patient.ID }, patient);
+            return CreatedAtAction(nameof(GetPatient), new { id = patient.ID }, new{
+                patient.ID,
+                patient.Name,
+                patient.Surname,
+                patient.Email
+            });
         }
 
         /// <summary>
@@ -120,5 +142,15 @@ namespace MediCare.Server.Controllers
 
             return NoContent();
         }
+    }
+    public class PatientRegisterDto
+    {
+        public string PESEL { get; set; }
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public DateTime Birthday { get; set; }
+        public string Email { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Password { get; set; }
     }
 }

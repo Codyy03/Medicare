@@ -9,6 +9,7 @@ import AllNews from "./pages/AllNews/AllNews";
 import SelectedNews from "./pages/SelectedNews/SelectedNews";
 import PatientLogin from "./pages/PatientLogin/PatientLogin";
 import DoctorLogin from "./pages/DoctorLogin/DoctorLogin";
+import PatientRegister from "./pages/PatientRegister/PatientRegister";
 import './App.css';
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
 
                     <Route path="/login/patient" element={<PatientLogin />} />
                     <Route path="/login/doctor" element={<DoctorLogin />} />
+                    <Route path="/register/patient" element={<PatientRegister />} />
                 </Route>
             </Routes>
         </BrowserRouter>
