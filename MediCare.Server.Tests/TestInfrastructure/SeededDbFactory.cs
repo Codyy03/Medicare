@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection.Emit;
 
 namespace MediCare.Server.Tests.TestInfrastructure
 {
@@ -43,6 +44,9 @@ namespace MediCare.Server.Tests.TestInfrastructure
 
                 if (db.NewsItems.Any())
                     db.NewsItems.RemoveRange(db.NewsItems);
+
+                if (db.Patients.Any())
+                    db.Patients.RemoveRange(db.Patients);
 
                 db.Specializations.AddRange(
                     new Specialization
@@ -104,6 +108,32 @@ namespace MediCare.Server.Tests.TestInfrastructure
                         Date = new DateTime(2025, 11, 14, 0, 0, 0, DateTimeKind.Utc)
                     }
                     );
+
+                db.Patients.AddRange(
+                 new Patient
+                   {
+                       ID = 1,
+                       PESEL = "90010112345",
+                       Name = "Michael",
+                       Surname = "Brown",
+                       Birthday = new DateTime(1990, 1, 1),
+                       Email = "michael.brown@example.com",
+                       PhoneNumber = "555111222",
+                       PasswordHash = "AQAAAAIAAYagAAAAELg5sSlJ9Z8pG1rKefpy1Pbfql3D+S2J7bXiM77uUOfyfdvsBcOdh75oC42ktQ8h3w==" // doctor1
+                   },
+                   new Patient
+                   {
+                       ID = 2,
+                       PESEL = "85050567890",
+                       Name = "Sarah",
+                       Surname = "Williams",
+                       Birthday = new DateTime(1985, 5, 5),
+                       Email = "sarah.williams@example.com",
+                       PhoneNumber = "555333444",
+                       PasswordHash = "AQAAAAIAAYagAAAAELo4ftbkWmWkCzg4YbZhATzJFIRg6s7HBY322tgk4mquh9bHdQy3NraDhJLvnhjJEQ==" // doctor1
+                   }
+                );
+
                 db.SaveChanges();
             });
         }
