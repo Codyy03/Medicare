@@ -34,7 +34,9 @@ namespace MediCare.Server.Controllers
                     Name = d.Name,
                     Surname = d.Surname,
                     Email = d.Email,
-                    PhoneNumber = d.PhoneNumber
+                    PhoneNumber = d.PhoneNumber,
+                    StartHour = d.StartHour,
+                    EndHour = d.EndHour,
                 })
                 .ToList();
 
@@ -59,7 +61,9 @@ namespace MediCare.Server.Controllers
                     Name = d.Name,
                     Surname = d.Surname,
                     Email = d.Email,
-                    PhoneNumber = d.PhoneNumber
+                    PhoneNumber = d.PhoneNumber,
+                    StartHour = d.StartHour,
+                    EndHour = d.EndHour
                 })
                 .FirstOrDefault();
 
@@ -122,26 +126,18 @@ namespace MediCare.Server.Controllers
         /// The updated <see cref="DoctorDto"/> if successful; otherwise, an appropriate error response.
         /// </returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateDoctor(int id, Doctor doctor)
+        public async Task<IActionResult> UpdateDoctor(int id, DoctorUpdateDto dto)
         {
-            if (id != doctor.ID)
-                return BadRequest();
-
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            Doctor? existing = context.Doctors.Find(id);
-
+            var existing = await context.Doctors.FindAsync(id);
             if (existing == null)
                 return NotFound();
 
-            existing.StartHour = doctor.StartHour;
-            existing.EndHour = doctor.EndHour;
-            existing.PhoneNumber = doctor.PhoneNumber;
-            existing.Surname = doctor.Surname;
-            existing.Name = doctor.Name;
-            existing.Email = doctor.Email;
+            existing.Name = dto.Name;
+            existing.Surname = dto.Surname;
+            existing.Email = dto.Email;
+            existing.PhoneNumber = dto.PhoneNumber;
+            existing.StartHour = dto.StartHour;
+            existing.EndHour = dto.EndHour;
 
             await context.SaveChangesAsync();
 
@@ -155,6 +151,7 @@ namespace MediCare.Server.Controllers
             });
         }
 
+
         /// <summary>
         /// Deletes a doctor record by ID.
         /// </summary>
@@ -162,7 +159,6 @@ namespace MediCare.Server.Controllers
         /// <returns>
         /// A 204 No Content response if the deletion is successful; otherwise, a 404 Not Found response.
         /// </returns>
-        [HttpDelete("{id}")]
         [HttpDelete("{id}")]
         public IActionResult DeleteDoctor(int id)
         {
@@ -200,6 +196,19 @@ namespace MediCare.Server.Controllers
             public string Surname { get; set; }
             public string Email { get; set; }
             public string PhoneNumber { get; set; }
+            public TimeOnly StartHour { get; set; }
+            public TimeOnly EndHour { get; set; }
         }
+
+        public class DoctorUpdateDto
+        {
+            public string Name { get; set; }
+            public string Surname { get; set; }
+            public string Email { get; set; }
+            public string PhoneNumber { get; set; }
+            public TimeOnly StartHour { get; set; }
+            public TimeOnly EndHour { get; set; }
+        }
+
     }
 }
