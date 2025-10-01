@@ -1,12 +1,13 @@
 ﻿using MediCare.Server.Data;
 using MediCare.Server.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MediCare.Server.Controllers
 {
     /// <summary>
     /// API controller for managing news items in the MediCare system.
-    /// Provides endpoints to retrieve, create, update, and delete news records.
+    /// Provides endpoints to retrieve, filter, create, update, and delete news records.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -20,19 +21,19 @@ namespace MediCare.Server.Controllers
         }
 
         /// <summary>
-        /// Retrieves all news items.
+        /// Retrieves all news items from the system.
         /// </summary>
-        /// <returns>A list of <see cref="NewsItem"/> objects.</returns>
+        /// <returns>A list of all <see cref="NewsItem"/> objects.</returns>
         [HttpGet]
-        public ActionResult<List<NewsItem>> GetNewsItems()
+        public async Task<ActionResult<List<NewsItem>>> GetNewsItems()
         {
-            List<NewsItem> newsItems = context.NewsItems.ToList();
+            List<NewsItem> newsItems = await context.NewsItems.ToListAsync();
 
             return Ok(newsItems);
         }
 
         /// <summary>
-        /// Retrieves a list of news items from the database, optionally filtered by month and year,
+        /// Retrieves news items filtered by month and year (if provided),
         /// and sorted by date in ascending or descending order.
         /// </summary>
         /// <param name="sort">
@@ -41,17 +42,17 @@ namespace MediCare.Server.Controllers
         /// "desc" - newest first (default).
         /// </param>
         /// <param name="month">
-        /// Optional month filter (1-12). If provided together with <paramref name="year"/>,
-        /// only news from that month will be returned.
+        /// Optional month filter (1–12). Must be provided together with <paramref name="year"/>.
         /// </param>
         /// <param name="year">
-        /// Optional year filter. Must be provided together with <paramref name="month"/> to apply filtering.
+        /// Optional year filter. Must be provided together with <paramref name="month"/>.
         /// </param>
         /// <returns>
-        /// HTTP 200 OK with a list of <see cref="NewsItem"/> objects matching the filter and sort criteria.
+        /// A 200 OK response containing a list of <see cref="NewsItem"/> objects
+        /// matching the filter and sort criteria.
         /// </returns>
         [HttpGet("by-date")]
-        public ActionResult<List<NewsItem>> GetNewsByDate(
+        public async Task<ActionResult<List<NewsItem>>> GetNewsByDate(
             [FromQuery] string sort = "desc",
             [FromQuery] int? month = null, // Optional month parameter
             [FromQuery] int? year = null) // Optional year parameter
@@ -64,7 +65,7 @@ namespace MediCare.Server.Controllers
                 query = query.Where(x => x.Date.Month== month.Value && x.Date.Year == year.Value);
 
             //Sorting depending on the 'sort' parameter
-            if (sort.ToLower() =="asc")
+            if (Equals("asc", StringComparison.OrdinalIgnoreCase))
             {
                 query = query.OrderBy(x => x.Date);
             }
@@ -73,41 +74,40 @@ namespace MediCare.Server.Controllers
                 query = query.OrderByDescending(x => x.Date);
             }
 
-            List<NewsItem> result = query.ToList();
+            List<NewsItem> result = await query.ToListAsync();
 
             return Ok(result);
         }
+
         /// <summary>
         /// Retrieves the latest news items, ordered by date in descending order.
         /// </summary>
-        /// <param name="count">
-        /// The maximum number of news items to return.
-        /// </param>
+        /// <param name="count">The maximum number of news items to return.</param>
         /// <returns>
-        /// A list of the most recent <see cref="NewsItem"/> objects, up to the specified count.
+        /// A 200 OK response containing up to <paramref name="count"/> of the most recent <see cref="NewsItem"/> objects.
         /// </returns>
         [HttpGet("latest/{count:int}")]
-        public ActionResult<List<NewsItem>> GetLatestNews(int count)
+        public async Task<ActionResult<List<NewsItem>>> GetLatestNews(int count)
         {
-            List<NewsItem> latestNews = context.NewsItems
+            List<NewsItem> latestNews = await context.NewsItems
                 .OrderByDescending(n => n.Date)
                 .Take(count)
-                .ToList();
+                .ToListAsync();
 
             return Ok(latestNews);
         }
 
         /// <summary>
-        /// Retrieves a specific news item by its ID.
+        /// Retrieves a specific news item by its unique identifier.
         /// </summary>
-        /// <param name="id">The unique identifier of the news item.</param>
+        /// <param name="id">The ID of the news item to retrieve.</param>
         /// <returns>
-        /// The <see cref="NewsItem"/> object if found; otherwise, a 404 Not Found response.
+        /// A 200 OK response with the <see cref="NewsItem"/> if found; otherwise, a 404 Not Found response.
         /// </returns>
         [HttpGet("{id:int}")]
-        public ActionResult<NewsItem> GetNewsItem(int id) 
+        public async Task<ActionResult<NewsItem>> GetNewsItem(int id) 
         {
-            NewsItem? newsItem = context.NewsItems.Find(id);
+            NewsItem? newsItem = await context.NewsItems.FindAsync(id);
 
             if (newsItem == null)
                 return NotFound();
@@ -116,34 +116,37 @@ namespace MediCare.Server.Controllers
         }
 
         /// <summary>
-        /// Creates a new news item.
+        /// Creates a new news item in the system.
         /// </summary>
-        /// <param name="newsItem">The news item object to create.</param>
+        /// <param name="newsItem">The news item entity to create.</param>
         /// <returns>
-        /// A 201 Created response containing the newly created news item.
+        /// A 201 Created response containing the newly created <see cref="NewsItem"/>; 
+        /// or 400 Bad Request if the model state is invalid.
         /// </returns>
         [HttpPost]
-        public ActionResult CreateNews(NewsItem newsItem)
+        public async Task<ActionResult> CreateNews(NewsItem newsItem)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             context.NewsItems.Add(newsItem);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetNewsItem), new { id = newsItem.ID }, newsItem);
         }
 
         /// <summary>
-        /// Updates an existing news item.
+        /// Updates the details of an existing news item.
         /// </summary>
-        /// <param name="id">The unique identifier of the news item to update.</param>
-        /// <param name="newsItem">The updated news item object.</param>
+        /// <param name="id">The ID of the news item to update.</param>
+        /// <param name="newsItem">The updated news item entity.</param>
         /// <returns>
-        /// A 204 No Content response if the update is successful; otherwise, an appropriate error response.
+        /// A 204 No Content response if the update is successful; 
+        /// 400 Bad Request if the IDs do not match or the model state is invalid; 
+        /// or 404 Not Found if the news item does not exist.
         /// </returns>
         [HttpPut("{id}")]
-        public IActionResult UpdateNews(int id, NewsItem newsItem)
+        public async Task<IActionResult> UpdateNews(int id, NewsItem newsItem)
         {
             if (id != newsItem.ID)
                 return BadRequest();
@@ -151,7 +154,7 @@ namespace MediCare.Server.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            NewsItem? existing = context.NewsItems.Find(id);
+            NewsItem? existing = await context.NewsItems.FindAsync(id);
 
             if (existing == null)
                 return NotFound();
@@ -161,28 +164,29 @@ namespace MediCare.Server.Controllers
             existing.Date = newsItem.Date;
             existing.ImageURL = newsItem.ImageURL;
 
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             return NoContent();
         }
 
         /// <summary>
-        /// Deletes a news item by its ID.
+        /// Deletes a news item by its unique identifier.
         /// </summary>
-        /// <param name="id">The unique identifier of the news item to delete.</param>
+        /// <param name="id">The ID of the news item to delete.</param>
         /// <returns>
-        /// A 204 No Content response if the deletion is successful; otherwise, a 404 Not Found response.
+        /// A 204 No Content response if the deletion is successful; 
+        /// or 404 Not Found if the news item does not exist.
         /// </returns>
         [HttpDelete("{id}")]
-        public IActionResult DeleteNews(int id)
+        public async Task<IActionResult> DeleteNews(int id)
         {
-            NewsItem? newsItem = context.NewsItems.Find(id);
+            NewsItem? newsItem = await context.NewsItems.FindAsync(id);
 
             if (newsItem == null)
                 return NotFound();
 
             context.NewsItems.Remove(newsItem);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             return NoContent();
         }

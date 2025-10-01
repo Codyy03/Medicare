@@ -1,15 +1,8 @@
-﻿using MediCare.Server.Controllers;
-using MediCare.Server.Entities;
-using MediCare.Server.Tests.TestInfrastructure;
+﻿using MediCare.Server.Tests.TestInfrastructure;
 using Microsoft.AspNetCore.Mvc.Testing;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http.Json;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using static MediCare.Server.Controllers.DoctorsController;
 
 namespace MediCare.Server.Tests.Controllers;

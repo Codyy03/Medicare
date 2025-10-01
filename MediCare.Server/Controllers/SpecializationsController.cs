@@ -1,12 +1,14 @@
 ﻿using MediCare.Server.Data;
 using MediCare.Server.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MediCare.Server.Controllers
 {
     /// <summary>
     /// API controller for managing medical specializations in the MediCare system.
     /// Provides endpoints to retrieve, create, update, and delete specialization records.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class SpecializationsController : ControllerBase
@@ -19,29 +21,28 @@ namespace MediCare.Server.Controllers
         }
 
         /// <summary>
-        /// Retrieves all specializations.
+        /// Retrieves all medical specializations available in the system.
         /// </summary>
-        /// <returns>A list of <see cref="Specialization"/> objects.</returns>
+        /// <returns>A list of all <see cref="Specialization"/> records.</returns>
         [HttpGet]
-        public ActionResult<List<Specialization>> GetSpecializations()
+        public async Task<ActionResult<List<Specialization>>> GetSpecializations()
         {
-            List<Specialization> specializations = context.Specializations.ToList();
+            List<Specialization> specializations = await context.Specializations.ToListAsync();
 
             return Ok(specializations);
         }
 
         /// <summary>
-        /// Retrieves a specific specialization by its ID.
+        /// Retrieves a single specialization by its unique identifier.
         /// </summary>
-        /// <param name="id">The unique identifier of the specialization.</param>
+        /// <param name="id">The ID of the specialization to retrieve.</param>
         /// <returns>
-        /// The <see cref="Specialization"/> object if found; otherwise, a 404 Not Found response.
+        /// Returns the <see cref="Specialization"/> if found; otherwise, a 404 Not Found response.
         /// </returns>
-        //Get api/Specializations/4
         [HttpGet("{id}")]
-        public ActionResult<Specialization> GetSpecialization(int id)
+        public async Task<ActionResult<Specialization>> GetSpecialization(int id)
         {
-            Specialization? specialization = context.Specializations.Find(id);
+            Specialization? specialization = await context.Specializations.FindAsync(id);
 
             if (specialization == null)
                 return NotFound();
@@ -50,54 +51,57 @@ namespace MediCare.Server.Controllers
         }
 
         /// <summary>
-        /// Retrieves a list of specialization highlights, including name, highlight text, and link.
+        /// Retrieves a simplified list of specialization highlights,
+        /// including the specialization name, highlight text, and an optional link.
         /// </summary>
         /// <returns>
         /// A list of <see cref="SpecializationHighlightDto"/> objects containing summary information.
         /// </returns>
         [HttpGet("highlights")]
-        public ActionResult<List<SpecializationHighlightDto>> GetSpecializationsHightlight()
+        public async Task<ActionResult<List<SpecializationHighlightDto>>> GetSpecializationsHightlight()
         {
-            List<SpecializationHighlightDto> specializationsHighlightDtos = context.Specializations.Select
+            List<SpecializationHighlightDto> specializationsHighlightDtos = await context.Specializations.Select
                 (s => new SpecializationHighlightDto
                 {
                     SpecializationName = s.SpecializationName,
                     SpecializationHighlight = s.SpecializationHighlight,
                     Link = s.Link
-                }).ToList();
+                }).ToListAsync();
 
             return Ok(specializationsHighlightDtos);
         }
 
         /// <summary>
-        /// Creates a new specialization record.
+        /// Creates a new specialization record in the system.
         /// </summary>
-        /// <param name="specialization">The specialization object to create.</param>
+        /// <param name="specialization">The specialization entity to create.</param>
         /// <returns>
-        /// A 201 Created response containing the newly created specialization object.
+        /// A 201 Created response containing the newly created <see cref="Specialization"/> object.
         /// </returns>
         [HttpPost]
-        public ActionResult<Specialization> CreateSpecialization(Specialization specialization)
+        public async Task<ActionResult<Specialization>> CreateSpecialization(Specialization specialization)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             context.Specializations.Add(specialization);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetSpecialization), new { id = specialization.ID }, specialization);
         }
 
         /// <summary>
-        /// Updates an existing specialization record.
+        /// Updates the details of an existing specialization.
         /// </summary>
-        /// <param name="id">The unique identifier of the specialization to update.</param>
-        /// <param name="specialization">The updated specialization object.</param>
+        /// <param name="id">The ID of the specialization to update.</param>
+        /// <param name="specialization">The updated specialization entity.</param>
         /// <returns>
-        /// A 204 No Content response if the update is successful; otherwise, an appropriate error response.
+        /// A 204 No Content response if the update is successful; 
+        /// 400 Bad Request if the IDs do not match; 
+        /// or 404 Not Found if the specialization does not exist.
         /// </returns>
         [HttpPut("{id}")]
-        public IActionResult UpdateSpecialization(int id, Specialization specialization)
+        public async Task<IActionResult> UpdateSpecialization(int id, Specialization specialization)
         {
             if (id != specialization.ID)
                 return BadRequest();
@@ -105,7 +109,7 @@ namespace MediCare.Server.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            Specialization? existing = context.Specializations.Find(id);
+            Specialization? existing = await context.Specializations.FindAsync(id);
 
             if (existing == null)
                 return NotFound();
@@ -115,34 +119,36 @@ namespace MediCare.Server.Controllers
             existing.SpecializationDescription = specialization.SpecializationDescription;
             existing.Link = specialization.Link;
 
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             return NoContent();
         }
 
         /// <summary>
-        /// Deletes a specialization record by ID.
+        /// Deletes a specialization by its unique identifier.
         /// </summary>
-        /// <param name="id">The unique identifier of the specialization to delete.</param>
+        /// <param name="id">The ID of the specialization to delete.</param>
         /// <returns>
-        /// A 204 No Content response if the deletion is successful; otherwise, a 404 Not Found response.
+        /// A 204 No Content response if the deletion is successful; 
+        /// or 404 Not Found if the specialization does not exist.
         /// </returns>
         [HttpDelete("{id}")]
-        public IActionResult DeleteSpecialization(int id)
+        public async Task<IActionResult> DeleteSpecialization(int id)
         {
-            Specialization? specialization = context.Specializations.Find(id);
+            Specialization? specialization = await context.Specializations.FindAsync(id);
 
             if (specialization == null)
                 return NotFound();
 
             context.Specializations.Remove(specialization);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             return NoContent();
         }
 
         /// <summary>
-        /// DTO for returning specialization highlights.
+        /// Data Transfer Object (DTO) for returning specialization highlights.
+        /// Contains only summary information such as name, highlight text, and link.
         /// </summary>
         public class SpecializationHighlightDto
         {

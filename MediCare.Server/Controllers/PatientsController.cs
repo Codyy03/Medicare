@@ -1,14 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MediCare.Server.Data;
+﻿using MediCare.Server.Data;
 using MediCare.Server.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace MediCare.Server.Controllers
-{    
-     /// <summary>
-     /// API controller for managing patients in the MediCare system.
-     /// Provides endpoints to retrieve, create, update, and delete patient records.
-     /// </summary>
+{
+    /// <summary>
+    /// API controller for managing patients in the MediCare system.
+    /// Provides endpoints to retrieve, register, update, and delete patient records.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class PatientsController : ControllerBase
@@ -21,27 +23,47 @@ namespace MediCare.Server.Controllers
         }
 
         /// <summary>
-        /// Retrieves all patients.
+        /// Retrieves all patients from the system.
         /// </summary>
-        /// <returns>A list of <see cref="Patient"/> objects.</returns>
+        /// <returns>A list of <see cref="PatientDto"/> objects representing all patients.</returns>
         [HttpGet]
-        public ActionResult<List<Patient>> GetPatients()
+        public async Task<ActionResult<List<PatientDto>>> GetPatients()
         {
-            List<Patient> patients = context.Patients.ToList();
+            var patients = await context.Patients
+                .Select(d => new PatientDto
+                {
+                    Name = d.Name,
+                    Surname = d.Surname,
+                    Email = d.Email,
+                    PhoneNumber = d.PhoneNumber,
+                    Birthday = d.Birthday,
+                })
+                .ToListAsync();
+
             return Ok(patients);
         }
 
         /// <summary>
-        /// Retrieves a specific patient by their ID.
+        /// Retrieves a specific patient by their unique identifier.
         /// </summary>
-        /// <param name="id">The unique identifier of the patient.</param>
+        /// <param name="id">The ID of the patient to retrieve.</param>
         /// <returns>
-        /// The <see cref="Patient"/> object if found; otherwise, a 404 Not Found response.
+        /// Returns the <see cref="PatientDto"/> if found; otherwise, a 404 Not Found response.
         /// </returns>
         [HttpGet("{id}")]
-        public ActionResult<Patient> GetPatient(int id)
+        public async Task<ActionResult<PatientDto>> GetPatient(int id)
         {
-            Patient? patient = context.Patients.Find(id);
+            var patient = await context.Patients
+              .Where(d => d.ID == id)
+              .Select(d => new PatientDto
+              {
+                  Name = d.Name,
+                  Surname = d.Surname,
+                  Email = d.Email,
+                  PhoneNumber = d.PhoneNumber,
+                  Birthday = d.Birthday,
+              })
+              .FirstOrDefaultAsync();
 
             if (patient == null) 
                 return NotFound();
@@ -50,20 +72,21 @@ namespace MediCare.Server.Controllers
         }
 
         /// <summary>
-        /// Creates a new patient record.
+        /// Registers a new patient in the system.
         /// </summary>
-        /// <param name="patient">The patient object to create.</param>
+        /// <param name="dto">The registration data for the patient, including personal details and password.</param>
         /// <returns>
-        /// A 201 Created response containing the newly created patient object.
+        /// A 201 Created response containing the newly created patient’s basic details; 
+        /// or 400 Bad Request if the PESEL or email is not unique.
         /// </returns>
         [HttpPost("register")]
         public async Task<ActionResult> CreatePatient(PatientRegisterDto dto)
         {
-            if (context.Patients.Any(p => p.PESEL == dto.PESEL))
-                return BadRequest("Passwords have to unique");
+            if (await context.Patients.AnyAsync(p => p.PESEL == dto.PESEL))
+                return BadRequest("PESEL must be unique");
 
-            if (context.Patients.Any(p => p.Email == dto.Email))
-                return BadRequest("Email have to unique");
+            if (await context.Patients.AnyAsync(p => p.Email == dto.Email))
+                return BadRequest("Email must be unique");
 
             var hasher = new PasswordHasher<Patient>();
 
@@ -90,67 +113,107 @@ namespace MediCare.Server.Controllers
         }
 
         /// <summary>
-        /// Updates an existing patient record.
+        /// Updates the details of an existing patient.
         /// </summary>
-        /// <param name="id">The unique identifier of the patient to update.</param>
-        /// <param name="patient">The updated patient object.</param>
+        /// <param name="id">The ID of the patient to update.</param>
+        /// <param name="dto">The updated patient data.</param>
         /// <returns>
-        /// A 204 No Content response if the update is successful; otherwise, an appropriate error response.
+        /// A 200 OK response containing the updated <see cref="PatientDto"/> if successful; 
+        /// 404 Not Found if the patient does not exist.
         /// </returns>
         [HttpPut("{id}")]
-        public IActionResult UpdatePatient(int id, Patient patient)
+        public async Task<IActionResult> UpdatePatient(int id, PatientUpdateDto dto)
         {
-            if (id != patient.ID)
-                return BadRequest();
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            Patient? existing = context.Patients.Find(id);
-
+            var existing = await context.Patients.FindAsync(id);
             if (existing == null)
                 return NotFound();
 
-            existing.Name = patient.Name;
-            existing.Surname = patient.Surname;
-            existing.PESEL = patient.PESEL;
-            existing.Birthday = patient.Birthday;
-            existing.Email = patient.Email;
-            existing.PhoneNumber = patient.PhoneNumber;
-            context.SaveChanges();
+            existing.Name = dto.Name;
+            existing.Surname = dto.Surname;
+            existing.PESEL = dto.PESEL;
+            existing.Birthday = dto.Birthday;
+            existing.Email = dto.Email;
+            existing.PhoneNumber = dto.PhoneNumber;
 
-            return NoContent();
+            await context.SaveChangesAsync();
+
+            return Ok(new PatientDto
+            {
+                Name = existing.Name,
+                Surname = existing.Surname,
+                Email = existing.Email,
+                PhoneNumber = existing.PhoneNumber,
+                Birthday = existing.Birthday,
+            });
         }
 
         /// <summary>
-        /// Deletes a patient record by ID.
+        /// Deletes a patient by their unique identifier.
         /// </summary>
-        /// <param name="id">The unique identifier of the patient to delete.</param>
+        /// <param name="id">The ID of the patient to delete.</param>
         /// <returns>
-        /// A 204 No Content response if the deletion is successful; otherwise, a 404 Not Found response.
+        /// A 204 No Content response if the deletion is successful; 
+        /// or 404 Not Found if the patient does not exist.
         /// </returns>
         [HttpDelete("{id}")]
-        public IActionResult DeletePatient(int id)
+        public async Task<IActionResult> DeletePatient(int id)
         {
-            Patient? patient = context.Patients.Find(id);
+            Patient? patient = await context.Patients.FindAsync(id);
 
             if (patient == null)
                 return NotFound();
 
             context.Patients.Remove(patient);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             return NoContent();
         }
     }
+
+    /// <summary>
+    /// Data Transfer Object (DTO) used when registering a new patient.
+    /// Includes personal details, PESEL, contact information, and password.
+    /// </summary>
     public class PatientRegisterDto
     {
+        [Required]
         public string PESEL { get; set; }
+        [Required]
+        public string Name { get; set; }
+        [Required]
+        public string Surname { get; set; }
+        [Required, EmailAddress]
+        public string Email { get; set; }
+        [Phone]
+        public string PhoneNumber { get; set; }
+        [Required]
+        public string Password { get; set; }
+        public DateTime Birthday { get; set; }
+    }
+
+    /// <summary>
+    /// Data Transfer Object (DTO) for returning patient information.
+    /// Excludes sensitive fields such as password hash.
+    /// </summary>
+    public class PatientDto
+    {
         public string Name { get; set; }
         public string Surname { get; set; }
+        public string Email { get; set; }
+        public string PhoneNumber { get; set; }
+        public DateTime Birthday { get; set; }
+    }
+
+    /// <summary>
+    /// Data Transfer Object (DTO) used when updating an existing patient’s details.
+    /// </summary>
+    public class PatientUpdateDto
+    {
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public string PESEL { get; set; }
         public DateTime Birthday { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
-        public string Password { get; set; }
     }
 }
