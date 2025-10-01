@@ -23,7 +23,7 @@ namespace MediCare.Server.Tests.Controllers
 
             var content = await response.Content.ReadAsStringAsync();
 
-            var patients = JsonSerializer.Deserialize<List<Patient>>(content,
+            var patients = JsonSerializer.Deserialize<List<PatientDto>>(content,
                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             Assert.NotNull(patients);
@@ -32,7 +32,6 @@ namespace MediCare.Server.Tests.Controllers
                 Assert.False(string.IsNullOrEmpty(p.Name));
                 Assert.False(string.IsNullOrEmpty(p.Surname));
                 Assert.True(p.Birthday > DateTime.MinValue);
-                Assert.False(string.IsNullOrEmpty(p.PESEL));
                 Assert.False(string.IsNullOrEmpty(p.Email));
                 Assert.False(string.IsNullOrEmpty(p.PhoneNumber));
             });
@@ -84,21 +83,34 @@ namespace MediCare.Server.Tests.Controllers
         }
 
         [Fact]
-        public async Task UpdatePatient_ReturnsNoContent()
+        public async Task UpdatePatient_ReturnsOkWithUpdatedPatient()
         {
             var client = new SeededDbFactory().CreateClient();
 
-            var list = await client.GetFromJsonAsync<List<Patient>>("/api/patients");
+            var list = await client.GetFromJsonAsync<List<PatientDto>>("/api/patients");
 
             Assert.NotNull(list);
             Assert.NotEmpty(list);
 
             var existing = list.First();
-            existing.Name = "New name";
 
-            var response = await client.PutAsJsonAsync($"/api/patients/{existing.ID}", existing);
+            var updateDto = new PatientUpdateDto
+            {
+                Name = "New name",
+                Surname = existing.Surname,
+                PESEL = "12345678901", // musisz podać poprawny PESEL
+                Birthday = existing.Birthday,
+                Email = existing.Email,
+                PhoneNumber = existing.PhoneNumber
+            };
 
-            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+            var response = await client.PutAsJsonAsync($"/api/patients/{existing.ID}", updateDto);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var updated = await response.Content.ReadFromJsonAsync<PatientDto>();
+            Assert.NotNull(updated);
+            Assert.Equal("New name", updated!.Name);
         }
 
         [Fact]
@@ -106,7 +118,7 @@ namespace MediCare.Server.Tests.Controllers
         {
             var client = new SeededDbFactory().CreateClient();
 
-            var list = await client.GetFromJsonAsync<List<Patient>>("/api/patients");
+            var list = await client.GetFromJsonAsync<List<PatientDto>>("/api/patients");
 
             Assert.NotNull(list);
             Assert.NotEmpty(list);
@@ -114,8 +126,12 @@ namespace MediCare.Server.Tests.Controllers
             int existingId = list.First().ID;
 
             var response = await client.DeleteAsync($"/api/patients/{existingId}");
-            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-        }
 
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+            // dodatkowa asercja: po usunięciu GET powinien zwrócić 404
+            var getResponse = await client.GetAsync($"/api/patients/{existingId}");
+            Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
+        }
     }
 }

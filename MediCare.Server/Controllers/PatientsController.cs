@@ -32,6 +32,7 @@ namespace MediCare.Server.Controllers
             var patients = await context.Patients
                 .Select(d => new PatientDto
                 {
+                    ID = d.ID,
                     Name = d.Name,
                     Surname = d.Surname,
                     Email = d.Email,
@@ -57,6 +58,7 @@ namespace MediCare.Server.Controllers
               .Where(d => d.ID == id)
               .Select(d => new PatientDto
               {
+                  ID = d.ID,
                   Name = d.Name,
                   Surname = d.Surname,
                   Email = d.Email,
@@ -197,6 +199,7 @@ namespace MediCare.Server.Controllers
     /// </summary>
     public class PatientDto
     {
+        public int ID { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }
         public string Email { get; set; }
