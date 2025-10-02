@@ -3,7 +3,11 @@ using MediCare.Server.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace MediCare.Server.Controllers
 {
@@ -114,6 +118,44 @@ namespace MediCare.Server.Controllers
             });
         }
 
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginDto dto)
+        {
+            // Find user
+            Patient? user = await context.Patients.FirstOrDefaultAsync(u => u.Email == dto.Email);
+
+            if (user == null) return Unauthorized("Invalid credentials");
+
+            // Check password
+            PasswordHasher<Patient> hasher = new PasswordHasher<Patient>();
+            var result = hasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
+
+            if (result == PasswordVerificationResult.Failed)
+                return Unauthorized("Invalid credentials");
+
+            // create tocken data
+            var claims = new[]
+            {
+                // user id
+                new Claim(ClaimTypes.NameIdentifier, user.ID.ToString()),
+                // user email
+                new Claim(ClaimTypes.Email, user.Email)
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("super_secret_key_123"));
+
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: "MediCare",
+                audience: "MediCare",
+                claims: claims,
+                expires: DateTime.Now.AddHours(1),
+                signingCredentials: creds
+            );
+
+            return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
+        }
         /// <summary>
         /// Updates the details of an existing patient.
         /// </summary>
@@ -179,17 +221,17 @@ namespace MediCare.Server.Controllers
     public class PatientRegisterDto
     {
         [Required]
-        public string PESEL { get; set; }
+        public required string PESEL { get; set; }
         [Required]
-        public string Name { get; set; }
+        public required string Name { get; set; }
         [Required]
-        public string Surname { get; set; }
+        public required string Surname { get; set; }
         [Required, EmailAddress]
-        public string Email { get; set; }
+        public required string Email { get; set; }
         [Phone]
-        public string PhoneNumber { get; set; }
+        public required string PhoneNumber { get; set; }
         [Required]
-        public string Password { get; set; }
+        public required string Password { get; set; }
         public DateTime Birthday { get; set; }
     }
 
@@ -200,10 +242,10 @@ namespace MediCare.Server.Controllers
     public class PatientDto
     {
         public int ID { get; set; }
-        public string Name { get; set; }
-        public string Surname { get; set; }
-        public string Email { get; set; }
-        public string PhoneNumber { get; set; }
+        public required string Name { get; set; }
+        public required string Surname { get; set; }
+        public required string Email { get; set; }
+        public required string PhoneNumber { get; set; }
         public DateTime Birthday { get; set; }
     }
 
@@ -212,11 +254,17 @@ namespace MediCare.Server.Controllers
     /// </summary>
     public class PatientUpdateDto
     {
-        public string Name { get; set; }
-        public string Surname { get; set; }
-        public string PESEL { get; set; }
+        public required string Name { get; set; }
+        public required string Surname { get; set; }
+        public required string PESEL { get; set; }
         public DateTime Birthday { get; set; }
-        public string Email { get; set; }
-        public string PhoneNumber { get; set; }
+        public required string Email { get; set; }
+        public required string PhoneNumber { get; set; }
+    }
+
+    public class LoginDto
+    {
+        public required string Email { get; set; }
+        public required string Password { get; set; }
     }
 }
