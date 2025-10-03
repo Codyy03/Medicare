@@ -20,10 +20,11 @@ namespace MediCare.Server.Controllers
     public class PatientsController : ControllerBase
     {
         readonly MediCareDbContext context;
-
-        public PatientsController(MediCareDbContext context)
+        readonly IConfiguration configuration;
+        public PatientsController(MediCareDbContext context, IConfiguration configuration)
         {
             this.context = context;
+            this.configuration = configuration;
         }
 
         /// <summary>
@@ -129,8 +130,8 @@ namespace MediCare.Server.Controllers
             // Check password
             PasswordHasher<Patient> hasher = new PasswordHasher<Patient>();
             var result = hasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
-
-            if (result == PasswordVerificationResult.Failed)
+            
+            if (string.IsNullOrEmpty(user.PasswordHash) || (result == PasswordVerificationResult.Failed))
                 return Unauthorized("Invalid credentials");
 
             // create tocken data
@@ -142,13 +143,13 @@ namespace MediCare.Server.Controllers
                 new Claim(ClaimTypes.Email, user.Email)
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("super_secret_key_123"));
+            SymmetricSecurityKey? key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
 
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            SigningCredentials? creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var token = new JwtSecurityToken(
-                issuer: "MediCare",
-                audience: "MediCare",
+            JwtSecurityToken? token = new JwtSecurityToken(
+                issuer: configuration["Jwt:Issuer"],
+                audience: configuration["Jwt:Audience"],
                 claims: claims,
                 expires: DateTime.Now.AddHours(1),
                 signingCredentials: creds
@@ -156,6 +157,7 @@ namespace MediCare.Server.Controllers
 
             return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
         }
+
         /// <summary>
         /// Updates the details of an existing patient.
         /// </summary>

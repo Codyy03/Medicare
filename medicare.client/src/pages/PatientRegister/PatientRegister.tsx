@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./PatientRegister.css";
 export default function PatientRegister() {
     const [form, setForm] = useState({
@@ -12,6 +13,8 @@ export default function PatientRegister() {
         confirmPassword: ""
     });
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+    const navigate = useNavigate();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -59,11 +62,12 @@ export default function PatientRegister() {
         const response = await fetch("https://localhost:7014/api/patients/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(form),
+            body: JSON.stringify(dto),
         });
 
         if (response.ok) {
             alert("success");
+            navigate("/");
         } else {
             const errorMsg = await response.text();
             alert("Error" + errorMsg);
@@ -160,7 +164,7 @@ return (
                 />
                 {errors.confirmPassword && <span className="error-text">{errors.confirmPassword}</span>}
 
-                <button type="submit" className="btn btn-primary w-100 mt-3">Register</button>
+                 <button type="submit" className="btn btn-primary w-100 mt-3">Register</button>
             </form>
         </div>
     </div>
