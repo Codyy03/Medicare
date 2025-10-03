@@ -1,12 +1,33 @@
 import { NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './Header.css';
 
 export default function Header() {
-    const [showLoginOptions, setShowLoginOptions] = useState(false);
+    interface JwtPayload {
+        name?: string;
+        email?: string;
+        exp?: number;
+    }
+    const [userName, setUserName] = useState<string | null>(null);
 
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            try {
+                const decoded = jwtDecode<JwtPayload>(token);
+                if (decoded.name) {
+                    setUserName(decoded.name);
+                }
+            } catch (err) {
+                console.error("Invalid token", err);
+            }
+        }
+    }, []);
+
+    const [showLoginOptions, setShowLoginOptions] = useState(false);
     useEffect(() => {
         const updatePadding = () => {
             const header = document.querySelector("header");
@@ -115,12 +136,44 @@ export default function Header() {
                             <NavLink className="nav-link" to="/appointments">Appointment</NavLink>
                         </li>
                         <li className="nav-item">
-                            <button
-                                className="nav-link login-btn"
-                                onClick={() => setShowLoginOptions(true)}
-                            >
-                                Login
-                            </button>
+                            {userName ? (
+                                <div className="nav-item dropdown">
+                                    <div
+                                        className="nav-link dropdown-toggle"
+                                        id="userDropdown"
+                                        role="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false"
+                                    >
+                                        {userName}
+                                    </div>
+                                    <ul className="dropdown-menu show-on-hover" aria-labelledby="userDropdown">
+                                        <li>
+                                            <NavLink className="dropdown-item hover-slide" to="/personalData">
+                                                My personal data
+                                            </NavLink>
+                                        </li>
+                                        <li>
+                                            <button
+                                                className="dropdown-item hover-slide"
+                                                onClick={() => {
+                                                    localStorage.removeItem("token");
+                                                    window.location.reload();
+                                                }}
+                                            >
+                                                Logout
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            ) : (
+                                <button
+                                    className="nav-link login-btn"
+                                    onClick={() => setShowLoginOptions(true)}
+                                >
+                                    Login
+                                </button>
+                            )}
                         </li>
                     </ul>
                 </div>

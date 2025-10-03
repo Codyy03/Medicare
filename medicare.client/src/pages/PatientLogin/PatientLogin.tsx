@@ -16,11 +16,8 @@ export default function PatientLogin() {
 
         if (token) {
             localStorage.setItem("token", token);
-
-            alert("sukcess");
             navigate("/");
         } else {
-            alert("blad");
             setError("Invalid email or password");
         }
     };

@@ -140,7 +140,9 @@ namespace MediCare.Server.Controllers
                 // user id
                 new Claim(ClaimTypes.NameIdentifier, user.ID.ToString()),
                 // user email
-                new Claim(ClaimTypes.Email, user.Email)
+                new Claim(ClaimTypes.Email, user.Email),
+                //user name
+                new Claim("name", user.Name)
             };
 
             SymmetricSecurityKey? key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
