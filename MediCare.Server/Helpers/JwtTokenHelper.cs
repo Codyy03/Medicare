@@ -5,6 +5,10 @@ using System.Text;
 
 namespace MediCare.Server.Helpers
 {
+    /// <summary>
+    /// Provides functionality for generating JSON Web Tokens (JWT) 
+    /// with user claims for authentication and authorization.
+    /// </summary>
     public class JwtTokenHelper
     {
         private readonly IConfiguration configuration;
@@ -14,6 +18,14 @@ namespace MediCare.Server.Helpers
             this.configuration = configuration;
         }
 
+        /// <summary>
+        /// Generates a signed JWT token containing user claims.
+        /// </summary>
+        /// <param name="id">Unique identifier of the user.</param>
+        /// <param name="email">Email address of the user.</param>
+        /// <param name="name">Display name of the user.</param>
+        /// <param name="role">Role of the user (e.g. "Patient", "Doctor").</param>
+        /// <returns>A signed JWT token string.</returns>
         public string GenerateJwtToken(string id, string email, string name, string role)
         {
             var claims = new[]

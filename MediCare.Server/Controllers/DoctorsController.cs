@@ -129,6 +129,14 @@ namespace MediCare.Server.Controllers
             });
         }
 
+        /// <summary>
+        /// Handles doctor login by verifying provided credentials.
+        /// </summary>
+        /// <param name="dto">Login data transfer object containing email and password.</param>
+        /// <returns>
+        /// Returns <see cref="UnauthorizedResult"/> if credentials are invalid, 
+        /// otherwise returns an <see cref="OkObjectResult"/> containing a JWT token.
+        /// </returns>
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
