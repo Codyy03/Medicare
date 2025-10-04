@@ -80,6 +80,19 @@ namespace MediCare.Server.Controllers
             return Ok(patient);
         }
 
+        [HttpGet("me")]
+        public async Task<ActionResult> GetMe()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null) return Unauthorized();
+
+            var patient = await context.Patients.FindAsync(int.Parse(userId));
+            if (patient == null) return NotFound();
+
+            return Ok(patient);
+        }
+
         /// <summary>
         /// Registers a new patient in the system.
         /// </summary>
@@ -147,6 +160,7 @@ namespace MediCare.Server.Controllers
             var token = jwtHelper.GenerateJwtToken(user.ID.ToString(), user.Email, user.Name, "Patient");
             return Ok(new { token });
         }
+
 
         /// <summary>
         /// Updates the details of an existing patient.

@@ -13,3 +13,19 @@ export async function getPatients() {
     }
     return response.json();
 }
+
+export async function getPatientMe() {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch("https://localhost:7014/api/patients/me", {
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": token ? `Bearer ${token}` : ""
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error("Error when downloading patient");
+    }
+    return response.json();
+}
