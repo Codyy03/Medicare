@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -10,21 +10,34 @@ export default function Header() {
         name?: string;
         email?: string;
         exp?: number;
+        role?: string;
     }
     const [userName, setUserName] = useState<string | null>(null);
+    const [userRole, setUserRole] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            try {
-                const decoded = jwtDecode<JwtPayload>(token);
-                if (decoded.name) {
-                    setUserName(decoded.name);
+        const loadUser = () => {
+            const token = localStorage.getItem("token");
+            if (token) {
+                try {
+                    const decoded = jwtDecode<JwtPayload>(token);
+                    setUserName(decoded.name ?? null);
+                    setUserRole(decoded.role ?? null);
+                } catch {
+                    setUserName(null);
+                    setUserRole(null);
                 }
-            } catch (err) {
-                console.error("Invalid token", err);
+            } else {
+                setUserName(null);
+                setUserRole(null);
             }
-        }
+        };
+
+        loadUser();
+
+        window.addEventListener("storage", loadUser);
+        return () => window.removeEventListener("storage", loadUser);
     }, []);
 
     const [showLoginOptions, setShowLoginOptions] = useState(false);
@@ -145,7 +158,7 @@ export default function Header() {
                                         data-bs-toggle="dropdown"
                                         aria-expanded="false"
                                     >
-                                        {userName}
+                                        {userRole === "Doctor" ? `Dr. ${userName}` : userName}
                                     </div>
                                     <ul className="dropdown-menu show-on-hover" aria-labelledby="userDropdown">
                                         <li>
@@ -158,7 +171,9 @@ export default function Header() {
                                                 className="dropdown-item hover-slide"
                                                 onClick={() => {
                                                     localStorage.removeItem("token");
-                                                    window.location.reload();
+                                                    setUserName(null);
+                                                    setUserRole(null);
+                                                    navigate("/");
                                                 }}
                                             >
                                                 Logout

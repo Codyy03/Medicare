@@ -1,11 +1,13 @@
 ﻿using MediCare.Server.Data;
 using MediCare.Server.Entities;
+using MediCare.Server.Helpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
+using System.Numerics;
 using System.Security.Claims;
 using System.Text;
 
@@ -20,11 +22,11 @@ namespace MediCare.Server.Controllers
     public class PatientsController : ControllerBase
     {
         readonly MediCareDbContext context;
-        readonly IConfiguration configuration;
-        public PatientsController(MediCareDbContext context, IConfiguration configuration)
+        readonly JwtTokenHelper jwtHelper;
+        public PatientsController(MediCareDbContext context, JwtTokenHelper jwtHelper)
         {
             this.context = context;
-            this.configuration = configuration;
+            this.jwtHelper = jwtHelper;
         }
 
         /// <summary>
@@ -134,30 +136,8 @@ namespace MediCare.Server.Controllers
             if (string.IsNullOrEmpty(user.PasswordHash) || (result == PasswordVerificationResult.Failed))
                 return Unauthorized("Invalid credentials");
 
-            // create tocken data
-            var claims = new[]
-            {
-                // user id
-                new Claim(ClaimTypes.NameIdentifier, user.ID.ToString()),
-                // user email
-                new Claim(ClaimTypes.Email, user.Email),
-                //user name
-                new Claim("name", user.Name)
-            };
-
-            SymmetricSecurityKey? key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
-
-            SigningCredentials? creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            JwtSecurityToken? token = new JwtSecurityToken(
-                issuer: configuration["Jwt:Issuer"],
-                audience: configuration["Jwt:Audience"],
-                claims: claims,
-                expires: DateTime.Now.AddHours(1),
-                signingCredentials: creds
-            );
-
-            return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
+            var token = jwtHelper.GenerateJwtToken(user.ID.ToString(), user.Email, user.Name, "Patient");
+            return Ok(new { token });
         }
 
         /// <summary>

@@ -1,9 +1,14 @@
 ﻿using MediCare.Server.Data;
 using MediCare.Server.Entities;
+using MediCare.Server.Helpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace MediCare.Server.Controllers
 {
@@ -16,10 +21,11 @@ namespace MediCare.Server.Controllers
     public class DoctorsController : ControllerBase
     {
         readonly MediCareDbContext context;
-
-        public DoctorsController(MediCareDbContext context)
+        readonly JwtTokenHelper jwtHelper;
+        public DoctorsController(MediCareDbContext context, JwtTokenHelper jwtHelper)
         {
             this.context = context;
+            this.jwtHelper = jwtHelper;
         }
 
         /// <summary>
@@ -123,6 +129,25 @@ namespace MediCare.Server.Controllers
             });
         }
 
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginDto dto)
+        {
+            // Find doctor
+            Doctor? doctor = await context.Doctors.FirstOrDefaultAsync(u => u.Email == dto.Email);
+
+            if (doctor == null) return Unauthorized("Invalid credentials");
+
+            // Check password
+            PasswordHasher<Doctor> hasher = new PasswordHasher<Doctor>();
+            var result = hasher.VerifyHashedPassword(doctor, doctor.PasswordHash, dto.Password);
+
+            if (string.IsNullOrEmpty(doctor.PasswordHash) || (result == PasswordVerificationResult.Failed))
+                return Unauthorized("Invalid credentials");
+
+            var token = jwtHelper.GenerateJwtToken(doctor.ID.ToString(), doctor.Email, doctor.Name, "Doctor");
+            return Ok(new { token });
+        }
+
         /// <summary>
         /// Updates the details of an existing doctor.
         /// </summary>
@@ -187,15 +212,15 @@ namespace MediCare.Server.Controllers
         public class DoctorRegisterDto
         {
             [Required]
-            public string Name { get; set; }
+            public required string Name { get; set; }
             [Required]
-            public string Surname { get; set; }
+            public required string Surname { get; set; }
             [Required, EmailAddress]
-            public string Email { get; set; }
+            public required string Email { get; set; }
             [Phone]
-            public string PhoneNumber { get; set; }
+            public required string PhoneNumber { get; set; }
             [Required]
-            public string Password { get; set; }
+            public required string Password { get; set; }
             public List<int> SpecializationIds { get; set; } = new();
         }
 
@@ -206,10 +231,10 @@ namespace MediCare.Server.Controllers
         public class DoctorDto
         {
             public int ID { get; set; }
-            public string Name { get; set; }
-            public string Surname { get; set; }
-            public string Email { get; set; }
-            public string PhoneNumber { get; set; }
+            public required string Name { get; set; }
+            public required string Surname { get; set; }
+            public required string Email { get; set; }
+            public required string PhoneNumber { get; set; }
             public TimeOnly StartHour { get; set; }
             public TimeOnly EndHour { get; set; }
         }
@@ -219,13 +244,17 @@ namespace MediCare.Server.Controllers
         /// </summary>
         public class DoctorUpdateDto
         {
-            public string Name { get; set; }
-            public string Surname { get; set; }
-            public string Email { get; set; }
-            public string PhoneNumber { get; set; }
+            public required string Name { get; set; }
+            public required string Surname { get; set; }
+            public required string Email { get; set; }
+            public required string PhoneNumber { get; set; }
             public TimeOnly StartHour { get; set; }
             public TimeOnly EndHour { get; set; }
         }
-
+        public class LoginDto
+        {
+            public required string Email { get; set; }
+            public required string Password { get; set; }
+        }
     }
 }

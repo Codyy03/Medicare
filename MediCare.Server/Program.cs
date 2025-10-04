@@ -1,4 +1,5 @@
 using MediCare.Server.Data;
+using MediCare.Server.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -38,6 +39,8 @@ builder.Services.AddAuthentication("Bearer")
     });
 
 builder.Services.AddAuthorization();
+
+builder.Services.AddScoped<JwtTokenHelper>();
 
 // Add services to the container.
 builder.Services.AddControllers();
