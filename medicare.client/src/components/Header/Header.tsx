@@ -162,7 +162,7 @@ export default function Header() {
                                     </div>
                                     <ul className="dropdown-menu show-on-hover" aria-labelledby="userDropdown">
                                         <li>
-                                            <NavLink className="dropdown-item hover-slide" to="/personalData">
+                                            <NavLink className="dropdown-item hover-slide" to={userRole === "Doctor" ? "/personalDataDoctor" : "/personalData" }>
                                                 My personal data
                                             </NavLink>
                                         </li>

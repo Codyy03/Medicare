@@ -129,6 +129,31 @@ namespace MediCare.Server.Controllers
             });
         }
 
+        [HttpGet("me")]
+        public async Task<ActionResult<DoctorDto>> GetMe()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null) return Unauthorized();
+
+            var doctor = await context.Doctors.Include(d => d.Specializations).FirstOrDefaultAsync(d => d.ID == int.Parse(userId));
+            if (doctor == null) return NotFound();
+
+            var dto = new DoctorDto
+            {
+                ID = doctor.ID,
+                Name = doctor.Name,
+                Surname = doctor.Surname,
+                Email = doctor.Email,
+                PhoneNumber = doctor.PhoneNumber,
+                EndHour = doctor.EndHour,
+                StartHour = doctor.StartHour,
+                Specializations = doctor.Specializations.Select(s => s.SpecializationName).ToList()
+            };
+
+            return Ok(dto);
+        }
+
         /// <summary>
         /// Handles doctor login by verifying provided credentials.
         /// </summary>
@@ -245,6 +270,8 @@ namespace MediCare.Server.Controllers
             public required string PhoneNumber { get; set; }
             public TimeOnly StartHour { get; set; }
             public TimeOnly EndHour { get; set; }
+            public List<string> Specializations { get; set; } = new();
+
         }
 
         /// <summary>
