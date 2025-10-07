@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { getSpecializationNames } from "../../services/specializationsService";
 import "./DoctorRegister.css";
 
 export default function DoctorRegister() {
@@ -13,6 +14,16 @@ export default function DoctorRegister() {
         confirmPassword: ""
     });
 
+    const [specializations, setSpecializations] = useState<string[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        getSpecializationNames().
+            then(data => setSpecializations(data)).
+            catch(err => console.error(err)).
+            finally(() => setLoading(false));
+    }, [])
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
@@ -21,6 +32,8 @@ export default function DoctorRegister() {
         e.preventDefault();
         alert("Only desing");
     };
+
+    if (loading) return <p>Loading...</p>;
 
     return (
         <div className="register-container">
@@ -32,11 +45,9 @@ export default function DoctorRegister() {
 
                     <select name="specialization" value={form.specialization} onChange={handleChange} required>
                         <option value="">-- Choose your specialization --</option>
-                        <option value="kardiolog">Cardiologist</option>
-                        <option value="pediatra">Pediatrician</option>
-                        <option value="ortopeda">Orthopaedist</option>
-                        <option value="dermatolog">Dermatologist</option>
-                        <option value="neurolog">Neurologist</option>
+                        {specializations.map((spec, index) => (
+                            <option key={index} value={spec}>{spec}</option>
+                        ))}
                     </select>
 
                     <input type="email" name="email" placeholder="email" value={form.email} onChange={handleChange} required />

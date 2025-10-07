@@ -32,6 +32,13 @@ namespace MediCare.Server.Controllers
             return Ok(specializations);
         }
 
+        [HttpGet("specializationsNames")]
+        public async Task<ActionResult<List<string>>> GetSpecializationsNames()
+        {
+            List<string> names = await context.Specializations.Select(s => s.SpecializationName).ToListAsync();
+
+            return Ok(names);
+        }
         /// <summary>
         /// Retrieves a single specialization by its unique identifier.
         /// </summary>
