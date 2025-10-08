@@ -57,7 +57,6 @@ namespace MediCare.Server.Tests.Controllers
         [Fact]
         public async Task CreatePatient_ReturnsCreated()
         {
-
             var client = new EmptyDbFactory().CreateClient();
 
             var dto = new PatientRegisterDto
@@ -98,7 +97,7 @@ namespace MediCare.Server.Tests.Controllers
             {
                 Name = "New name",
                 Surname = existing.Surname,
-                PESEL = "12345678901", // musisz podać poprawny PESEL
+                PESEL = "12345678901",
                 Birthday = existing.Birthday,
                 Email = existing.Email,
                 PhoneNumber = existing.PhoneNumber
@@ -129,7 +128,6 @@ namespace MediCare.Server.Tests.Controllers
 
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
 
-            // dodatkowa asercja: po usunięciu GET powinien zwrócić 404
             var getResponse = await client.GetAsync($"/api/patients/{existingId}");
             Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
         }

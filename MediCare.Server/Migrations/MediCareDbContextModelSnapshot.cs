@@ -34,7 +34,7 @@ namespace MediCare.Server.Migrations
 
                     b.HasIndex("SpecializationID");
 
-                    b.ToTable("DoctorSpecialization");
+                    b.ToTable("DoctorSpecialization", (string)null);
 
                     b.HasData(
                         new
@@ -98,7 +98,7 @@ namespace MediCare.Server.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Doctors");
+                    b.ToTable("Doctors", (string)null);
 
                     b.HasData(
                         new
@@ -151,7 +151,7 @@ namespace MediCare.Server.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("NewsItems");
+                    b.ToTable("NewsItems", (string)null);
 
                     b.HasData(
                         new
@@ -237,7 +237,7 @@ namespace MediCare.Server.Migrations
                     b.HasIndex("PESEL")
                         .IsUnique();
 
-                    b.ToTable("Patients");
+                    b.ToTable("Patients", (string)null);
 
                     b.HasData(
                         new
@@ -288,7 +288,7 @@ namespace MediCare.Server.Migrations
                     b.HasIndex("RoomNumber")
                         .IsUnique();
 
-                    b.ToTable("Rooms");
+                    b.ToTable("Rooms", (string)null);
 
                     b.HasData(
                         new
@@ -341,7 +341,7 @@ namespace MediCare.Server.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("Specializations");
+                    b.ToTable("Specializations", (string)null);
 
                     b.HasData(
                         new
@@ -403,7 +403,7 @@ namespace MediCare.Server.Migrations
 
                     b.HasIndex("StatusID");
 
-                    b.ToTable("Visits");
+                    b.ToTable("Visits", (string)null);
                 });
 
             modelBuilder.Entity("MediCare.Server.Entities.VisitStatus", b =>
@@ -421,7 +421,7 @@ namespace MediCare.Server.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("VisitStatuses");
+                    b.ToTable("VisitStatuses", (string)null);
 
                     b.HasData(
                         new

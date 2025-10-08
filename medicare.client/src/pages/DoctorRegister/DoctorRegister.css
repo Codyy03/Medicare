@@ -28,3 +28,33 @@
   border-color: #007bff;
   outline: none;
 }
+.register-select {
+  margin-bottom: 12px;
+}
+
+.register-select__control {
+  width: 100%;
+  padding: 2px 4px; 
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  min-height: 42px;
+  box-shadow: none;
+}
+
+.register-select__control--is-focused {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 1px #007bff;
+}
+
+.register-select__placeholder,
+.register-select__single-value {
+  font-size: 14px;
+  color: #333;
+}
+
+.register-select__menu {
+  border-radius: 4px;
+  margin-top: 2px;
+  z-index: 10;
+}

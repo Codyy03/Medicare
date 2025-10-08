@@ -24,10 +24,10 @@ namespace MediCare.Server.Entities
 
         [Required]
         public required TimeOnly StartHour { get; set; }
-      
+
         [Required]
         public required TimeOnly EndHour { get; set; }
-    
+
         public ICollection<Specialization> Specializations { get; set; } = new List<Specialization>();
         public ICollection<Visit> Visits { get; set; } = new List<Visit>();
 

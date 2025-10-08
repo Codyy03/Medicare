@@ -234,7 +234,7 @@ namespace MediCare.Server.Controllers
         public required string Surname { get; set; }
         [Required, EmailAddress]
         public required string Email { get; set; }
-        [Phone]
+        [Required, Phone]
         public required string PhoneNumber { get; set; }
         [Required]
         public required string Password { get; set; }

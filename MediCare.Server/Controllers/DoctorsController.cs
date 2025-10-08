@@ -98,6 +98,9 @@ namespace MediCare.Server.Controllers
             if (await context.Doctors.AnyAsync(d => d.Email == dto.Email))
                 return BadRequest("Email must be unique");
 
+            if (dto.SpecializationIds == null || !dto.SpecializationIds.Any())
+                return BadRequest("At least one specialization must be selected");
+
             var hasher = new PasswordHasher<Doctor>();
 
             var specializations = context.Specializations
@@ -111,8 +114,8 @@ namespace MediCare.Server.Controllers
                 Surname = dto.Surname,
                 PhoneNumber = dto.PhoneNumber,
                 PasswordHash = hasher.HashPassword(null!, dto.Password),
-                StartHour = new TimeOnly(8),
-                EndHour = new TimeOnly(16),
+                StartHour = new TimeOnly(8, 0),
+                EndHour = new TimeOnly(16, 0),
                 Specializations = specializations
             };
 
@@ -254,6 +257,8 @@ namespace MediCare.Server.Controllers
             public required string PhoneNumber { get; set; }
             [Required]
             public required string Password { get; set; }
+
+            [MinLength(1, ErrorMessage = "At least one specialization is required")]
             public List<int> SpecializationIds { get; set; } = new();
         }
 

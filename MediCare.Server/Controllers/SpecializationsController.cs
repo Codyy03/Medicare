@@ -2,6 +2,7 @@
 using MediCare.Server.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 namespace MediCare.Server.Controllers
 {
@@ -33,9 +34,14 @@ namespace MediCare.Server.Controllers
         }
 
         [HttpGet("specializationsNames")]
-        public async Task<ActionResult<List<string>>> GetSpecializationsNames()
+        public async Task<ActionResult<List<SpecializationsNamesID>>> GetSpecializationsNames()
         {
-            List<string> names = await context.Specializations.Select(s => s.SpecializationName).ToListAsync();
+            List<SpecializationsNamesID> names = await context.Specializations.Select(
+                 s => new SpecializationsNamesID
+                 {
+                     ID = s.ID,
+                     SpecializationName = s.SpecializationName
+                 }).ToListAsync();
 
             return Ok(names);
         }
@@ -162,6 +168,15 @@ namespace MediCare.Server.Controllers
             public string? SpecializationName { get; set; }
             public string? Link { get; set; }
             public string? SpecializationHighlight { get; set; }
+        }
+
+        public class SpecializationsNamesID
+        {
+            [JsonPropertyName("id")]
+            public int ID { get; set; }
+
+            [JsonPropertyName("specializationName")]
+            public string? SpecializationName { get; set; }
         }
     }
 }
