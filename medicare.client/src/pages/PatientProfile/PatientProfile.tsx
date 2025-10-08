@@ -80,6 +80,13 @@ export default function PatientProfile() {
                         </div>
                     </div>
                 </div>
+
+                <div className="card-footer d-flex justify-content-center bg-light">
+                    <a href="/doctor/edit" className="btn btn-outline-primary px-4 py-2 rounded-pill shadow-sm">
+                        <i className="bi bi-pencil-square me-2"></i> Edit Data
+                    </a>
+                </div>
+
             </div>
         </div>
     );
