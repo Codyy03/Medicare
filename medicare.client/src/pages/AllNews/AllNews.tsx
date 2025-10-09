@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from 'react';
-import { getAllNews } from "../../services/allNewsService";
+import { getAllNews } from "../../services/newsService";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./AllNews.css";
 
