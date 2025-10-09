@@ -33,6 +33,13 @@ namespace MediCare.Server.Controllers
             return Ok(specializations);
         }
 
+        /// <summary>
+        /// Retrieves a list of all available specializations with their IDs and names.
+        /// </summary>
+        /// <returns>
+        /// A 200 OK response containing a list of <see cref="SpecializationsNamesID"/> objects.  
+        /// Each object includes the specialization's unique identifier and display name.
+        /// </returns>
         [HttpGet("specializationsNames")]
         public async Task<ActionResult<List<SpecializationsNamesID>>> GetSpecializationsNames()
         {

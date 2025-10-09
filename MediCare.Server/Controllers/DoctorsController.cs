@@ -132,6 +132,13 @@ namespace MediCare.Server.Controllers
             });
         }
 
+        /// <summary>
+        /// Retrieves the profile information of the currently authenticated doctor.
+        /// </summary>
+        /// <returns>
+        /// A 200 OK response containing the <see cref="DoctorDto"/> with the doctor's details and specializations;  
+        /// 401 Unauthorized if the user is not authenticated;  
+        /// or 404 Not Found if the doctor does not exist.
         [HttpGet("me")]
         public async Task<ActionResult<DoctorDto>> GetMe()
         {

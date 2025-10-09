@@ -80,6 +80,14 @@ namespace MediCare.Server.Controllers
             return Ok(patient);
         }
 
+        /// <summary>
+        /// Retrieves the profile information of the currently authenticated patient.
+        /// </summary>
+        /// <returns>
+        /// A 200 OK response containing the patient entity;  
+        /// 401 Unauthorized if the user is not authenticated;  
+        /// or 404 Not Found if the patient does not exist.
+        /// </returns>
         [HttpGet("me")]
         public async Task<ActionResult> GetMe()
         {
