@@ -89,7 +89,7 @@ namespace MediCare.Server.Controllers
         /// or 404 Not Found if the patient does not exist.
         /// </returns>
         [HttpGet("me")]
-        public async Task<ActionResult> GetMe()
+        public async Task<ActionResult<PatientDto>> GetMe()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 

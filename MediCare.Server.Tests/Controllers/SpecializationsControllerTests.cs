@@ -45,6 +45,33 @@ namespace MediCare.Server.Tests.Controllers
             });
         }
 
+        [Fact]
+        public async Task GetSpecializationsNamesIDs_ReturnOk()
+        {
+            var client = new SeededDbFactory().CreateClient();
+
+            var response = await client.GetAsync("/api/specializations/specializationsNames");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            Assert.Equal("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+
+            var content = await response.Content.ReadAsStringAsync();
+            var specialization = JsonSerializer.Deserialize<List<SpecializationsNamesID>>(content,
+                 new JsonSerializerOptions
+                 {
+                     PropertyNameCaseInsensitive = true
+                 });
+
+            Assert.NotNull(specialization);
+            Assert.NotEmpty(specialization);
+            Assert.All(specialization, s =>
+            {
+                Assert.False(string.IsNullOrEmpty(s.SpecializationName));
+                Assert.True(s.ID > 0);
+            });
+        }
+
         /// <summary>
         /// Verifies that the /api/specializations/highlights endpoint returns a JSON list
         /// of highlighted specializations and that each highlight contains all required fields.

@@ -3,8 +3,10 @@ using MediCare.Server.Entities;
 using MediCare.Server.Tests.TestInfrastructure;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using static MediCare.Server.Controllers.DoctorsController;
 
 namespace MediCare.Server.Tests.Controllers
 {
@@ -115,8 +117,11 @@ namespace MediCare.Server.Tests.Controllers
         [Fact]
         public async Task DeletePatient_ReturnsNoContent()
         {
-            var client = new SeededDbFactory().CreateClient();
+            // Arrange
+            var factory = new SeededDbFactory();
+            var client = factory.CreateClient();
 
+            // get patients list
             var list = await client.GetFromJsonAsync<List<PatientDto>>("/api/patients");
 
             Assert.NotNull(list);
@@ -124,12 +129,53 @@ namespace MediCare.Server.Tests.Controllers
 
             int existingId = list.First().ID;
 
+            // Act – delete patient
             var response = await client.DeleteAsync($"/api/patients/{existingId}");
 
+            // Assert – DELETE reurn 204 NoContent
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
 
+            // try to get delete patient
             var getResponse = await client.GetAsync($"/api/patients/{existingId}");
+
             Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetMe_Unauthorized_WithoutToken()
+        {
+            var clinet = new SeededDbFactory().CreateClient();
+
+            var response = await clinet.GetAsync("/api/patients/me");
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetMe_ReturnsDoctor_WhenAuthorized()
+        {
+            // Arrange
+            var factory = new SeededDbFactory();
+            var client = factory.CreateClient();
+
+            var token = TestJwtTokenHelper.GenerateTestToken("1", "michael.brown@example.com", "Michael", "Patient");
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            // Act
+            var response = await client.GetAsync("/api/patients/me");
+
+            // Assert
+            response.EnsureSuccessStatusCode();
+
+            var dto = await response.Content.ReadFromJsonAsync<PatientDto>();
+
+            Assert.NotNull(dto);
+            Assert.Equal(1, dto!.ID);
+            Assert.Equal("Michael", dto.Name);
+            Assert.Equal("Brown", dto.Surname);
+            Assert.Equal("michael.brown@example.com", dto.Email);
+            Assert.False(string.IsNullOrEmpty(dto.PhoneNumber));
         }
     }
 }

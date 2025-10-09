@@ -1,6 +1,8 @@
-﻿using MediCare.Server.Tests.TestInfrastructure;
+﻿using MediCare.Server.Helpers;
+using MediCare.Server.Tests.TestInfrastructure;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using static MediCare.Server.Controllers.DoctorsController;
@@ -10,7 +12,6 @@ namespace MediCare.Server.Tests.Controllers;
 public class DoctorsControllerTests : IClassFixture<WebApplicationFactory<Program>>
 {
     [Fact]
-
     public async Task GetDoctors_ReturnOk()
     {
         var clinet = new SeededDbFactory().CreateClient();
@@ -117,6 +118,44 @@ public class DoctorsControllerTests : IClassFixture<WebApplicationFactory<Progra
 
         var response = await client.DeleteAsync($"/api/doctors/{existingId}");
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetMe_Unauthorized_WithoutToken()
+    {
+        var clinet = new SeededDbFactory().CreateClient();
+
+        var response = await clinet.GetAsync("/api/doctors/me");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetMe_ReturnsDoctor_WhenAuthorized()
+    {
+        // Arrange
+        var factory = new SeededDbFactory();
+        var client = factory.CreateClient();
+
+        var token = TestJwtTokenHelper.GenerateTestToken("1", "john.smith@medicare.com", "John", "Doctor");
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+
+        // Act
+        var response = await client.GetAsync("/api/doctors/me");
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+
+        var dto = await response.Content.ReadFromJsonAsync<DoctorDto>();
+
+        Assert.NotNull(dto);
+        Assert.Equal(1, dto!.ID);                
+        Assert.Equal("John", dto.Name);
+        Assert.Equal("Smith", dto.Surname);
+        Assert.Equal("john.smith@medicare.com", dto.Email);
+        Assert.False(string.IsNullOrEmpty(dto.PhoneNumber));
+        Assert.NotEmpty(dto.Specializations);
     }
 
 }
