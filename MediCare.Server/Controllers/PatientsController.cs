@@ -134,11 +134,14 @@ namespace MediCare.Server.Controllers
             context.Patients.Add(patient);
             await context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetPatient), new { id = patient.ID }, new{
-                patient.ID,
-                patient.Name,
-                patient.Surname,
-                patient.Email
+            return CreatedAtAction(nameof(GetPatient), new { id = patient.ID }, new PatientDto
+            {
+                ID = patient.ID,
+                Name = patient.Name,
+                Surname = patient.Surname,
+                Email = patient.Email,
+                PhoneNumber = patient.PhoneNumber,
+                Birthday = patient.Birthday
             });
         }
 

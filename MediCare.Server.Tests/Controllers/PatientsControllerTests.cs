@@ -74,7 +74,7 @@ namespace MediCare.Server.Tests.Controllers
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
-            var created = await response.Content.ReadFromJsonAsync<PatientRegisterDto>();
+            var created = await response.Content.ReadFromJsonAsync<PatientDto>();
 
             Assert.NotNull(created);
             Assert.Equal("John", created!.Name);
