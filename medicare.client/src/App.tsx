@@ -13,6 +13,7 @@ import PatientRegister from "./pages/PatientRegister/PatientRegister";
 import DoctorRegister from "./pages/DoctorRegister/DoctorRegister";
 import PatientProfile from "./pages/PatientProfile/PatientProfile";
 import DoctorProfile from "./pages/DoctorProfile/DoctorProfile";
+import DoctorsList from "./pages/DoctorsList/DoctorsList";
 import './App.css';
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
                     <Route path="/register/doctor" element={<DoctorRegister />} />
                     <Route path="/personalData" element={<PatientProfile />} />
                     <Route path="/personalDataDoctor" element={<DoctorProfile />} />
+                    <Route path="/doctors" element={<DoctorsList />} />
                 </Route>
             </Routes>
         </BrowserRouter>

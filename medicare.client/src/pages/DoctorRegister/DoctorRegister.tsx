@@ -8,7 +8,7 @@ export default function DoctorRegister() {
     const [form, setForm] = useState({
         name: "",
         surname: "",
-        specializationsID: [] as string[], // trzymamy jako string[], konwersja przy wysy³ce
+        specializationsID: [] as string[],
         pwz: "",
         email: "",
         phoneNumber: "",

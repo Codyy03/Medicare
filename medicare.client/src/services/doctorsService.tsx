@@ -13,3 +13,12 @@ export async function getDoctorMe(){
     }
     return response.json();
 }
+
+export async function getDoctors() {
+    const response = await fetch("https://localhost:7014/api/doctors");
+
+    if (!response.ok) {
+        throw new Error("Error when downloading doctors");
+    }
+    return response.json();
+}
