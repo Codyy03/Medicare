@@ -74,9 +74,9 @@ export default function DoctorProfile() {
                     <div className="row">
                         <div className="col-sm-3 fw-bold">Reset Password</div>
                         <div className="col-sm-9">
-                            <a href="/reset-password" className="btn btn-outline-primary btn-sm">
+                            <Link to="/resetPasswordDoctor" className="btn btn-outline-primary btn-sm">
                                 <i className="bi bi-arrow-repeat me-1"></i> Reset Password
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </div>

@@ -14,6 +14,7 @@ import DoctorRegister from "./pages/DoctorRegister/DoctorRegister";
 import PatientProfile from "./pages/PatientProfile/PatientProfile";
 import DoctorProfile from "./pages/DoctorProfile/DoctorProfile";
 import DoctorsList from "./pages/DoctorsList/DoctorsList";
+import DoctorsResetPassword from "./pages/DoctorResetPassword/DoctorResetPassword";
 import './App.css';
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
                     <Route path="/personalData" element={<PatientProfile />} />
                     <Route path="/personalDataDoctor" element={<DoctorProfile />} />
                     <Route path="/doctors" element={<DoctorsList />} />
+                    <Route path="/resetPasswordDoctor" element={<DoctorsResetPassword />} />
                 </Route>
             </Routes>
         </BrowserRouter>
