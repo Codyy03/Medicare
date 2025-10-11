@@ -23,22 +23,34 @@ const DoctorResetPassword: React.FC = () => {
             return;
         }
 
-        await axios.put(
-            "https://localhost:7014/api/doctors/password-reset",
-            { newPassword },
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-            }
-        );
+        try {
+            await axios.put(
+                "https://localhost:7014/api/doctors/password-reset",
+                { oldPassword, newPassword },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                }
+            );
 
-        setSuccess("Password has been changed successfully.");
-        setOldPassword("");
-        setNewPassword("");
-        setConfirmNewPassword("");
+            setSuccess("Password has been changed successfully.");
+            setOldPassword("");
+            setNewPassword("");
+            setConfirmNewPassword("");
+        } catch (err) {
+            if (axios.isAxiosError(err)) {
+                const message =
+                    err.response?.data?.message ||
+                    "An unexpected error occurred while changing your password.";
+                setError(message);
+            } else {
+                setError("Something went wrong. Please try again.");
+            }
+        }
     };
+
 
     return (
         <div className="reset-container">
@@ -77,8 +89,10 @@ const DoctorResetPassword: React.FC = () => {
                         placeholder="Confirm your new password"
                     />
                 </div>
+
                 {error && <div className="reset-error">{error}</div>}
                 {success && <div className="reset-success">{success}</div>}
+
                 <button type="submit" className="reset-button">
                     Change Password
                 </button>

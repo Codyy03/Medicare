@@ -154,17 +154,18 @@ namespace MediCare.Server.Controllers
                 .Where(s => dto.SpecializationIds.Contains(s.ID))
                 .ToList();
 
-            Doctor doctor = new Doctor
+            var doctor = new Doctor
             {
                 Name = dto.Name,
                 Email = dto.Email,
                 Surname = dto.Surname,
                 PhoneNumber = dto.PhoneNumber,
-                PasswordHash = hasher.HashPassword(null!, dto.Password),
                 StartHour = new TimeOnly(8, 0),
                 EndHour = new TimeOnly(16, 0),
-                Specializations = specializations
+                Specializations = specializations,
+                PasswordHash = hasher.HashPassword(null!, dto.Password)
             };
+
 
             context.Doctors.Add(doctor);
             await context.SaveChangesAsync();
@@ -273,29 +274,78 @@ namespace MediCare.Server.Controllers
             });
         }
         /// <summary>
-        ///     
+        ///     Resets password for the currently authenticated doctor.
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="newPassword"></param>
-        /// <returns></returns>
+        /// <param name="id">The ID of the doctor to reset password</param>
+        /// <param name="newPassword">New password for doctor</param>
+        /// <returns>
+        /// A 204 No Content response if the password reset is successful;
+        /// Or 401 Unauthorized if the user is not authenticated;
+        /// </returns>
+
         [HttpPut("password-reset")]
         public async Task<IActionResult> ResetPassword([FromBody] PasswordResetDto dto)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
+                return Unauthorized(new { message = "Unauthorized access." });
 
-            var existing = await context.Doctors.FindAsync(int.Parse(userId));
-            if (existing == null)
-                return NotFound();
+            var doctor = await context.Doctors.FindAsync(int.Parse(userId));
+            if (doctor == null)
+                return NotFound(new { message = "Doctor not found." });
 
             var hasher = new PasswordHasher<Doctor>();
-            existing.PasswordHash = hasher.HashPassword(existing, dto.NewPassword);
 
+            // 🔹 Sprawdzenie starego hasła
+            var verifyResult = hasher.VerifyHashedPassword(doctor, doctor.PasswordHash, dto.OldPassword);
+            if (verifyResult == PasswordVerificationResult.Failed)
+                return BadRequest(new { message = "Old password is incorrect." });
+
+            // 🔹 Sprawdzenie, czy nowe hasło nie jest takie samo
+            if (hasher.VerifyHashedPassword(doctor, doctor.PasswordHash, dto.NewPassword)
+                == PasswordVerificationResult.Success)
+            {
+                return BadRequest(new { message = "New password cannot be the same as the old one." });
+            }
+
+            // 🔹 Walidacja siły hasła
+            var passwordErrors = ValidatePassword(dto.NewPassword);
+            if (passwordErrors.Any())
+                return BadRequest(new { message = string.Join(" ", passwordErrors) });
+
+            // 🔹 Zmiana hasła
+            doctor.PasswordHash = hasher.HashPassword(doctor, dto.NewPassword);
             await context.SaveChangesAsync();
 
             return NoContent();
         }
+
+
+
+
+        private static List<string> ValidatePassword(string password)
+        {
+            var errors = new List<string>();
+
+            if (string.IsNullOrWhiteSpace(password) || password.Length < 8)
+                errors.Add("Password must be at least 8 characters long.");
+
+            if (!password.Any(char.IsUpper))
+                errors.Add("Password must contain at least one uppercase letter.");
+
+            if (!password.Any(char.IsLower))
+                errors.Add("Password must contain at least one lowercase letter.");
+
+            if (!password.Any(char.IsDigit))
+                errors.Add("Password must contain at least one digit.");
+
+            if (!password.Any(ch => "!@#$%^&*()_-+=<>?/{}~|".Contains(ch)))
+                errors.Add("Password must contain at least one special character.");
+
+            return errors;
+        }
+
+
 
         /// <summary>
         /// Deletes a doctor by their unique identifier.
@@ -376,6 +426,7 @@ namespace MediCare.Server.Controllers
         }
         public class PasswordResetDto
         {
+            public string OldPassword { get; set; } = string.Empty;
             public string NewPassword { get; set; } = string.Empty;
         }
     }
