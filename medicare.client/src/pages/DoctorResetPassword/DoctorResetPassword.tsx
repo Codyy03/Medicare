@@ -18,26 +18,55 @@ const DoctorResetPassword: React.FC = () => {
             setError("All fields are required.");
             return;
         }
+
+        if (newPassword.length < 8) {
+            setError("Password must be at least 8 characters long.");
+            return;
+        } else if (!/[A-Z]/.test(newPassword)) {
+            setError("Password must contain at least one uppercase letter.");
+            return;
+        } else if (!/[a-z]/.test(newPassword)) {
+            setError("Password must contain at least one lowercase letter.");
+            return;
+        } else if (!/[0-9]/.test(newPassword)) {
+            setError("Password must contain at least one digit.");
+            return;
+        } else if (!/[!@#$%^&*()_\-+=<>?/{}~|]/.test(newPassword)) {
+            setError("Password must contain at least one special character.");
+            return;
+        }
+
         if (newPassword !== confirmNewPassword) {
             setError("New password and confirmation must match.");
             return;
         }
 
-        await axios.put(
-            "https://localhost:7014/api/doctors/password-reset",
-            { newPassword },
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-            }
-        );
+        try {
+            await axios.put(
+                "https://localhost:7014/api/doctors/password-reset",
+                { oldPassword, newPassword },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                }
+            );
 
-        setSuccess("Password has been changed successfully.");
-        setOldPassword("");
-        setNewPassword("");
-        setConfirmNewPassword("");
+            setSuccess("Password has been changed successfully.");
+            setOldPassword("");
+            setNewPassword("");
+            setConfirmNewPassword("");
+        } catch (err) {
+            if (axios.isAxiosError(err)) {
+                const message =
+                    err.response?.data?.message ||
+                    "An unexpected error occurred while changing your password.";
+                setError(message);
+            } else {
+                setError("Something went wrong. Please try again.");
+            }
+        }
     };
 
     return (
@@ -77,8 +106,10 @@ const DoctorResetPassword: React.FC = () => {
                         placeholder="Confirm your new password"
                     />
                 </div>
+
                 {error && <div className="reset-error">{error}</div>}
                 {success && <div className="reset-success">{success}</div>}
+
                 <button type="submit" className="reset-button">
                     Change Password
                 </button>
