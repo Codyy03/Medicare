@@ -279,7 +279,7 @@ namespace MediCare.Server.Controllers
         /// <param name="newPassword"></param>
         /// <returns></returns>
         [HttpPut("password-reset")]
-        public async Task<IActionResult> ResetPassword([FromBody] string newPassword)
+        public async Task<IActionResult> ResetPassword([FromBody] PasswordResetDto dto)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
@@ -290,7 +290,7 @@ namespace MediCare.Server.Controllers
                 return NotFound();
 
             var hasher = new PasswordHasher<Doctor>();
-            existing.PasswordHash = hasher.HashPassword(existing, newPassword);
+            existing.PasswordHash = hasher.HashPassword(existing, dto.NewPassword);
 
             await context.SaveChangesAsync();
 
@@ -373,6 +373,10 @@ namespace MediCare.Server.Controllers
         {
             public required string Email { get; set; }
             public required string Password { get; set; }
+        }
+        public class PasswordResetDto
+        {
+            public string NewPassword { get; set; } = string.Empty;
         }
     }
 }

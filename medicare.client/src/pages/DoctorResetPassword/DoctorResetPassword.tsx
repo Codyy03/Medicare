@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import "./DoctorResetPassword.css";
 
 const DoctorResetPassword: React.FC = () => {
     const [oldPassword, setOldPassword] = useState("");
@@ -22,91 +23,63 @@ const DoctorResetPassword: React.FC = () => {
             return;
         }
 
-        await axios.put("/api/doctors/password-reset", newPassword, {
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${localStorage.getItem("token")}`
+        await axios.put(
+            "https://localhost:7014/api/doctors/password-reset",
+            { newPassword },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
             }
-        });
+        );
+
         setSuccess("Password has been changed successfully.");
         setOldPassword("");
         setNewPassword("");
         setConfirmNewPassword("");
-
     };
 
     return (
-        <div className="container" style={{ maxWidth: 400, margin: "40px auto", background: "#fff", borderRadius: 8, boxShadow: "0 2px 8px rgba(0,0,0,0.08)", padding: 32 }}>
-            <h2 style={{ textAlign: "center", marginBottom: 24, color: "#1976d2" }}>Change Password</h2>
+        <div className="reset-container">
+            <h2 className="reset-title">Change Password</h2>
             <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: 18 }}>
-                    <label style={{ display: "block", marginBottom: 6, fontWeight: 500 }}>Old Password</label>
+                <div className="reset-group">
+                    <label className="reset-label">Old Password</label>
                     <input
                         type="password"
                         value={oldPassword}
-                        onChange={e => setOldPassword(e.target.value)}
+                        onChange={(e) => setOldPassword(e.target.value)}
                         required
-                        style={{
-                            width: "100%",
-                            padding: "10px",
-                            borderRadius: 4,
-                            border: "1px solid #ccc",
-                            fontSize: 16
-                        }}
+                        className="reset-input"
                         placeholder="Enter your old password"
                     />
                 </div>
-                <div style={{ marginBottom: 18 }}>
-                    <label style={{ display: "block", marginBottom: 6, fontWeight: 500 }}>New Password</label>
+                <div className="reset-group">
+                    <label className="reset-label">New Password</label>
                     <input
                         type="password"
                         value={newPassword}
-                        onChange={e => setNewPassword(e.target.value)}
+                        onChange={(e) => setNewPassword(e.target.value)}
                         required
-                        style={{
-                            width: "100%",
-                            padding: "10px",
-                            borderRadius: 4,
-                            border: "1px solid #ccc",
-                            fontSize: 16
-                        }}
+                        className="reset-input"
                         placeholder="Enter your new password"
                     />
                 </div>
-                <div style={{ marginBottom: 18 }}>
-                    <label style={{ display: "block", marginBottom: 6, fontWeight: 500 }}>Confirm New Password</label>
+                <div className="reset-group">
+                    <label className="reset-label">Confirm New Password</label>
                     <input
                         type="password"
                         value={confirmNewPassword}
-                        onChange={e => setConfirmNewPassword(e.target.value)}
+                        onChange={(e) => setConfirmNewPassword(e.target.value)}
                         required
-                        style={{
-                            width: "100%",
-                            padding: "10px",
-                            borderRadius: 4,
-                            border: "1px solid #ccc",
-                            fontSize: 16
-                        }}
+                        className="reset-input"
                         placeholder="Confirm your new password"
                     />
                 </div>
-                {error && <div style={{ color: "#d32f2f", marginBottom: 12, textAlign: "center" }}>{error}</div>}
-                {success && <div style={{ color: "#388e3c", marginBottom: 12, textAlign: "center" }}>{success}</div>}
-                <button
-                    type="submit"
-                    style={{
-                        width: "100%",
-                        padding: "12px",
-                        background: "#1976d2",
-                        color: "#fff",
-                        border: "none",
-                        borderRadius: 4,
-                        fontSize: 16,
-                        fontWeight: 600,
-                        cursor: "pointer",
-                        boxShadow: "0 1px 4px rgba(25, 118, 210, 0.12)"
-                    }}
-                >
+                {error && <div className="reset-error">{error}</div>}
+                {success && <div className="reset-success">{success}</div>}
+                <button type="submit" className="reset-button">
                     Change Password
                 </button>
             </form>
