@@ -225,6 +225,30 @@ namespace MediCare.Server.Controllers
                 PhoneNumber = existing.PhoneNumber
             });
         }
+        /// <summary>
+        ///     
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="newPassword"></param>
+        /// <returns></returns>
+        [HttpPut("password-reset")]
+        public async Task<IActionResult> ResetPassword([FromBody] string newPassword)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var existing = await context.Doctors.FindAsync(int.Parse(userId));
+            if (existing == null)
+                return NotFound();
+
+            var hasher = new PasswordHasher<Doctor>();
+            existing.PasswordHash = hasher.HashPassword(existing, newPassword);
+
+            await context.SaveChangesAsync();
+
+            return NoContent();
+        }
 
         /// <summary>
         /// Deletes a doctor by their unique identifier.
