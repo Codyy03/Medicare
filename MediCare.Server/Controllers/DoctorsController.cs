@@ -52,6 +52,24 @@ namespace MediCare.Server.Controllers
             return Ok(doctors);
         }
 
+        /// <summary>
+        /// Retrieves a list of doctors filtered by specialization, surname, and availability hours.
+        /// </summary>
+        /// <param name="specializationID">
+        /// Optional specialization ID to filter doctors by their specialization.
+        /// </param>
+        /// <param name="surname">
+        /// Optional surname (case-insensitive, partial match) to filter doctors.
+        /// </param>
+        /// <param name="availableFrom">
+        /// Optional start time; returns doctors whose working hours start before or at this time.
+        /// </param>
+        /// <param name="availableUntil">
+        /// Optional end time; returns doctors whose working hours end after or at this time.
+        /// </param>
+        /// <returns>
+        /// A 200 OK response containing a filtered list of <see cref="DoctorDto"/> objects.
+        /// </returns>
         [HttpGet("by-filter")]
         public async Task<ActionResult<IEnumerable<DoctorDto>>> GetDoctorsByFilter(
             [FromQuery] int? specializationID,
@@ -317,6 +335,14 @@ namespace MediCare.Server.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Validates a password against defined security requirements.
+        /// </summary>
+        /// <param name="password">The password string to validate.</param>
+        /// <returns>
+        /// A list of validation error messages. 
+        /// If the list is empty, the password meets all requirements.
+        /// </returns>
         private static List<string> ValidatePassword(string password)
         {
             var errors = new List<string>();
@@ -411,11 +437,19 @@ namespace MediCare.Server.Controllers
             public TimeOnly StartHour { get; set; }
             public TimeOnly EndHour { get; set; }
         }
+
+        /// <summary>
+        /// Data transfer object for doctor login.
+        /// </summary>
         public class LoginDto
         {
             public required string Email { get; set; }
             public required string Password { get; set; }
         }
+
+        /// <summary>
+        /// Data transfer object for resetting a doctor's password.
+        /// </summary>
         public class PasswordResetDto
         {
             public string OldPassword { get; set; } = string.Empty;

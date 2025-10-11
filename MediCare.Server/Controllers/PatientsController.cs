@@ -279,6 +279,9 @@ namespace MediCare.Server.Controllers
         public required string PhoneNumber { get; set; }
     }
 
+    /// <summary>
+    /// Data transfer object for patient login.
+    /// </summary>
     public class LoginDto
     {
         public required string Email { get; set; }

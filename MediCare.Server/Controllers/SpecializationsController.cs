@@ -177,6 +177,9 @@ namespace MediCare.Server.Controllers
             public string? SpecializationHighlight { get; set; }
         }
 
+        /// <summary>
+        /// Represents a specialization with its ID and name.
+        /// </summary>
         public class SpecializationsNamesID
         {
             [JsonPropertyName("id")]
