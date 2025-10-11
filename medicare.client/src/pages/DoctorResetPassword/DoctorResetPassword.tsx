@@ -18,6 +18,24 @@ const DoctorResetPassword: React.FC = () => {
             setError("All fields are required.");
             return;
         }
+
+        if (newPassword.length < 8) {
+            setError("Password must be at least 8 characters long.");
+            return;
+        } else if (!/[A-Z]/.test(newPassword)) {
+            setError("Password must contain at least one uppercase letter.");
+            return;
+        } else if (!/[a-z]/.test(newPassword)) {
+            setError("Password must contain at least one lowercase letter.");
+            return;
+        } else if (!/[0-9]/.test(newPassword)) {
+            setError("Password must contain at least one digit.");
+            return;
+        } else if (!/[!@#$%^&*()_\-+=<>?/{}~|]/.test(newPassword)) {
+            setError("Password must contain at least one special character.");
+            return;
+        }
+
         if (newPassword !== confirmNewPassword) {
             setError("New password and confirmation must match.");
             return;
@@ -50,7 +68,6 @@ const DoctorResetPassword: React.FC = () => {
             }
         }
     };
-
 
     return (
         <div className="reset-container">

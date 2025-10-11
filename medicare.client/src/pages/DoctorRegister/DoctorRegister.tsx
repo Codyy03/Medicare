@@ -92,12 +92,21 @@ export default function DoctorRegister() {
         }
 
         if (form.password.length < 8) {
-            newErrors.password = "The password must be at least 8 characters long.";
+            newErrors.password = "Password must be at least 8 characters long.";
+        } else if (!/[A-Z]/.test(form.password)) {
+            newErrors.password = "Password must contain at least one uppercase letter.";
+        } else if (!/[a-z]/.test(form.password)) {
+            newErrors.password = "Password must contain at least one lowercase letter.";
+        } else if (!/[0-9]/.test(form.password)) {
+            newErrors.password = "Password must contain at least one digit.";
+        } else if (!/[!@#$%^&*()_\-+=<>?/{}~|]/.test(form.password)) {
+            newErrors.password = "Password must contain at least one special character.";
         }
 
         if (form.password !== form.confirmPassword) {
             newErrors.confirmPassword = "The passwords are not identical";
         }
+
         if (form.specializationsID.length === 0) {
             newErrors.specializations = "At least one specialization must be selected";
         }
@@ -105,6 +114,8 @@ export default function DoctorRegister() {
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
+
+
 
     if (loading) return <p>Loading...</p>;
 

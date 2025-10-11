@@ -148,6 +148,10 @@ namespace MediCare.Server.Controllers
             if (dto.SpecializationIds == null || !dto.SpecializationIds.Any())
                 return BadRequest("At least one specialization must be selected");
 
+            var passwordErrors = ValidatePassword(dto.Password);
+            if (passwordErrors.Any())
+                return BadRequest(new { message = string.Join(" ", passwordErrors) });
+
             var hasher = new PasswordHasher<Doctor>();
 
             var specializations = context.Specializations
@@ -282,7 +286,6 @@ namespace MediCare.Server.Controllers
         /// A 204 No Content response if the password reset is successful;
         /// Or 401 Unauthorized if the user is not authenticated;
         /// </returns>
-
         [HttpPut("password-reset")]
         public async Task<IActionResult> ResetPassword([FromBody] PasswordResetDto dto)
         {
@@ -296,32 +299,23 @@ namespace MediCare.Server.Controllers
 
             var hasher = new PasswordHasher<Doctor>();
 
-            // 🔹 Sprawdzenie starego hasła
             var verifyResult = hasher.VerifyHashedPassword(doctor, doctor.PasswordHash, dto.OldPassword);
             if (verifyResult == PasswordVerificationResult.Failed)
                 return BadRequest(new { message = "Old password is incorrect." });
 
-            // 🔹 Sprawdzenie, czy nowe hasło nie jest takie samo
-            if (hasher.VerifyHashedPassword(doctor, doctor.PasswordHash, dto.NewPassword)
-                == PasswordVerificationResult.Success)
-            {
+            var newPasswordCheck = hasher.VerifyHashedPassword(doctor, doctor.PasswordHash, dto.NewPassword);
+            if (newPasswordCheck == PasswordVerificationResult.Success)
                 return BadRequest(new { message = "New password cannot be the same as the old one." });
-            }
 
-            // 🔹 Walidacja siły hasła
             var passwordErrors = ValidatePassword(dto.NewPassword);
             if (passwordErrors.Any())
                 return BadRequest(new { message = string.Join(" ", passwordErrors) });
 
-            // 🔹 Zmiana hasła
             doctor.PasswordHash = hasher.HashPassword(doctor, dto.NewPassword);
             await context.SaveChangesAsync();
 
             return NoContent();
         }
-
-
-
 
         private static List<string> ValidatePassword(string password)
         {
@@ -344,8 +338,6 @@ namespace MediCare.Server.Controllers
 
             return errors;
         }
-
-
 
         /// <summary>
         /// Deletes a doctor by their unique identifier.
