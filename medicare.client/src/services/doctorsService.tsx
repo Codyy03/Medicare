@@ -22,3 +22,32 @@ export async function getDoctors() {
     }
     return response.json();
 }
+
+export async function getDoctorsByFilters(specializationID?: number, surname?: string, availableFrom?: string, availableUntil?: string) {
+    const params = new URLSearchParams();
+
+    if (specializationID) {
+        params.append("specializationID", specializationID.toString());
+    }
+
+    if (surname != null && surname != "") {
+        params.append("surname", surname);
+    }
+
+    if (availableFrom) {
+        params.append("availableFrom", availableFrom);
+    }
+
+    if (availableUntil) {
+        params.append("availableUntil", availableUntil);
+    }
+    const url = `https://localhost:7014/api/doctors/by-filter?${params.toString()}`;
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+        throw new Error("Error when downloading doctors");
+    }
+
+    return response.json();
+}

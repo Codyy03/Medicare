@@ -45,10 +45,57 @@ namespace MediCare.Server.Controllers
                     PhoneNumber = d.PhoneNumber,
                     StartHour = d.StartHour,
                     EndHour = d.EndHour,
+                    Specializations = d.Specializations.Select(s => s.SpecializationName).ToList()
                 })
                 .ToListAsync();
 
             return Ok(doctors);
+        }
+
+        [HttpGet("by-filter")]
+        public async Task<ActionResult<IEnumerable<DoctorDto>>> GetDoctorsByFilter(
+            [FromQuery] int? specializationID,
+            [FromQuery] string? surname,
+            [FromQuery] TimeOnly? availableFrom,
+            [FromQuery] TimeOnly? availableUntil)
+        {
+            IQueryable<DoctorDto> query = context.Doctors.Select(d =>
+                new DoctorDto
+                {
+                    ID = d.ID,
+                    Name = d.Name,
+                    Surname = d.Surname,
+                    Email = d.Email,
+                    StartHour = d.StartHour,
+                    EndHour = d.EndHour,
+                    PhoneNumber = d.PhoneNumber,
+                    Specializations = d.Specializations
+                        .Select(s => s.SpecializationName) 
+                        .ToList()
+                });
+
+            if (!string.IsNullOrEmpty(surname))
+                query = query.Where(d =>  d.Surname == surname);
+
+            if (specializationID.HasValue)
+            {
+                query = query.Where(d => d.Specializations.Any(
+                    s => s == context.Specializations
+                        .Where(sp => sp.ID == specializationID.Value)
+                        .Select(sp => sp.SpecializationName)
+                        .FirstOrDefault()
+                ));
+            }
+
+            if (availableFrom.HasValue)
+                query = query.Where(d => d.StartHour <= availableFrom.Value);
+
+            if (availableUntil.HasValue)
+                query = query.Where(d => d.EndHour >= availableUntil.Value);
+
+            List<DoctorDto> result = await query.ToListAsync();
+
+            return Ok(result);
         }
 
         /// <summary>
