@@ -75,7 +75,7 @@ namespace MediCare.Server.Controllers
                 });
 
             if (!string.IsNullOrEmpty(surname))
-                query = query.Where(d =>  d.Surname == surname);
+                query = query.Where(d => d.Surname.ToLower().Contains(surname.ToLower()));
 
             if (specializationID.HasValue)
             {

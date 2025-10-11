@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react"
 import { getDoctors } from "../../services/doctorsService"
+import { getDoctorsByFilters } from "../../services/doctorsService"
+import { getSpecializationNames } from "../../services/specializationsService"
 import { Link } from "react-router-dom";
 
 function DoctorsList() {
@@ -13,17 +15,67 @@ function DoctorsList() {
         specializations: string[];
     }
 
+    interface SpecializationsNamesID {
+        id: number;
+        specializationName: string;
+    }
+
+    // data
+    const [specializations, setSpecializations] = useState<SpecializationsNamesID[]>([]);
     const [doctors, setDoctors] = useState<DoctorDto[]>([]);
-    const [loading, setLoading] = useState(true);
+
+    // filters
+    const [selectedSpec, setSelectedSpec] = useState("");
+    const [surname, setSurname] = useState("");
+    const [availableFrom, setAvailableFrom] = useState("");
+    const [availableUntil, setAvailableUntil] = useState("");
+
+    // loading
+    const [loadingDoctors, setLoadingDoctors] = useState(true);
+    const [loadingSpecs, setLoadingSpecs] = useState(true);
 
     useEffect(() => {
-        getDoctors().
-            then((data) => setDoctors(data)).
-            catch(err => console.error(err)).
-            finally(() => setLoading(false))
+        getDoctors()
+            .then(setDoctors)
+            .catch(console.error)
+            .finally(() => setLoadingDoctors(false));
     }, []);
 
-    if (loading) return <p>Loading...</p>
+    useEffect(() => {
+        getSpecializationNames()
+            .then(setSpecializations)
+            .catch(console.error)
+            .finally(() => setLoadingSpecs(false));
+    }, []);
+
+    if (loadingDoctors || loadingSpecs) return <p>Loading...</p>;
+
+
+    const applyFilters = async (
+        specId?: string,
+        name?: string,
+        from?: string,
+        until?: string
+    ) => {
+        setLoadingDoctors(true);
+        try {
+            const data = await getDoctorsByFilters(
+                specId ? parseInt(specId) : undefined,
+                name || undefined,
+                from || undefined,
+                until || undefined
+            );
+            setDoctors(data);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoadingDoctors(false);
+        }
+    };
+
+
+    if (loadingDoctors || loadingSpecs) return <p>Loading...</p>
+
     return (
         <div className="container my-5">
             <h2 className="mb-2 text-center fw-bold">Our doctors</h2>
@@ -43,22 +95,32 @@ function DoctorsList() {
                             {/* specializations */}
                             <div className="mb-3">
                                 <label className="form-label">Specialization</label>
-                                <select className="form-select">
-                                    <option value="">Select the specialization you are looking for</option>
-                                    {doctors.flatMap((d) =>
-                                        d.specializations.map((spec, i) => (
-                                            <option key={`${d.id}-${i}`}>{spec}</option>
-                                        ))
-                                    )}
+                                <select
+                                    className="form-select"
+                                    value={selectedSpec}
+                                    onChange={(e) => {
+                                        setSelectedSpec(e.target.value);
+                                        applyFilters(e.target.value, surname, availableFrom, availableUntil);
+                                    }}
+                                >
+                                    <option value="">Select specialization</option>
+                                    {specializations.map(spec => (
+                                        <option key={spec.id} value={spec.id}>
+                                            {spec.specializationName}
+                                        </option>
+                                    ))}
                                 </select>
+
                             </div>
 
                             {/* Surname */}
                             <div className="mb-3">
-                                <label className="form-label">Search by name</label>
+                                <label className="form-label">Search by surname</label>
                                 <input
                                     type="text"
                                     className="form-control"
+                                    value={surname}
+                                    onChange={(e) => setSurname(e.target.value)}
                                     placeholder="e.g. Smith"
                                 />
                             </div>
@@ -66,14 +128,40 @@ function DoctorsList() {
                             {/* Hours */}
                             <div className="mb-3">
                                 <label className="form-label">Available from</label>
-                                <input type="time" className="form-control" />
+                                <input
+                                    type="time"
+                                    className="form-control"
+                                    value={availableFrom}
+                                    onChange={(e) => setAvailableFrom(e.target.value)}
+                                />
                             </div>
                             <div className="mb-3">
                                 <label className="form-label">Available until</label>
-                                <input type="time" className="form-control" />
+                                <input
+                                    type="time"
+                                    className="form-control"
+                                    value={availableUntil}
+                                    onChange={(e) => setAvailableUntil(e.target.value)} 
+                                />
                             </div>
 
-                            <button className="btn btn-outline-secondary w-100">
+                            <button
+                                className="btn btn-primary w-100 mb-2"
+                                onClick={() => applyFilters(selectedSpec, surname, availableFrom, availableUntil)}
+                            >
+                                Szukaj
+                            </button>
+
+                            <button
+                                className="btn btn-outline-secondary w-100"
+                                onClick={() => {
+                                    setSelectedSpec("");
+                                    setSurname("");
+                                    setAvailableFrom("");
+                                    setAvailableUntil("");
+                                    applyFilters();
+                                }}
+                            >
                                 Reset
                             </button>
                         </div>
