@@ -182,8 +182,8 @@ namespace MediCare.Server.Controllers
         /// A 200 OK response containing the updated <see cref="PatientDto"/> if successful; 
         /// 404 Not Found if the patient does not exist.
         /// </returns>
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePatient(int id, PatientUpdateDto dto)
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> UpdatePatient(int id, [FromBody] PatientUpdateDto dto)
         {
             var existing = await context.Patients.FindAsync(id);
             if (existing == null)
@@ -193,7 +193,6 @@ namespace MediCare.Server.Controllers
             existing.Surname = dto.Surname;
             existing.PESEL = dto.PESEL;
             existing.Birthday = dto.Birthday;
-            existing.Email = dto.Email;
             existing.PhoneNumber = dto.PhoneNumber;
 
             await context.SaveChangesAsync();
@@ -275,7 +274,6 @@ namespace MediCare.Server.Controllers
         public required string Surname { get; set; }
         public required string PESEL { get; set; }
         public DateTime Birthday { get; set; }
-        public required string Email { get; set; }
         public required string PhoneNumber { get; set; }
     }
 
