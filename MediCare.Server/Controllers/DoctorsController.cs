@@ -270,16 +270,20 @@ namespace MediCare.Server.Controllers
         /// A 200 OK response containing the updated <see cref="DoctorDto"/> if successful; 
         /// or 404 Not Found if the doctor does not exist.
         /// </returns>
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateDoctor(int id, DoctorUpdateDto dto)
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateDoctor(DoctorUpdateDto dto)
         {
-            var existing = await context.Doctors.FindAsync(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null) 
+                return Unauthorized();
+
+            var existing = await context.Doctors.FindAsync(int.Parse(userId));
             if (existing == null)
                 return NotFound();
 
             existing.Name = dto.Name;
             existing.Surname = dto.Surname;
-            existing.Email = dto.Email;
             existing.PhoneNumber = dto.PhoneNumber;
             existing.StartHour = dto.StartHour;
             existing.EndHour = dto.EndHour;
@@ -436,7 +440,6 @@ namespace MediCare.Server.Controllers
         {
             public required string Name { get; set; }
             public required string Surname { get; set; }
-            public required string Email { get; set; }
             public required string PhoneNumber { get; set; }
             public TimeOnly StartHour { get; set; }
             public TimeOnly EndHour { get; set; }

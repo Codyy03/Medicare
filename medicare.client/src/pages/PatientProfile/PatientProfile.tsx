@@ -26,7 +26,7 @@ export default function PatientProfile() {
             const birthday = formData?.birthday;
             try {
                 await axios.put(
-                    `https://localhost:7014/api/patients/update/${formData?.id}`,
+                    `https://localhost:7014/api/patients/update`,
                     { name, surname, pesel, phonenumber, birthday },
                     {
                         headers: {

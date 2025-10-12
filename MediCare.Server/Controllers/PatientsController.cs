@@ -182,10 +182,16 @@ namespace MediCare.Server.Controllers
         /// A 200 OK response containing the updated <see cref="PatientDto"/> if successful; 
         /// 404 Not Found if the patient does not exist.
         /// </returns>
-        [HttpPut("update/{id}")]
-        public async Task<IActionResult> UpdatePatient(int id, [FromBody] PatientUpdateDto dto)
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdatePatient([FromBody] PatientUpdateDto dto)
         {
-            var existing = await context.Patients.FindAsync(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+                return Unauthorized();
+
+            var existing = await context.Patients.FindAsync(int.Parse(userId));
+            
             if (existing == null)
                 return NotFound();
 
