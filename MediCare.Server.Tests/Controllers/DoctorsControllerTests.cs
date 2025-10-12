@@ -1,4 +1,5 @@
-﻿using MediCare.Server.Helpers;
+﻿using MediCare.Server.Entities;
+using MediCare.Server.Helpers;
 using MediCare.Server.Tests.TestInfrastructure;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
@@ -158,4 +159,225 @@ public class DoctorsControllerTests : IClassFixture<WebApplicationFactory<Progra
         Assert.NotEmpty(dto.Specializations);
     }
 
+    [Fact]
+    public async Task ReestPassword_ReturnsNoContent_WhenValid()
+    {
+        var factory = new SeededDbFactory();
+        var client = factory.CreateClient();
+
+        var token = TestJwtTokenHelper.GenerateTestToken("1", "john.smith@medicare.com", "John", "Doctor");
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        PasswordResetDto passwordResetDto = new PasswordResetDto
+        {
+            OldPassword = "1234",
+            NewPassword = "NewPass123!"
+        };
+
+        var response = await client.PutAsJsonAsync("/api/doctors/password-reset", passwordResetDto);
+
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+        var loginOld = await client.PostAsJsonAsync("/api/doctors/login", new LoginDto
+        {
+            Email = "john.smith@medicare.com",
+            Password = "Test1234!"
+        });
+        Assert.Equal(HttpStatusCode.Unauthorized, loginOld.StatusCode);
+
+        var loginNew = await client.PostAsJsonAsync("/api/doctors/login", new LoginDto
+        {
+            Email = "john.smith@medicare.com",
+            Password = "NewPass123!"
+        });
+        Assert.Equal(HttpStatusCode.OK, loginNew.StatusCode);
+    }
+
+    [Fact]
+    public async Task ResetPassword_ReturnsBadRequest_WhenOldPasswordIncorrect()
+    {
+        var client = new SeededDbFactory().CreateClient();
+
+        var token = TestJwtTokenHelper.GenerateTestToken("1", "john.smith@medicare.com", "John", "Doctor");
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var dto = new PasswordResetDto
+        {
+            OldPassword = "WrongPass",
+            NewPassword = "NewPass123"
+        };
+
+        var response = await client.PutAsJsonAsync("/api/doctors/password-reset", dto);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        var content = await response.Content.ReadAsStringAsync();
+        Assert.Contains("Old password is incorrect", content);
+    }
+
+    [Fact]
+    public async Task GetDoctors_ReturnSortedBySurnname_ReturnOk()
+    {
+        var clinet = new SeededDbFactory().CreateClient();
+
+        var response = await clinet.GetAsync("/api/doctors/by-filter?surname=Smith");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        Assert.Equal("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+
+        var content = await response.Content.ReadAsStringAsync();
+
+        var doctors = JsonSerializer.Deserialize<List<DoctorDto>>(content,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        Assert.NotNull(doctors);
+        Assert.NotEmpty(doctors);
+
+        Assert.All(doctors, d =>
+        {
+            Assert.False(string.IsNullOrEmpty(d.Name));
+            Assert.False(string.IsNullOrEmpty(d.Surname));
+            Assert.False(string.IsNullOrEmpty(d.Email));
+            Assert.False(string.IsNullOrEmpty(d.PhoneNumber));
+            Assert.True(d.ID > 0);
+            Assert.True(d.StartHour > TimeOnly.MinValue);
+            Assert.True(d.EndHour > TimeOnly.MinValue);
+
+            Assert.Contains("smith", d.Surname.ToLower());
+        });
+    }
+
+    [Fact]
+    public async Task GetDoctors_FilterByAvailableFrom_ReturnsOnlyMatching()
+    {
+        var clinet = new SeededDbFactory().CreateClient();
+
+        var response = await clinet.GetAsync("/api/doctors/by-filter?availableFrom=9:00");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        Assert.Equal("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+
+        var content = await response.Content.ReadAsStringAsync();
+
+        var doctors = JsonSerializer.Deserialize<List<DoctorDto>>(content,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        Assert.NotNull(doctors);
+        Assert.NotEmpty(doctors);
+
+        Assert.All(doctors, d =>
+        {
+            Assert.False(string.IsNullOrEmpty(d.Name));
+            Assert.False(string.IsNullOrEmpty(d.Surname));
+            Assert.False(string.IsNullOrEmpty(d.Email));
+            Assert.False(string.IsNullOrEmpty(d.PhoneNumber));
+            Assert.True(d.ID > 0);
+            Assert.True(d.StartHour > TimeOnly.MinValue);
+            Assert.True(d.EndHour > TimeOnly.MinValue);
+
+            Assert.True(d.StartHour <= new TimeOnly(9,0));
+        });
+    }
+
+    [Fact]
+    public async Task GetDoctors_FilterByAvailableUntil_ReturnsOnlyMatching()
+    {
+        var clinet = new SeededDbFactory().CreateClient();
+
+        var response = await clinet.GetAsync("/api/doctors/by-filter?availableUntil=17:00");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        Assert.Equal("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+
+        var content = await response.Content.ReadAsStringAsync();
+
+        var doctors = JsonSerializer.Deserialize<List<DoctorDto>>(content,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        Assert.NotNull(doctors);
+        Assert.NotEmpty(doctors);
+
+        Assert.All(doctors, d =>
+        {
+            Assert.False(string.IsNullOrEmpty(d.Name));
+            Assert.False(string.IsNullOrEmpty(d.Surname));
+            Assert.False(string.IsNullOrEmpty(d.Email));
+            Assert.False(string.IsNullOrEmpty(d.PhoneNumber));
+            Assert.True(d.ID > 0);
+            Assert.True(d.StartHour > TimeOnly.MinValue);
+            Assert.True(d.EndHour > TimeOnly.MinValue);
+
+            Assert.True(d.EndHour >= new TimeOnly(17, 0));
+        });
+    }
+
+    [Fact]
+    public async Task GetDoctors_FilterBySpecialization_ReturnsOnlyMatching()
+    {
+        var clinet = new SeededDbFactory().CreateClient();
+
+        var response = await clinet.GetAsync("/api/doctors/by-filter?specializationID=1");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        Assert.Equal("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+
+        var content = await response.Content.ReadAsStringAsync();
+
+        var doctors = JsonSerializer.Deserialize<List<DoctorDto>>(content,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        Assert.NotNull(doctors);
+        Assert.NotEmpty(doctors);
+
+        Assert.All(doctors, d =>
+        {
+            Assert.False(string.IsNullOrEmpty(d.Name));
+            Assert.False(string.IsNullOrEmpty(d.Surname));
+            Assert.False(string.IsNullOrEmpty(d.Email));
+            Assert.False(string.IsNullOrEmpty(d.PhoneNumber));
+            Assert.True(d.ID > 0);
+            Assert.True(d.StartHour > TimeOnly.MinValue);
+            Assert.True(d.EndHour > TimeOnly.MinValue);
+
+            Assert.Contains("Cardiologist", d.Specializations);
+        });
+    }
+
+    [Fact]
+    public async Task GetDoctors_FilterBySurnameAndSpecialization_ReturnsOnlyMatching()
+    {
+        var clinet = new SeededDbFactory().CreateClient();
+
+        var response = await clinet.GetAsync("/api/doctors/by-filter?specializationID=1&&surname=Smith");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        Assert.Equal("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+
+        var content = await response.Content.ReadAsStringAsync();
+
+        var doctors = JsonSerializer.Deserialize<List<DoctorDto>>(content,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        Assert.NotNull(doctors);
+        Assert.NotEmpty(doctors);
+
+        Assert.All(doctors, d =>
+        {
+            Assert.False(string.IsNullOrEmpty(d.Name));
+            Assert.False(string.IsNullOrEmpty(d.Surname));
+            Assert.False(string.IsNullOrEmpty(d.Email));
+            Assert.False(string.IsNullOrEmpty(d.PhoneNumber));
+            Assert.True(d.ID > 0);
+            Assert.True(d.StartHour > TimeOnly.MinValue);
+            Assert.True(d.EndHour > TimeOnly.MinValue);
+
+            Assert.Contains("Cardiologist", d.Specializations);
+            Assert.Contains("smith", d.Surname.ToLower());
+        });
+    }
 }

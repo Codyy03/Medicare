@@ -295,14 +295,18 @@ namespace MediCare.Server.Controllers
                 PhoneNumber = existing.PhoneNumber
             });
         }
+
         /// <summary>
-        ///     Resets password for the currently authenticated doctor.
+        /// Resets the password for the currently authenticated doctor.
         /// </summary>
-        /// <param name="id">The ID of the doctor to reset password</param>
-        /// <param name="newPassword">New password for doctor</param>
+        /// <param name="dto">
+        /// A <see cref="PasswordResetDto"/> containing the old password for verification and the new password to be set.
+        /// </param>
         /// <returns>
-        /// A 204 No Content response if the password reset is successful;
-        /// Or 401 Unauthorized if the user is not authenticated;
+        /// A 204 No Content response if the password reset is successful;  
+        /// 400 Bad Request if the old password is incorrect, the new password is invalid, or matches the old one;  
+        /// 401 Unauthorized if the user is not authenticated;  
+        /// 404 Not Found if the doctor does not exist.
         /// </returns>
         [HttpPut("password-reset")]
         public async Task<IActionResult> ResetPassword([FromBody] PasswordResetDto dto)
