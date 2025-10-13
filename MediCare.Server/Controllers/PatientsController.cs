@@ -74,7 +74,7 @@ namespace MediCare.Server.Controllers
               })
               .FirstOrDefaultAsync();
 
-            if (patient == null) 
+            if (patient == null)
                 return NotFound();
 
             return Ok(patient);
@@ -164,7 +164,7 @@ namespace MediCare.Server.Controllers
             // Check password
             PasswordHasher<Patient> hasher = new PasswordHasher<Patient>();
             var result = hasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
-            
+
             if (string.IsNullOrEmpty(user.PasswordHash) || (result == PasswordVerificationResult.Failed))
                 return Unauthorized("Invalid credentials");
 
@@ -191,7 +191,7 @@ namespace MediCare.Server.Controllers
                 return Unauthorized();
 
             var existing = await context.Patients.FindAsync(int.Parse(userId));
-            
+
             if (existing == null)
                 return NotFound();
 
@@ -214,6 +214,49 @@ namespace MediCare.Server.Controllers
         }
 
         /// <summary>
+        /// Resets the password for the currently authenticated patient.
+        /// </summary>
+        /// <param name="dto">
+        /// A <see cref="PasswordResetDto"/> containing the old password for verification and the new password to be set.
+        /// </param>
+        /// <returns>
+        /// A 204 No Content response if the password reset is successful;  
+        /// 400 Bad Request if the old password is incorrect, the new password is invalid, or matches the old one;  
+        /// 401 Unauthorized if the user is not authenticated;  
+        /// 404 Not Found if the patient does not exist.
+        /// </returns>
+        [HttpPut("password-reset")]
+        public async Task<IActionResult> ResetPassword([FromBody] PasswordResetDto dto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { message = "Unauthorized access." });
+
+            var patient = await context.Patients.FindAsync(int.Parse(userId));
+            if (patient == null)
+                return NotFound(new { message = "Patient not found." });
+
+            var hasher = new PasswordHasher<Patient>();
+
+            var verifyResult = hasher.VerifyHashedPassword(patient, patient.PasswordHash, dto.OldPassword);
+            if (verifyResult == PasswordVerificationResult.Failed)
+                return BadRequest(new { message = "Old password is incorrect." });
+
+            var newPasswordCheck = hasher.VerifyHashedPassword(patient, patient.PasswordHash, dto.NewPassword);
+            if (newPasswordCheck == PasswordVerificationResult.Success)
+                return BadRequest(new { message = "New password cannot be the same as the old one." });
+
+            var passwordErrors = ValidatePassword(dto.NewPassword);
+            if (passwordErrors.Any())
+                return BadRequest(new { message = string.Join(" ", passwordErrors) });
+
+            patient.PasswordHash = hasher.HashPassword(patient, dto.NewPassword);
+            await context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        /// <summary>
         /// Deletes a patient by their unique identifier.
         /// </summary>
         /// <param name="id">The ID of the patient to delete.</param>
@@ -233,6 +276,35 @@ namespace MediCare.Server.Controllers
             await context.SaveChangesAsync();
 
             return NoContent();
+        }
+        /// <summary>
+        /// Validates a password against defined security requirements.
+        /// </summary>
+        /// <param name="password">The password string to validate.</param>
+        /// <returns>
+        /// A list of validation error messages. 
+        /// If the list is empty, the password meets all requirements.
+        /// </returns>
+        private static List<string> ValidatePassword(string password)
+        {
+            var errors = new List<string>();
+
+            if (string.IsNullOrWhiteSpace(password) || password.Length < 8)
+                errors.Add("Password must be at least 8 characters long.");
+
+            if (!password.Any(char.IsUpper))
+                errors.Add("Password must contain at least one uppercase letter.");
+
+            if (!password.Any(char.IsLower))
+                errors.Add("Password must contain at least one lowercase letter.");
+
+            if (!password.Any(char.IsDigit))
+                errors.Add("Password must contain at least one digit.");
+
+            if (!password.Any(ch => "!@#$%^&*()_-+=<>?/{}~|".Contains(ch)))
+                errors.Add("Password must contain at least one special character.");
+
+            return errors;
         }
     }
 
@@ -269,8 +341,7 @@ namespace MediCare.Server.Controllers
         public required string Email { get; set; }
         public required string PhoneNumber { get; set; }
         public DateTime Birthday { get; set; }
-    }
-
+    } 
     /// <summary>
     /// Data Transfer Object (DTO) used when updating an existing patient’s details.
     /// </summary>
@@ -290,5 +361,13 @@ namespace MediCare.Server.Controllers
     {
         public required string Email { get; set; }
         public required string Password { get; set; }
+    }
+    /// <summary>
+    /// Data transfer object for resetting a patients's password.
+    /// </summary>
+    public class PasswordResetDto
+    {
+        public string OldPassword { get; set; } = string.Empty;
+        public string NewPassword { get; set; } = string.Empty;
     }
 }
