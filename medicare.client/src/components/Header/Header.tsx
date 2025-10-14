@@ -1,46 +1,15 @@
-import { NavLink, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode";
+import { NavLink } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useAuth } from "../../context/AuthContext";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './Header.css';
 
 export default function Header() {
-    interface JwtPayload {
-        name?: string;
-        email?: string;
-        exp?: number;
-        role?: string;
-    }
-    const [userName, setUserName] = useState<string | null>(null);
-    const [userRole, setUserRole] = useState<string | null>(null);
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        const loadUser = () => {
-            const token = localStorage.getItem("token");
-            if (token) {
-                try {
-                    const decoded = jwtDecode<JwtPayload>(token);
-                    setUserName(decoded.name ?? null);
-                    setUserRole(decoded.role ?? null);
-                } catch {
-                    setUserName(null);
-                    setUserRole(null);
-                }
-            } else {
-                setUserName(null);
-                setUserRole(null);
-            }
-        };
-
-        loadUser();
-
-        window.addEventListener("storage", loadUser);
-        return () => window.removeEventListener("storage", loadUser);
-    }, []);
-
+    const { userName, userRole, logout } = useAuth();
     const [showLoginOptions, setShowLoginOptions] = useState(false);
+
+    // padding pod header (¿eby nie nachodzi³ na treœæ)
     useEffect(() => {
         const updatePadding = () => {
             const header = document.querySelector("header");
@@ -60,17 +29,10 @@ export default function Header() {
             {/* Topbar */}
             <div className="topbar text-white py-3">
                 <div className="container d-flex justify-content-between align-items-center">
-
                     {/* Logo + slogan */}
                     <div className="d-flex align-items-center gap-3">
                         <NavLink className="navbar-brand d-flex align-items-center" to="/">
-                            <img
-                                src="/logo.png"
-                                alt="Logo"
-                                width="60"
-                                height="60"
-                                className="me-2"
-                            />
+                            <img src="/logo.png" alt="Logo" width="60" height="60" className="me-2" />
                             <span className="fw-bold text-white fs-5">MediCare</span>
                         </NavLink>
                         <div className="slogan">
@@ -88,13 +50,8 @@ export default function Header() {
                                 </a>
                             ))}
                         </div>
-
                         <form className="d-flex search-form">
-                            <input
-                                className="form-control form-control-sm me-2"
-                                type="search"
-                                placeholder="Find..."
-                            />
+                            <input className="form-control form-control-sm me-2" type="search" placeholder="Find..." />
                             <button className="btn btn-light btn-sm search-btn" type="submit">
                                 <i className="bi bi-search"></i>
                             </button>
@@ -120,72 +77,38 @@ export default function Header() {
                 <div className="collapse navbar-collapse" id="mainNavbar">
                     <ul className="navbar-nav mx-auto">
                         <li className="nav-item dropdown">
-                            <div className="nav-link dropdown-toggle" id="infoDropdown">
-                                Info
-                            </div>
+                            <div className="nav-link dropdown-toggle" id="infoDropdown">Info</div>
                             <ul className="dropdown-menu show-on-hover" aria-labelledby="infoDropdown">
-                                <li>
-                                    <NavLink className="dropdown-item hover-slide" to="/aboutUs">
-                                        About us
-                                    </NavLink>
-                                </li>
-                                <li>
-                                    <NavLink className="dropdown-item hover-slide" to="/contact">
-                                        Contact
-                                    </NavLink>
-                                </li>
-                                <li>
-                                    <NavLink className="dropdown-item hover-slide" to="/allNews">
-                                        News
-                                    </NavLink>
-                                </li>
+                                <li><NavLink className="dropdown-item hover-slide" to="/aboutUs">About us</NavLink></li>
+                                <li><NavLink className="dropdown-item hover-slide" to="/contact">Contact</NavLink></li>
+                                <li><NavLink className="dropdown-item hover-slide" to="/allNews">News</NavLink></li>
                             </ul>
                         </li>
 
-                        <li className="nav-item">
-                            <NavLink className="nav-link" to="/doctors">Doctors</NavLink>
-                        </li>
-                        <li className="nav-item">
-                            <NavLink className="nav-link" to="/appointments">Appointment</NavLink>
-                        </li>
+                        <li className="nav-item"><NavLink className="nav-link" to="/doctors">Doctors</NavLink></li>
+                        <li className="nav-item"><NavLink className="nav-link" to="/appointments">Appointment</NavLink></li>
+
                         <li className="nav-item">
                             {userName ? (
                                 <div className="nav-item dropdown">
-                                    <div
-                                        className="nav-link dropdown-toggle"
-                                        id="userDropdown"
-                                        role="button"
-                                        data-bs-toggle="dropdown"
-                                        aria-expanded="false"
-                                    >
+                                    <div className="nav-link dropdown-toggle" id="userDropdown" role="button" data-bs-toggle="dropdown">
                                         {userRole === "Doctor" ? `Dr. ${userName}` : userName}
                                     </div>
                                     <ul className="dropdown-menu show-on-hover" aria-labelledby="userDropdown">
                                         <li>
-                                            <NavLink className="dropdown-item hover-slide" to={userRole === "Doctor" ? "/personalDataDoctor" : "/personalData" }>
+                                            <NavLink className="dropdown-item hover-slide" to={userRole === "Doctor" ? "/personalDataDoctor" : "/personalData"}>
                                                 My personal data
                                             </NavLink>
                                         </li>
                                         <li>
-                                            <button
-                                                className="dropdown-item hover-slide"
-                                                onClick={() => {
-                                                    localStorage.removeItem("token");
-                                                    setUserName(null);
-                                                    setUserRole(null);
-                                                    navigate("/");
-                                                }}
-                                            >
+                                            <button className="dropdown-item hover-slide" onClick={logout}>
                                                 Logout
                                             </button>
                                         </li>
                                     </ul>
                                 </div>
                             ) : (
-                                <button
-                                    className="nav-link login-btn"
-                                    onClick={() => setShowLoginOptions(true)}
-                                >
+                                <button className="nav-link login-btn" onClick={() => setShowLoginOptions(true)}>
                                     Login
                                 </button>
                             )}
@@ -194,7 +117,7 @@ export default function Header() {
                 </div>
             </nav>
 
-            {/*Login overlay – only shows when showLoginOptions = true*/}
+            {/* Login overlay */}
             {showLoginOptions && (
                 <div className="login-overlay">
                     <div className="login-box">

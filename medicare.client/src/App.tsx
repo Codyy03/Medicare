@@ -15,35 +15,55 @@ import PatientProfile from "./pages/PatientProfile/PatientProfile";
 import DoctorProfile from "./pages/DoctorProfile/DoctorProfile";
 import DoctorsList from "./pages/DoctorsList/DoctorsList";
 import DoctorsResetPassword from "./pages/DoctorResetPassword/DoctorResetPassword";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 import './App.css';
-
 function App() {
     return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<Layout />}>
-                    <Route path="patients" element={<PatientsPage />} />
-                    <Route path="client" element={<ClientPage />} />
-                </Route>
+        <AuthProvider>
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/" element={<Layout />}>
+                        <Route path="patients" element={<PatientsPage />} />
+                        <Route path="client" element={<ClientPage />} />
+                    </Route>
 
-                <Route element={<MinimalLayout />}>
-                    <Route path="/aboutUs" element={<AboutUs />} />
-                    <Route path="/contact" element={<Contact />} />
-                    <Route path="/allNews" element={<AllNews />} />
-                    <Route path="/selectedNews/:id" element={<SelectedNews />} />
+                    <Route element={<MinimalLayout />}>
+                        <Route path="/aboutUs" element={<AboutUs />} />
+                        <Route path="/contact" element={<Contact />} />
+                        <Route path="/allNews" element={<AllNews />} />
+                        <Route path="/selectedNews/:id" element={<SelectedNews />} />
 
-                    <Route path="/login/patient" element={<PatientLogin />} />
-                    <Route path="/login/doctor" element={<DoctorLogin />} />
-                    <Route path="/register/patient" element={<PatientRegister />} />
-                    <Route path="/register/doctor" element={<DoctorRegister />} />
-                    <Route path="/personalData" element={<PatientProfile />} />
-                    <Route path="/personalDataDoctor" element={<DoctorProfile />} />
-                    <Route path="/doctors" element={<DoctorsList />} />
-                    <Route path="/resetPasswordDoctor" element={<DoctorsResetPassword />} />
-                </Route>
-            </Routes>
-        </BrowserRouter>
+                        <Route path="/login/patient" element={<PatientLogin />} />
+                        <Route path="/login/doctor" element={<DoctorLogin />} />
+                        <Route path="/register/patient" element={<PatientRegister />} />
+                        <Route path="/register/doctor" element={<DoctorRegister />} />
 
+                        <Route
+                            path="/personalData"
+                            element={
+                                <ProtectedRoute role="Patient">
+                                    <PatientProfile />
+                                </ProtectedRoute>
+                            }
+                        />
+
+                        <Route
+                            path="/personalDataDoctor"
+                            element={
+                                <ProtectedRoute role="Doctor">
+                                    <DoctorProfile />
+                                </ProtectedRoute>
+                            }
+                        />
+
+                        <Route path="/doctors" element={<DoctorsList />} />
+                        <Route path="/resetPasswordDoctor" element={<DoctorsResetPassword />} />
+                    </Route>
+                </Routes>
+
+            </BrowserRouter>
+        </AuthProvider>
     );
 }
 

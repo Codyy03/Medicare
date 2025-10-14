@@ -1,6 +1,7 @@
-import { useState } from "react"
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { loginDoctor } from "../../services/authSevice"
+import { useAuth } from "../../context/AuthContext";
+import axios from "axios";
 import "./DoctorLogin.css";
 
 export default function DoctorLogin() {
@@ -8,16 +9,22 @@ export default function DoctorLogin() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const token = await loginDoctor({ email, password });
+        try {
+            const res = await axios.post("https://localhost:7014/api/doctors/login", { email, password });
+            const token = res.data.token;
 
-        if (token) {
-            localStorage.setItem("token", token);
-            navigate("/");
-        } else {
+            if (token) {
+                login(token);       
+                navigate("/"); 
+            } else {
+                setError("Invalid email or password");
+            }
+        } catch (err) {
             setError("Invalid email or password");
         }
     };
