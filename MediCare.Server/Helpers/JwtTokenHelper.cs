@@ -43,7 +43,7 @@ namespace MediCare.Server.Helpers
                 issuer: configuration["Jwt:Issuer"],
                 audience: configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(1),
+                expires: DateTime.UtcNow.AddSeconds(60), //  DateTime.UtcNow.AddSeconds(60) // DateTime.UtcNow.AddHours(1)
                 signingCredentials: creds
             );
 
