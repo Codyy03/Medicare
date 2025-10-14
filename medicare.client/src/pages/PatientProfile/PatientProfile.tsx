@@ -183,7 +183,7 @@ export default function PatientProfile() {
                     <div className="row align-items-center">
                         <div className="col-sm-3 fw-bold">Reset Password</div>
                         <div className="col-sm-9">
-                            <Link to="/reset-password" className="btn btn-outline-primary btn-sm">
+                            <Link to="/resetPasswordPatient" className="btn btn-outline-primary btn-sm">
                                 <i className="bi bi-arrow-repeat me-1"></i> Reset Password
                             </Link>
                         </div>
@@ -192,7 +192,8 @@ export default function PatientProfile() {
 
                 <div className="card-footer d-flex justify-content-center bg-light">
                     <button className="btn btn-outline-primary px-4 py-2 rounded-pill shadow-sm" onClick={change}>
-                        <i className="bi bi-pencil-square me-2"></i> Edit Data
+                        <i className="bi bi-pencil-square me-2"></i>
+                        {edit ? "Save Changes" : "Edit Data"}
                     </button>
                 </div>
 

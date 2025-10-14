@@ -15,9 +15,11 @@ import PatientProfile from "./pages/PatientProfile/PatientProfile";
 import DoctorProfile from "./pages/DoctorProfile/DoctorProfile";
 import DoctorsList from "./pages/DoctorsList/DoctorsList";
 import DoctorsResetPassword from "./pages/DoctorResetPassword/DoctorResetPassword";
+import PatientsResetPassword from "./pages/PatientResetPassword/PatientResetPassword";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import './App.css';
+
 function App() {
     return (
         <AuthProvider>
@@ -57,11 +59,15 @@ function App() {
                             }
                         />
 
-                        <Route path="/doctors" element={<DoctorsList />} />
-                        <Route path="/resetPasswordDoctor" element={<DoctorsResetPassword />} />
-                    </Route>
-                </Routes>
-
+                    <Route path="/login/patient" element={<PatientLogin />} />
+                    <Route path="/login/doctor" element={<DoctorLogin />} />
+                    <Route path="/register/patient" element={<PatientRegister />} />
+                    <Route path="/register/doctor" element={<DoctorRegister />} />
+                    <Route path="/doctors" element={<DoctorsList />} />
+                    <Route path="/resetPasswordDoctor" element={<DoctorsResetPassword />} />
+                    <Route path="/resetPasswordPatient" element={<PatientsResetPassword />} />
+                </Route>
+            </Routes>
             </BrowserRouter>
         </AuthProvider>
     );
