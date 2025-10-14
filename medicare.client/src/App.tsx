@@ -59,10 +59,6 @@ function App() {
                             }
                         />
 
-                    <Route path="/login/patient" element={<PatientLogin />} />
-                    <Route path="/login/doctor" element={<DoctorLogin />} />
-                    <Route path="/register/patient" element={<PatientRegister />} />
-                    <Route path="/register/doctor" element={<DoctorRegister />} />
                     <Route path="/doctors" element={<DoctorsList />} />
                     <Route path="/resetPasswordDoctor" element={<DoctorsResetPassword />} />
                     <Route path="/resetPasswordPatient" element={<PatientsResetPassword />} />
