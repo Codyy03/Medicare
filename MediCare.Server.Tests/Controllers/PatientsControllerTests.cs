@@ -101,11 +101,14 @@ namespace MediCare.Server.Tests.Controllers
                 Surname = existing.Surname,
                 PESEL = "12345678901",
                 Birthday = existing.Birthday,
-                Email = existing.Email,
                 PhoneNumber = existing.PhoneNumber
             };
 
-            var response = await client.PutAsJsonAsync($"/api/patients/{existing.ID}", updateDto);
+            var token = TestJwtTokenHelper.GenerateTestToken("1", "michael.brown@example.com", "Michael", "Patient");
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.PutAsJsonAsync($"/api/patients/update", updateDto);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 

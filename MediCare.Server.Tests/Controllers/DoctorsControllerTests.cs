@@ -96,7 +96,11 @@ public class DoctorsControllerTests : IClassFixture<WebApplicationFactory<Progra
         var existing = list.First();
         existing.Name = "New name";
 
-        var response = await client.PutAsJsonAsync($"/api/doctors/{existing.ID}", existing);
+        var token = TestJwtTokenHelper.GenerateTestToken("1", "john.smith@medicare.com", "John", "Doctor");
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await client.PutAsJsonAsync($"/api/doctors/update", existing);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -249,11 +253,11 @@ public class DoctorsControllerTests : IClassFixture<WebApplicationFactory<Progra
     }
 
     [Fact]
-    public async Task GetDoctors_FilterByAvailableFrom_ReturnsOnlyMatching()
+    public async Task GetDoctors_FilterByAvailableAt_ReturnsOnlyMatching()
     {
         var clinet = new SeededDbFactory().CreateClient();
 
-        var response = await clinet.GetAsync("/api/doctors/by-filter?availableFrom=9:00");
+        var response = await clinet.GetAsync("/api/doctors/by-filter?availableAt=9:00");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -274,45 +278,10 @@ public class DoctorsControllerTests : IClassFixture<WebApplicationFactory<Progra
             Assert.False(string.IsNullOrEmpty(d.Email));
             Assert.False(string.IsNullOrEmpty(d.PhoneNumber));
             Assert.True(d.ID > 0);
-            Assert.True(d.StartHour > TimeOnly.MinValue);
-            Assert.True(d.EndHour > TimeOnly.MinValue);
-
-            Assert.True(d.StartHour <= new TimeOnly(9,0));
+            Assert.True(d.StartHour <= new TimeOnly(9, 0) && d.EndHour >= new TimeOnly(9, 0));
         });
     }
 
-    [Fact]
-    public async Task GetDoctors_FilterByAvailableUntil_ReturnsOnlyMatching()
-    {
-        var clinet = new SeededDbFactory().CreateClient();
-
-        var response = await clinet.GetAsync("/api/doctors/by-filter?availableUntil=17:00");
-
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-        Assert.Equal("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-
-        var content = await response.Content.ReadAsStringAsync();
-
-        var doctors = JsonSerializer.Deserialize<List<DoctorDto>>(content,
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-        Assert.NotNull(doctors);
-        Assert.NotEmpty(doctors);
-
-        Assert.All(doctors, d =>
-        {
-            Assert.False(string.IsNullOrEmpty(d.Name));
-            Assert.False(string.IsNullOrEmpty(d.Surname));
-            Assert.False(string.IsNullOrEmpty(d.Email));
-            Assert.False(string.IsNullOrEmpty(d.PhoneNumber));
-            Assert.True(d.ID > 0);
-            Assert.True(d.StartHour > TimeOnly.MinValue);
-            Assert.True(d.EndHour > TimeOnly.MinValue);
-
-            Assert.True(d.EndHour >= new TimeOnly(17, 0));
-        });
-    }
 
     [Fact]
     public async Task GetDoctors_FilterBySpecialization_ReturnsOnlyMatching()

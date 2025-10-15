@@ -23,7 +23,7 @@ export async function getDoctors() {
     return response.json();
 }
 
-export async function getDoctorsByFilters(specializationID?: number, surname?: string, availableFrom?: string, availableUntil?: string) {
+export async function getDoctorsByFilters(specializationID?: number, surname?: string, availableAt?: string) {
     const params = new URLSearchParams();
 
     if (specializationID) {
@@ -34,13 +34,10 @@ export async function getDoctorsByFilters(specializationID?: number, surname?: s
         params.append("surname", surname);
     }
 
-    if (availableFrom) {
-        params.append("availableFrom", availableFrom);
+    if (availableAt) {
+        params.append("availableAt", availableAt);
     }
 
-    if (availableUntil) {
-        params.append("availableUntil", availableUntil);
-    }
     const url = `https://localhost:7014/api/doctors/by-filter?${params.toString()}`;
 
     const response = await fetch(url);

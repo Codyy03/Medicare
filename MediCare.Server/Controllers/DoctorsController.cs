@@ -74,8 +74,8 @@ namespace MediCare.Server.Controllers
         public async Task<ActionResult<IEnumerable<DoctorDto>>> GetDoctorsByFilter(
             [FromQuery] int? specializationID,
             [FromQuery] string? surname,
-            [FromQuery] TimeOnly? availableFrom,
-            [FromQuery] TimeOnly? availableUntil)
+            [FromQuery] TimeOnly? availableAt)
+
         {
             IQueryable<DoctorDto> query = context.Doctors.Select(d =>
                 new DoctorDto
@@ -105,11 +105,8 @@ namespace MediCare.Server.Controllers
                 ));
             }
 
-            if (availableFrom.HasValue)
-                query = query.Where(d => d.StartHour <= availableFrom.Value);
-
-            if (availableUntil.HasValue)
-                query = query.Where(d => d.EndHour >= availableUntil.Value);
+            if (availableAt.HasValue)
+                query = query.Where(d => d.StartHour <= availableAt.Value && d.EndHour >= availableAt.Value);
 
             List<DoctorDto> result = await query.ToListAsync();
 

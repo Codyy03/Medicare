@@ -27,8 +27,7 @@ function DoctorsList() {
     // filters
     const [selectedSpec, setSelectedSpec] = useState("");
     const [surname, setSurname] = useState("");
-    const [availableFrom, setAvailableFrom] = useState("");
-    const [availableUntil, setAvailableUntil] = useState("");
+    const [availableAt, setAvailableAt] = useState("");
 
     // loading
     const [loadingDoctors, setLoadingDoctors] = useState(true);
@@ -54,16 +53,14 @@ function DoctorsList() {
     const applyFilters = async (
         specId?: string,
         name?: string,
-        from?: string,
-        until?: string
+        at?: string,
     ) => {
         setLoadingDoctors(true);
         try {
             const data = await getDoctorsByFilters(
                 specId ? parseInt(specId) : undefined,
                 name || undefined,
-                from || undefined,
-                until || undefined
+                at || undefined,
             );
             setDoctors(data);
         } catch (err) {
@@ -100,7 +97,7 @@ function DoctorsList() {
                                     value={selectedSpec}
                                     onChange={(e) => {
                                         setSelectedSpec(e.target.value);
-                                        applyFilters(e.target.value, surname, availableFrom, availableUntil);
+                                        applyFilters(e.target.value, surname, availableAt);
                                     }}
                                 >
                                     <option value="">Select specialization</option>
@@ -127,27 +124,18 @@ function DoctorsList() {
 
                             {/* Hours */}
                             <div className="mb-3">
-                                <label className="form-label">Available from</label>
+                                <label className="form-label">Available at</label>
                                 <input
                                     type="time"
                                     className="form-control"
-                                    value={availableFrom}
-                                    onChange={(e) => setAvailableFrom(e.target.value)}
-                                />
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label">Available until</label>
-                                <input
-                                    type="time"
-                                    className="form-control"
-                                    value={availableUntil}
-                                    onChange={(e) => setAvailableUntil(e.target.value)} 
+                                    value={availableAt}
+                                    onChange={(e) => setAvailableAt(e.target.value)}
                                 />
                             </div>
 
                             <button
                                 className="btn btn-primary w-100 mb-2"
-                                onClick={() => applyFilters(selectedSpec, surname, availableFrom, availableUntil)}
+                                onClick={() => applyFilters(selectedSpec, surname, availableAt)}
                             >
                                 Szukaj
                             </button>
@@ -157,8 +145,7 @@ function DoctorsList() {
                                 onClick={() => {
                                     setSelectedSpec("");
                                     setSurname("");
-                                    setAvailableFrom("");
-                                    setAvailableUntil("");
+                                    setAvailableAt("");
                                     applyFilters();
                                 }}
                             >
