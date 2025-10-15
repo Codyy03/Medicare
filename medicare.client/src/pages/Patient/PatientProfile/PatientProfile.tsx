@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 import { useEffect, useState } from "react";
-import { getPatientMe } from "../../services/patientsService"
+import { getPatientMe } from "../../../services/patientsService"
 import axios from "axios";
 export default function PatientProfile() {
     interface Patient {

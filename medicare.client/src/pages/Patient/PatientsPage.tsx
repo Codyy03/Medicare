@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getPatients } from "../services/patientsService";
+import { getPatients } from "../../services/patientsService";
 
 interface Patient {
     id: number;

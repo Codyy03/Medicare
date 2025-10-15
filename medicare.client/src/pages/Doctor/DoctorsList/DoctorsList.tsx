@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
-import { getDoctors } from "../../services/doctorsService"
-import { getDoctorsByFilters } from "../../services/doctorsService"
-import { getSpecializationNames } from "../../services/specializationsService"
+import { getDoctors } from "../../../services/doctorsService"
+import { getDoctorsByFilters } from "../../../services/doctorsService"
+import { getSpecializationNames } from "../../../services/specializationsService"
 import { Link } from "react-router-dom";
 
 function DoctorsList() {

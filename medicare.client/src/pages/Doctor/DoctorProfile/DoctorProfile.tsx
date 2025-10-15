@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getDoctorMe } from "../../services/doctorsService";
+import { getDoctorMe } from "../../../services/doctorsService";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 

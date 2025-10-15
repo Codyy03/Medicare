@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
-import { getNewsByID } from "../../services/newsService";
+import { getNewsByID } from "../../../services/newsService";
 import "./SelectedNews.css";
 export default function SelectedNews() {
 

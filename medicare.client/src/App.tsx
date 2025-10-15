@@ -1,21 +1,20 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./layout/Layout";
 import MinimalLayout from "./layout/MinimalLayout";
-import PatientsPage from "./pages/PatientsPage";
-import ClientPage from "./pages/ClientPanel";
-import AboutUs from "./pages/AboutUs/AboutUs";
-import Contact from "./pages/Contact/Contact";
-import AllNews from "./pages/AllNews/AllNews";
-import SelectedNews from "./pages/SelectedNews/SelectedNews";
-import PatientLogin from "./pages/PatientLogin/PatientLogin";
-import DoctorLogin from "./pages/DoctorLogin/DoctorLogin";
-import PatientRegister from "./pages/PatientRegister/PatientRegister";
-import DoctorRegister from "./pages/DoctorRegister/DoctorRegister";
-import PatientProfile from "./pages/PatientProfile/PatientProfile";
-import DoctorProfile from "./pages/DoctorProfile/DoctorProfile";
-import DoctorsList from "./pages/DoctorsList/DoctorsList";
-import DoctorsResetPassword from "./pages/DoctorResetPassword/DoctorResetPassword";
-import PatientsResetPassword from "./pages/PatientResetPassword/PatientResetPassword";
+import PatientsPage from "./pages/Patient/PatientsPage";
+import AboutUs from "./pages/Other/AboutUs/AboutUs";
+import Contact from "./pages/Other/Contact/Contact";
+import AllNews from "./pages/News/AllNews/AllNews";
+import SelectedNews from "./pages/News/SelectedNews/SelectedNews";
+import PatientLogin from "./pages/Patient/PatientLogin/PatientLogin";
+import DoctorLogin from "./pages/Doctor/DoctorLogin/DoctorLogin";
+import PatientRegister from "./pages/Patient/PatientRegister/PatientRegister";
+import DoctorRegister from "./pages/Doctor/DoctorRegister/DoctorRegister";
+import PatientProfile from "./pages/Patient/PatientProfile/PatientProfile";
+import DoctorProfile from "./pages/Doctor/DoctorProfile/DoctorProfile";
+import DoctorsList from "./pages/Doctor/DoctorsList/DoctorsList";
+import DoctorsResetPassword from "./pages/Doctor/DoctorResetPassword/DoctorResetPassword";
+import PatientsResetPassword from "./pages/Patient/PatientResetPassword/PatientResetPassword";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import './App.css';
@@ -27,7 +26,6 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Layout />}>
                         <Route path="patients" element={<PatientsPage />} />
-                        <Route path="client" element={<ClientPage />} />
                     </Route>
 
                     <Route element={<MinimalLayout />}>
