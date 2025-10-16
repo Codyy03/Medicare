@@ -19,7 +19,8 @@ export default function DoctorProfile() {
     const [formData, setFormData] = useState<DoctorDto | undefined>(doctor);
     const [loading, setLoading] = useState(true);
     const [edit, setEdit] = useState(false);
-
+    const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
     useEffect(() => {
         getDoctorMe()
             .then((data) => {
@@ -32,11 +33,43 @@ export default function DoctorProfile() {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev!, [name]: value }));
+
+        setFormData((prev) => ({ ...prev!, [name]: value}));
     };
 
+
     async function change() {
+        setError("");
+        setSuccess("");
         if (edit) {
+            if (!formData?.name || "" || !/^[A-Za-z]+$/.test(formData!.name) ) {
+                setError("Name must contain only letters and cannot be empty.");
+                return;
+            }
+            if (!formData?.surname || "" || !/^[A-Za-z]+$/.test(formData!.surname)) {
+                setError("Surname must contain only letters and cannot be empty.");
+                return;
+            }
+            if (validatePhoneNumber(formData?.phoneNumber || "") !== "") {
+                setError(validatePhoneNumber(formData?.phoneNumber || ""));
+                return;
+            }
+            if (validateHours(formData?.startHour || "", formData?.endHour || "") !== "") {
+                setError(validateHours(formData?.startHour || "", formData?.endHour || ""));
+                return;
+            }
+            let colonCount = (formData!.startHour.match(/:/g) || []).length;
+
+            if (colonCount === 1) {
+                formData!.startHour+=":00";
+            }
+
+            colonCount = (formData!.endHour.match(/:/g) || []).length;
+
+            if (colonCount === 1) {
+                formData!.endHour += ":00";
+            }
+
             try {
                 await axios.put(
                     `https://localhost:7014/api/doctors/update`,
@@ -54,6 +87,7 @@ export default function DoctorProfile() {
                         },
                     }
                 );
+                setSuccess("Profile updated successfully.");
                 setDoctor(formData);
             } catch (err) {
                 console.error("Error updating doctor data:", err);
@@ -193,14 +227,50 @@ export default function DoctorProfile() {
                         </div>
                     </div>
                 </div>
-
+                {error && <div className="reset-error">{error}</div>}
+                {success && <div className="reset-success">{success}</div>}
                 <div className="card-footer d-flex justify-content-center bg-light">
                     <button className="btn btn-outline-primary px-4 py-2 rounded-pill shadow-sm" onClick={change}>
                         <i className="bi bi-pencil-square me-2"></i>{" "}
                         {edit ? "Save Changes" : "Edit Data"}
                     </button>
                 </div>
+
             </div>
         </div>
     );
+}
+function validatePhoneNumber(phoneNumber: string): string {
+    if (!phoneNumber) {
+        return "Phone number is required.";
+    }
+
+    if (!/^\d+$/.test(phoneNumber)) {
+       return "Phone number must contain only digits.";
+    }
+
+    if (phoneNumber.length != 9) {
+        return "Phone number must be 9 digits long.";
+    }
+
+    if (phoneNumber.startsWith("0")) {
+        return "Phone number cannot start with 0.";
+    }
+    return "";
+}
+function validateHours(startHour: string, endHour: string): string {
+    if (startHour == endHour) {
+        return "Stat hour and end hour cannot be the same.";
+    }
+    if (!startHour || !endHour) {
+        return "Start hour and end hour are required.";
+    }
+    if (startHour > endHour) {
+        return "Start hour must be before end hour.";
+    }
+    if (startHour < "08:00" || startHour > "20:00" || endHour < "08:00" || endHour > "20:00") {
+        return "Working hours must be between 08:00 and 20:00.";
+    }
+
+    return "";
 }
