@@ -9,6 +9,7 @@ using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace MediCare.Server.Controllers
 {
@@ -275,9 +276,30 @@ namespace MediCare.Server.Controllers
             if (userId == null) 
                 return Unauthorized();
 
+
             var existing = await context.Doctors.FindAsync(int.Parse(userId));
             if (existing == null)
                 return NotFound();
+
+
+            var phoneNumberErrors = ValidatePhoneNumber(dto.PhoneNumber);
+            if (phoneNumberErrors.Any())
+                return BadRequest(new { message = string.Join(" ", phoneNumberErrors) });
+
+
+            var NameErrors = ValidateName(dto.Name);
+            if (NameErrors.Any())
+                return BadRequest(new { message = string.Join(" ", NameErrors) });
+
+
+            var SurnameErrors = ValidateSurname(dto.Surname);
+            if (SurnameErrors.Any())
+                return BadRequest(new { message = string.Join(" ", SurnameErrors) });
+
+
+            var WorkHoursErrors = ValidateWorkHours(dto.StartHour, dto.EndHour);
+            if (WorkHoursErrors.Any())
+                return BadRequest(new { message = string.Join(" ", WorkHoursErrors) });
 
             existing.Name = dto.Name;
             existing.Surname = dto.Surname;
@@ -348,7 +370,7 @@ namespace MediCare.Server.Controllers
         /// A list of validation error messages. 
         /// If the list is empty, the password meets all requirements.
         /// </returns>
-        private static List<string> ValidatePassword(string password)
+        List<string> ValidatePassword(string password)
         {
             var errors = new List<string>();
 
@@ -367,6 +389,105 @@ namespace MediCare.Server.Controllers
             if (!password.Any(ch => "!@#$%^&*()_-+=<>?/{}~|".Contains(ch)))
                 errors.Add("Password must contain at least one special character.");
 
+            return errors;
+        }
+
+        /// <summary>
+        /// Validates a phone number to ensure it is not empty, contains only digits,
+        /// has exactly 9 digits, and does not start with zero.
+        /// </summary>
+        /// <param name="phoneNumber">The phone number to validate.</param>
+        /// <returns>A list of validation error messages, or empty if valid.</returns>
+        List<string> ValidatePhoneNumber(string phoneNumber)
+        {
+            var errors = new List<string>();
+
+            if (string.IsNullOrWhiteSpace(phoneNumber))
+            {
+                errors.Add("Phone number is required.");
+                return errors;
+            }
+            
+            if (!Regex.IsMatch(phoneNumber, @"^\d+$"))
+            {
+                errors.Add("Phone number must contain only digits.");
+            }
+            if (!Regex.IsMatch(phoneNumber, @"^\d{9}$"))
+            {
+                errors.Add("Phone number must be 9 digits long.");
+            }
+            if (phoneNumber.StartsWith("0"))
+            {
+                errors.Add("Phone number cannot start with zero.");
+            }
+
+            return errors;
+        }
+
+        /// <summary>
+        /// Validates a name to ensure it is not empty and contains only letters.
+        /// </summary>
+        /// <param name="name">The name to validate.</param>
+        /// <returns>A list of validation error messages, or empty if valid.</returns>
+        List<string> ValidateName(string name)
+        {
+            var errors = new List<string>();
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                errors.Add("Name is required.");
+                return errors;
+            }
+            if (!Regex.IsMatch(name, @"^[A-Za-z]+$"))
+            {
+                errors.Add("Name must contain only letters.");
+                return errors;
+            }
+            return errors;
+        }
+
+        /// <summary>
+        /// Validates a surname to ensure it is not empty and contains only letters.
+        /// </summary>
+        /// <param name="surname">The surname to validate.</param>
+        /// <returns>A list of validation error messages, or empty if valid.</returns>
+        List<string> ValidateSurname(string surname)
+        {
+            var errors = new List<string>();
+
+            if (string.IsNullOrWhiteSpace(surname))
+            {
+                errors.Add("Surname is required.");
+                return errors;
+            }
+            if (!Regex.IsMatch(surname, @"^[A-Za-z]+$"))
+            {
+                errors.Add("Surname must contain only letters.");
+                return errors;
+            }
+            return errors;
+        }
+
+        /// <summary>
+        /// Validates working hours to ensure both start and end times are provided
+        /// and that the start time is earlier than the end time.
+        /// </summary>
+        /// <param name="startHour">The start hour of work.</param>
+        /// <param name="endHour">The end hour of work.</param>
+        /// <returns>A list of validation error messages, or empty if valid.</returns>
+        List<string> ValidateWorkHours(TimeOnly? startHour, TimeOnly? endHour)
+        {
+            var errors = new List<string>();
+            if (startHour == null || endHour == null)
+            {
+                errors.Add("Start hour and end hour are required.");
+                return errors;
+            }
+
+            if (startHour >= endHour)
+            {
+                errors.Add("Start hour must be earlier than end hour.");
+            }
             return errors;
         }
 
