@@ -319,6 +319,13 @@ namespace MediCare.Server.Controllers
             existing.StartHour = dto.StartHour;
             existing.EndHour = dto.EndHour;
 
+            if (dto.Facility is not null)
+                existing.Facility = dto.Facility;
+
+            if (dto.DoctorDescription is not null)
+                existing.DoctorDescription = dto.DoctorDescription;
+
+
             await context.SaveChangesAsync();
 
             return Ok(new DoctorDto
@@ -574,7 +581,10 @@ namespace MediCare.Server.Controllers
             public required string PhoneNumber { get; set; }
             public TimeOnly StartHour { get; set; }
             public TimeOnly EndHour { get; set; }
+            public string? Facility { get; set; }
+            public string? DoctorDescription { get; set; }
         }
+
 
         /// <summary>
         /// Data transfer object for doctor login.
