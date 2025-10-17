@@ -10,6 +10,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Numerics;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace MediCare.Server.Controllers
 {
@@ -323,159 +324,159 @@ namespace MediCare.Server.Controllers
 
             return errors;
         }
-    }
-    /// <summary>
-    /// Validates a name to ensure it is not empty and contains only letters.
-    /// </summary>
-    /// <param name="name">The name to validate.</param>
-    /// <returns>A list of validation error messages, or empty if valid.</returns>
-    List<string> ValidateName(string name)
-    {
-        var errors = new List<string>();
-
-        if (string.IsNullOrWhiteSpace(name))
+        /// <summary>
+        /// Validates a name to ensure it is not empty and contains only letters.
+        /// </summary>
+        /// <param name="name">The name to validate.</param>
+        /// <returns>A list of validation error messages, or empty if valid.</returns>
+        List<string> ValidateName(string name)
         {
-            errors.Add("Name is required.");
+            var errors = new List<string>();
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                errors.Add("Name is required.");
+                return errors;
+            }
+            if (!Regex.IsMatch(name, @"^[A-Za-z]+$"))
+            {
+                errors.Add("Name must contain only letters.");
+                return errors;
+            }
             return errors;
         }
-        if (!Regex.IsMatch(name, @"^[A-Za-z]+$"))
+
+        /// <summary>
+        /// Validates a surname to ensure it is not empty and contains only letters.
+        /// </summary>
+        /// <param name="surname">The surname to validate.</param>
+        /// <returns>A list of validation error messages, or empty if valid.</returns>
+        List<string> ValidateSurname(string surname)
         {
-            errors.Add("Name must contain only letters.");
+            var errors = new List<string>();
+
+            if (string.IsNullOrWhiteSpace(surname))
+            {
+                errors.Add("Surname is required.");
+                return errors;
+            }
+            if (!Regex.IsMatch(surname, @"^[A-Za-z]+$"))
+            {
+                errors.Add("Surname must contain only letters.");
+                return errors;
+            }
             return errors;
         }
-        return errors;
-    }
 
-    /// <summary>
-    /// Validates a surname to ensure it is not empty and contains only letters.
-    /// </summary>
-    /// <param name="surname">The surname to validate.</param>
-    /// <returns>A list of validation error messages, or empty if valid.</returns>
-    List<string> ValidateSurname(string surname)
-    {
-        var errors = new List<string>();
 
-        if (string.IsNullOrWhiteSpace(surname))
+        /// <summary>
+        /// Validates a PESEL number to ensure it has the correct length,
+        /// structure, and control digit.
+        /// </summary>
+        /// <param name="pesel">The PESEL number to validate.</param>
+        /// <returns>A validation error message, or empty if valid.</returns>
+        List<string> ValidatePESEL(string pesel)
         {
-            errors.Add("Surname is required.");
+            var errors = new List<string>();
+
+            if (string.IsNullOrWhiteSpace(pesel))
+            {
+                errors.Add("PESEL is required.");
+                return errors;
+            }
+            if (!Regex.IsMatch(pesel, @"^\d{11}$"))
+            {
+                errors.Add("PESEL must be exactly 11 digits.");
+                return errors;
+            }
+            if (!Regex.IsMatch(pesel, @"^\d+$"))
+            {
+                errors.Add("PESEL must contain only digits.");
+            }
             return errors;
         }
-        if (!Regex.IsMatch(surname, @"^[A-Za-z]+$"))
+
+
+        /// <summary>
+        /// Validates a date of birth to ensure it is in the correct format
+        /// and not set in the future.
+        /// </summary>
+        /// <param name="birthday">The date of birth to validate.</param>
+        /// <returns>A validation error message, or empty if valid.</returns>
+        List<string> ValidateBirthday(DateTime birthday)
         {
-            errors.Add("Surname must contain only letters.");
+            var errors = new List<string>();
+            if (birthday > DateTime.Now)
+            {
+                errors.Add("Birthday cannot be in the future.");
+            }
+            if (birthday < DateTime.Now.AddYears(-125))
+            {
+                errors.Add("Birthday is too far in the past");
+            }
             return errors;
         }
-        return errors;
-    }
-
-
-    /// <summary>
-    /// Validates a PESEL number to ensure it has the correct length,
-    /// structure, and control digit.
-    /// </summary>
-    /// <param name="pesel">The PESEL number to validate.</param>
-    /// <returns>A validation error message, or empty if valid.</returns>
-    List<string> ValidatePESEL(string pesel)
-    {
-        var errors = new List<string>();
-
-        if (string.IsNullOrWhiteSpace(pesel))
+        /// <summary>
+        /// Data Transfer Object (DTO) used when registering a new patient.
+        /// Includes personal details, PESEL, contact information, and password.
+        /// </summary>
+        public class PatientRegisterDto
         {
-            errors.Add("PESEL is required.");
-            return errors;
+            [Required]
+            public required string PESEL { get; set; }
+            [Required]
+            public required string Name { get; set; }
+            [Required]
+            public required string Surname { get; set; }
+            [Required, EmailAddress]
+            public required string Email { get; set; }
+            [Required, Phone]
+            public required string PhoneNumber { get; set; }
+            [Required]
+            public required string Password { get; set; }
+            public DateTime Birthday { get; set; }
         }
-        if (!Regex.IsMatch(pesel, @"^\d{11}$"))
-        {
-            errors.Add("PESEL must be exactly 11 digits.");
-            return errors;
-        }
-        if(!Regex.IsMatch(pesel, @"^\d+$"))
-        {
-            errors.Add("PESEL must contain only digits.");
-        }
-        return errors;
-    }
 
-
-    /// <summary>
-    /// Validates a date of birth to ensure it is in the correct format
-    /// and not set in the future.
-    /// </summary>
-    /// <param name="birthday">The date of birth to validate.</param>
-    /// <returns>A validation error message, or empty if valid.</returns>
-    List<string> ValidateBirthday(DateTime birthday)
-    {
-        var errors = new List<string>();
-        if (birthday > DateTime.Now)
+        /// <summary>
+        /// Data Transfer Object (DTO) for returning patient information.
+        /// Excludes sensitive fields such as password hash.
+        /// </summary>
+        public class PatientDto
         {
-            errors.Add("Birthday cannot be in the future.");
+            public int ID { get; set; }
+            public required string Name { get; set; }
+            public required string Surname { get; set; }
+            public required string Email { get; set; }
+            public required string PhoneNumber { get; set; }
+            public DateTime Birthday { get; set; }
         }
-        if (birthday < DateTime.Now.AddYears(-125))
+        /// <summary>
+        /// Data Transfer Object (DTO) used when updating an existing patient’s details.
+        /// </summary>
+        public class PatientUpdateDto
         {
-            errors.Add("Birthday is too far in the past");
+            public required string Name { get; set; }
+            public required string Surname { get; set; }
+            public required string PESEL { get; set; }
+            public DateTime Birthday { get; set; }
+            public required string PhoneNumber { get; set; }
         }
-        return errors;
-    }
-    /// <summary>
-    /// Data Transfer Object (DTO) used when registering a new patient.
-    /// Includes personal details, PESEL, contact information, and password.
-    /// </summary>
-    public class PatientRegisterDto
-    {
-        [Required]
-        public required string PESEL { get; set; }
-        [Required]
-        public required string Name { get; set; }
-        [Required]
-        public required string Surname { get; set; }
-        [Required, EmailAddress]
-        public required string Email { get; set; }
-        [Required, Phone]
-        public required string PhoneNumber { get; set; }
-        [Required]
-        public required string Password { get; set; }
-        public DateTime Birthday { get; set; }
-    }
 
-    /// <summary>
-    /// Data Transfer Object (DTO) for returning patient information.
-    /// Excludes sensitive fields such as password hash.
-    /// </summary>
-    public class PatientDto
-    {
-        public int ID { get; set; }
-        public required string Name { get; set; }
-        public required string Surname { get; set; }
-        public required string Email { get; set; }
-        public required string PhoneNumber { get; set; }
-        public DateTime Birthday { get; set; }
-    } 
-    /// <summary>
-    /// Data Transfer Object (DTO) used when updating an existing patient’s details.
-    /// </summary>
-    public class PatientUpdateDto
-    {
-        public required string Name { get; set; }
-        public required string Surname { get; set; }
-        public required string PESEL { get; set; }
-        public DateTime Birthday { get; set; }
-        public required string PhoneNumber { get; set; }
-    }
-
-    /// <summary>
-    /// Data transfer object for patient login.
-    /// </summary>
-    public class LoginDto
-    {
-        public required string Email { get; set; }
-        public required string Password { get; set; }
-    }
-    /// <summary>
-    /// Data transfer object for resetting a patients's password.
-    /// </summary>
-    public class PasswordResetDto
-    {
-        public string OldPassword { get; set; } = string.Empty;
-        public string NewPassword { get; set; } = string.Empty;
+        /// <summary>
+        /// Data transfer object for patient login.
+        /// </summary>
+        public class LoginDto
+        {
+            public required string Email { get; set; }
+            public required string Password { get; set; }
+        }
+        /// <summary>
+        /// Data transfer object for resetting a patients's password.
+        /// </summary>
+        public class PasswordResetDto
+        {
+            public string OldPassword { get; set; } = string.Empty;
+            public string NewPassword { get; set; } = string.Empty;
+        }
     }
 }

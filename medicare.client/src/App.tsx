@@ -18,6 +18,7 @@ import DoctorsResetPassword from "./pages/Doctor/DoctorResetPassword/DoctorReset
 import PatientsResetPassword from "./pages/Patient/PatientResetPassword/PatientResetPassword";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import NotFoundPage from "./pages/Other/NotFoundPage/NotFoundPage";
 import './App.css';
 
 function App() {
@@ -62,6 +63,7 @@ function App() {
                     <Route path="/resetPasswordDoctor" element={<DoctorsResetPassword />} />
                     <Route path="/resetPasswordPatient" element={<PatientsResetPassword />} />
                     <Route path="/doctorInfo/:id" element={<DoctorInfo />} />
+                    <Route path="*" element={<NotFoundPage />} />
                 </Route>
             </Routes>
             </BrowserRouter>
