@@ -138,28 +138,32 @@ namespace MediCare.Server.Tests.TestInfrastructure
                 );
 
               db.Doctors.AddRange(
-               new Doctor
-                 {
-                     ID = 1,
-                     Name = "John",
-                     Surname = "Smith",
-                     Email = "john.smith@medicare.com",
-                     PhoneNumber = "123456789",
-                     PasswordHash = "AQAAAAIAAYagAAAAENK5qXUBaMBuUFBpttYV0aR626yy171wqlX3Fr6lZ3A63GhTGmRFWptH6uZm1Eu9Og==", //1234
-                     StartHour = new TimeOnly(8, 0),
-                     EndHour = new TimeOnly(16, 0)
-                 },
-                 new Doctor
-                 {
-                     ID = 2,
-                     Name = "Emily",
-                     Surname = "Johnson",
-                     Email = "emily.johnson@medicare.com",
-                     PhoneNumber = "987654321",
-                     PasswordHash = "AQAAAAIAAYagAAAAEK2wr62/vPT1IadjOSNuOLLQ9ECj5CKYZbod4yvHThIexqGnCcp5Yry6PpFG9WRYYw==",// password1
-                     StartHour = new TimeOnly(9, 0),
-                     EndHour = new TimeOnly(17, 0)
-                 }
+                new Doctor
+                {
+                    ID = 1,
+                    Name = "John",
+                    Surname = "Smith",
+                    Email = "john.smith@medicare.com",
+                    PhoneNumber = "123456789",
+                    PasswordHash = "AQAAAAIAAYagAAAAENK5qXUBaMBuUFBpttYV0aR626yy171wqlX3Fr6lZ3A63GhTGmRFWptH6uZm1Eu9Og==", //1234
+                    StartHour = new TimeOnly(8, 0),
+                    EndHour = new TimeOnly(16, 0),
+                    Facility = "Room 203, MediCare Center",
+                    DoctorDescription = "Dr. John Smith is an experienced cardiologist and surgeon with over 15 years of practice. He specializes in preventive cardiology, minimally invasive surgery, and patient-centered care."
+                },
+                new Doctor
+                {
+                    ID = 2,
+                    Name = "Emily",
+                    Surname = "Johnson",
+                    Email = "emily.johnson@medicare.com",
+                    PhoneNumber = "987654321",
+                    PasswordHash = "AQAAAAIAAYagAAAAEK2wr62/vPT1IadjOSNuOLLQ9ECj5CKYZbod4yvHThIexqGnCcp5Yry6PpFG9WRYYw==", //password1
+                    StartHour = new TimeOnly(9, 0),
+                    EndHour = new TimeOnly(17, 0),
+                    Facility = "Building A, Floor 2, MediCare Center",
+                    DoctorDescription = "Dr. Emily Johnson is a dedicated neurologist with over 10 years of experience. She focuses on patient-centered care, neurological diagnostics, and innovative treatment methods."
+                }
                 );
                 db.SaveChanges();
             });

@@ -12,9 +12,10 @@ function DoctorsList() {
         email: string;
         startHour: string;
         endHour: string;
+        facility: string;
+        doctorDescription: string;
         specializations: string[];
     }
-
     interface SpecializationsNamesID {
         id: number;
         specializationName: string;
@@ -189,7 +190,8 @@ function DoctorsList() {
                                         </p>
 
                                         <Link
-                                            to={`/doctors/${d.id}`}
+                                            to={`/doctorInfo/${d.id}`}
+                                            state={{ doctor: d }}
                                             className="btn btn-primary mt-2 w-100"
                                         >
                                             See profile

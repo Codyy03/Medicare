@@ -46,6 +46,8 @@ namespace MediCare.Server.Controllers
                     PhoneNumber = d.PhoneNumber,
                     StartHour = d.StartHour,
                     EndHour = d.EndHour,
+                    Facility = d.Facility,
+                    DoctorDescription = d.DoctorDescription,
                     Specializations = d.Specializations.Select(s => s.SpecializationName).ToList()
                 })
                 .ToListAsync();
@@ -88,6 +90,8 @@ namespace MediCare.Server.Controllers
                     StartHour = d.StartHour,
                     EndHour = d.EndHour,
                     PhoneNumber = d.PhoneNumber,
+                    Facility = d.Facility,
+                    DoctorDescription = d.DoctorDescription,
                     Specializations = d.Specializations
                         .Select(s => s.SpecializationName) 
                         .ToList()
@@ -135,7 +139,13 @@ namespace MediCare.Server.Controllers
                     Email = d.Email,
                     PhoneNumber = d.PhoneNumber,
                     StartHour = d.StartHour,
-                    EndHour = d.EndHour
+                    EndHour = d.EndHour,
+                    Facility = d.Facility,
+                    DoctorDescription = d.DoctorDescription,
+                    Specializations = d.Specializations
+                        .Select(ds => ds.SpecializationName)
+                        .ToList()
+
                 })
                 .FirstOrDefaultAsync();
 
@@ -183,6 +193,8 @@ namespace MediCare.Server.Controllers
                 StartHour = new TimeOnly(8, 0),
                 EndHour = new TimeOnly(16, 0),
                 Specializations = specializations,
+                Facility = "-",
+                DoctorDescription = "-",
                 PasswordHash = hasher.HashPassword(null!, dto.Password)
             };
 
@@ -547,8 +559,9 @@ namespace MediCare.Server.Controllers
             public required string PhoneNumber { get; set; }
             public TimeOnly StartHour { get; set; }
             public TimeOnly EndHour { get; set; }
+            public string? Facility { get; set; }
+            public string? DoctorDescription { get; set; }
             public List<string> Specializations { get; set; } = new();
-
         }
 
         /// <summary>

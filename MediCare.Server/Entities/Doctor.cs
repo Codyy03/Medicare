@@ -28,6 +28,12 @@ namespace MediCare.Server.Entities
         [Required]
         public required TimeOnly EndHour { get; set; }
 
+        [Required, StringLength(255)]
+        public required string Facility { get; set; }
+
+        [Required]
+        public required string DoctorDescription { get; set; }
+
         public ICollection<Specialization> Specializations { get; set; } = new List<Specialization>();
         public ICollection<Visit> Visits { get; set; } = new List<Visit>();
 
