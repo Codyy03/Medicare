@@ -94,19 +94,28 @@ public class DoctorsControllerTests : IClassFixture<WebApplicationFactory<Progra
         Assert.NotEmpty(list);
 
         var existing = list.First();
-        existing.Name = "New name";
+        var update = new DoctorUpdateDto
+        {
+            Name = "Newname",
+            Surname = existing.Surname,
+            PhoneNumber = existing.PhoneNumber,
+            StartHour = existing.StartHour,
+            EndHour = existing.EndHour,
+            Facility = existing.Facility ?? "Room 203, MediCare Center",
+            DoctorDescription = existing.DoctorDescription ?? "Experienced cardiologist with 15+ years of practice."
+        };
 
         var token = TestJwtTokenHelper.GenerateTestToken("1", "john.smith@medicare.com", "John", "Doctor");
         client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", token);
 
-        var response = await client.PutAsJsonAsync($"/api/doctors/update", existing);
+        var response = await client.PutAsJsonAsync($"/api/doctors/update", update);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var updated = await response.Content.ReadFromJsonAsync<DoctorDto>();
-        Assert.NotNull(updated);
-        Assert.Equal("New name", updated!.Name);
+        var updatedData = await response.Content.ReadFromJsonAsync<DoctorDto>();
+        Assert.NotNull(updatedData);
+        Assert.Equal("Newname", updatedData!.Name);
     }
 
     [Fact]
