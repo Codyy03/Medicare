@@ -12,6 +12,7 @@ namespace MediCare.Server.Data
         public DbSet<Visit> Visits { get; set; }
         public DbSet<VisitStatus> VisitStatuses { get; set; }
         public DbSet<Room> Rooms { get; set; }
+        public DbSet<SpecializationRoom> SpecializationRooms { get; set; }
         public DbSet<NewsItem> NewsItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -29,8 +30,9 @@ namespace MediCare.Server.Data
             RoomsSeeds(modelBuilder);
             DoctorsSeeds(modelBuilder);
             PatientsSeeds(modelBuilder);
+            VisitsSeeds(modelBuilder);
             NewsSeeds(modelBuilder);
-
+            SpecializationRoomSeeds(modelBuilder);
             SpecializationRelationships(modelBuilder);
 
         }
@@ -89,6 +91,9 @@ namespace MediCare.Server.Data
             {
                 j.HasKey("DoctorID", "SpecializationID");
             });
+
+            modelBuilder.Entity<SpecializationRoom>()
+                .HasKey(sr => new { sr.SpecializationID, sr.RoomID });
         }
         #endregion
 
@@ -174,9 +179,30 @@ namespace MediCare.Server.Data
         void RoomsSeeds(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Room>().HasData(
-                new Room { ID = 1, RoomNumber = 101, RoomType = "Consultation Room", Availability = true },
-                new Room { ID = 2, RoomNumber = 102, RoomType = "Consultation Room", Availability = true },
-                new Room { ID = 3, RoomNumber = 201, RoomType = "Operating Room", Availability = false }
+                new Room
+                {
+                    ID = 1,
+                    RoomNumber = 101,
+                    RoomType = "Cardiology Consultation Room"
+                },
+                new Room
+                {
+                    ID = 2,
+                    RoomNumber = 102,
+                    RoomType = "Orthopedic Consultation Room"
+                },
+                new Room
+                {
+                    ID = 3,
+                    RoomNumber = 103,
+                    RoomType = "Dermatology Consultation Room"
+                },
+                new Room
+                {
+                    ID = 4,
+                    RoomNumber = 201,
+                    RoomType = "Operating Room"
+                }
             );
         }
 
@@ -246,6 +272,9 @@ namespace MediCare.Server.Data
             );
         }
 
+        /// <summary>
+        /// Seeds initial data for the NewsItem table, including sample announcements and events.
+        /// </summary>
         void NewsSeeds(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<NewsItem>().HasData(
@@ -283,6 +312,61 @@ namespace MediCare.Server.Data
                 }
             );
         }
+
+        void SpecializationRoomSeeds(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<SpecializationRoom>().HasData(
+                new SpecializationRoom { SpecializationID = 1, RoomID = 1 }, // Cardiologist → Room 101
+                new SpecializationRoom { SpecializationID = 2, RoomID = 2 }, // Orthopedic → Room 102
+                new SpecializationRoom { SpecializationID = 3, RoomID = 3 }  // Dermatologist → Room 103
+            );
+        }
+
+        /// <summary>
+        /// Seeds initial data for the Visit table, linking doctors, patients, statuses, and rooms with specific dates and times.
+        /// </summary>
+        void VisitsSeeds(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Visit>().HasData(
+                new Visit
+                {
+                    ID = 1,
+                    VisitDate = new DateOnly(2025, 10, 20),
+                    VisitTime = new TimeOnly(10, 30),
+                    DoctorID = 1,   // John Smith
+                    PatientID = 1,  // Michael Brown
+                    StatusID = 1,   // Scheduled
+                    RoomID = 1,     // Room 101
+                    Reason = VisitReason.Consultation,
+                    AdditionalNotes = "Please discuss the test results in advance."
+                },
+                new Visit
+                {
+                    ID = 2,
+                    VisitDate = new DateOnly(2025, 10, 21),
+                    VisitTime = new TimeOnly(13, 00),
+                    DoctorID = 2,   // Emily Johnson
+                    PatientID = 2,  // Sarah Williams
+                    StatusID = 1,   // Scheduled
+                    RoomID = 2,     // Room 102
+                    Reason = VisitReason.Prescription,
+                    AdditionalNotes = null
+                },
+                new Visit
+                {
+                    ID = 3,
+                    VisitDate = new DateOnly(2025, 10, 22),
+                    VisitTime = new TimeOnly(9, 30),
+                    DoctorID = 1,   // John Smith
+                    PatientID = 2,  // Sarah Williams
+                    StatusID = 2,   // Completed
+                    RoomID = 1,     // Room 101
+                    Reason = VisitReason.FollowUp,
+                    AdditionalNotes = "Checkup after previous visit."
+                }
+            );
+        }
+
         /// <summary>
         /// Seeds initial data for the DoctorSpecialization join table (many-to-many relationship).
         /// </summary>

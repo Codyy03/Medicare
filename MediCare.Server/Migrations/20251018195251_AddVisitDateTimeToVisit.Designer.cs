@@ -3,6 +3,7 @@ using System;
 using MediCare.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MediCare.Server.Migrations
 {
     [DbContext(typeof(MediCareDbContext))]
-    partial class MediCareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251018195251_AddVisitDateTimeToVisit")]
+    partial class AddVisitDateTimeToVisit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -285,6 +288,9 @@ namespace MediCare.Server.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ID"));
 
+                    b.Property<bool>("Availability")
+                        .HasColumnType("boolean");
+
                     b.Property<int>("RoomNumber")
                         .HasColumnType("integer");
 
@@ -304,24 +310,21 @@ namespace MediCare.Server.Migrations
                         new
                         {
                             ID = 1,
+                            Availability = true,
                             RoomNumber = 101,
-                            RoomType = "Cardiology Consultation Room"
+                            RoomType = "Consultation Room"
                         },
                         new
                         {
                             ID = 2,
+                            Availability = true,
                             RoomNumber = 102,
-                            RoomType = "Orthopedic Consultation Room"
+                            RoomType = "Consultation Room"
                         },
                         new
                         {
                             ID = 3,
-                            RoomNumber = 103,
-                            RoomType = "Dermatology Consultation Room"
-                        },
-                        new
-                        {
-                            ID = 4,
+                            Availability = false,
                             RoomNumber = 201,
                             RoomType = "Operating Room"
                         });
@@ -391,16 +394,10 @@ namespace MediCare.Server.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ID"));
 
-                    b.Property<string>("AdditionalNotes")
-                        .HasColumnType("text");
-
                     b.Property<int>("DoctorID")
                         .HasColumnType("integer");
 
                     b.Property<int>("PatientID")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Reason")
                         .HasColumnType("integer");
 
                     b.Property<int>("RoomID")
@@ -412,8 +409,8 @@ namespace MediCare.Server.Migrations
                     b.Property<DateOnly>("VisitDate")
                         .HasColumnType("date");
 
-                    b.Property<TimeOnly>("VisitTime")
-                        .HasColumnType("time without time zone");
+                    b.Property<DateTime>("VisitDateTime")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("ID");
 
@@ -426,43 +423,6 @@ namespace MediCare.Server.Migrations
                     b.HasIndex("StatusID");
 
                     b.ToTable("Visits");
-
-                    b.HasData(
-                        new
-                        {
-                            ID = 1,
-                            AdditionalNotes = "Please discuss the test results in advance.",
-                            DoctorID = 1,
-                            PatientID = 1,
-                            Reason = 1,
-                            RoomID = 1,
-                            StatusID = 1,
-                            VisitDate = new DateOnly(2025, 10, 20),
-                            VisitTime = new TimeOnly(10, 30, 0)
-                        },
-                        new
-                        {
-                            ID = 2,
-                            DoctorID = 2,
-                            PatientID = 2,
-                            Reason = 3,
-                            RoomID = 2,
-                            StatusID = 1,
-                            VisitDate = new DateOnly(2025, 10, 21),
-                            VisitTime = new TimeOnly(13, 0, 0)
-                        },
-                        new
-                        {
-                            ID = 3,
-                            AdditionalNotes = "Checkup after previous visit.",
-                            DoctorID = 1,
-                            PatientID = 2,
-                            Reason = 2,
-                            RoomID = 1,
-                            StatusID = 2,
-                            VisitDate = new DateOnly(2025, 10, 22),
-                            VisitTime = new TimeOnly(9, 30, 0)
-                        });
                 });
 
             modelBuilder.Entity("MediCare.Server.Entities.VisitStatus", b =>
@@ -497,38 +457,6 @@ namespace MediCare.Server.Migrations
                         {
                             ID = 3,
                             Name = "Cancelled"
-                        });
-                });
-
-            modelBuilder.Entity("SpecializationRoom", b =>
-                {
-                    b.Property<int>("SpecializationID")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("RoomID")
-                        .HasColumnType("integer");
-
-                    b.HasKey("SpecializationID", "RoomID");
-
-                    b.HasIndex("RoomID");
-
-                    b.ToTable("SpecializationRooms");
-
-                    b.HasData(
-                        new
-                        {
-                            SpecializationID = 1,
-                            RoomID = 1
-                        },
-                        new
-                        {
-                            SpecializationID = 2,
-                            RoomID = 2
-                        },
-                        new
-                        {
-                            SpecializationID = 3,
-                            RoomID = 3
                         });
                 });
 
@@ -580,25 +508,6 @@ namespace MediCare.Server.Migrations
                     b.Navigation("Room");
 
                     b.Navigation("Status");
-                });
-
-            modelBuilder.Entity("SpecializationRoom", b =>
-                {
-                    b.HasOne("MediCare.Server.Entities.Room", "Room")
-                        .WithMany()
-                        .HasForeignKey("RoomID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MediCare.Server.Entities.Specialization", "Specialization")
-                        .WithMany()
-                        .HasForeignKey("SpecializationID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Room");
-
-                    b.Navigation("Specialization");
                 });
 
             modelBuilder.Entity("MediCare.Server.Entities.Doctor", b =>

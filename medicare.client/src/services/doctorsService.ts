@@ -58,3 +58,12 @@ export async function getDoctorsByFilters(specializationID?: number, surname?: s
 
     return response.json();
 }
+
+export async function getDoctorsBySpecialization(id: number) {
+    const response = await fetch(`https://localhost:7014/api/doctors/doctorsBySpecialization/${id}`);
+
+    if (!response.ok) {
+        throw new Error("Error when downloading doctors");
+    }
+    return response.json();
+}

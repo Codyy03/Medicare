@@ -1,0 +1,16 @@
+.booking-page .timeslots-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(100px, 1fr));
+  gap: 0.75rem;
+}
+
+.booking-page .timeslot-btn {
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+@media (max-width: 576px) {
+  .booking-page .timeslots-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

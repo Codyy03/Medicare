@@ -12,8 +12,5 @@ namespace MediCare.Server.Entities
       
         [Required, StringLength(255)]
         public string RoomType { get; set; } = string.Empty;
-
-        [Required]
-        public bool Availability { get; set; }
     }
 }

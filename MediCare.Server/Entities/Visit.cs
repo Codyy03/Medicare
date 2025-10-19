@@ -9,22 +9,37 @@ namespace MediCare.Server.Entities
 
         [Required]
         public DateOnly VisitDate {  get; set; }
-       
+
+        [Required]
+        public TimeOnly VisitTime { get; set; }
+
         [Required]
         public int DoctorID { get; set; }
-        public required Doctor Doctor{ get; set; }
+        public Doctor Doctor{ get; set; }
 
         [Required]
         public int PatientID { get; set; }
-        public required Patient Patient { get; set; }
+        public  Patient Patient { get; set; }
 
         [Required]
         public int StatusID { get; set; }
-        public required VisitStatus Status { get; set; }
+        public VisitStatus Status { get; set; }
+
+        [Required]
+        public VisitReason Reason { get; set; }
+        public string? AdditionalNotes { get; set; }
 
         [Required]
         public int RoomID { get; set; }
-        public required Room Room { get; set; }
+        public Room Room { get; set; }
+    }
+
+    public enum VisitReason
+    {
+        Consultation = 1,
+        FollowUp = 2,
+        Prescription = 3,
+        Checkup = 4
     }
 
     public class VisitStatus

@@ -3,6 +3,7 @@ using System;
 using MediCare.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MediCare.Server.Migrations
 {
     [DbContext(typeof(MediCareDbContext))]
-    partial class MediCareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251019121229_AddVisitReasonAndAdditionalNotes")]
+    partial class AddVisitReasonAndAdditionalNotes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -500,38 +503,6 @@ namespace MediCare.Server.Migrations
                         });
                 });
 
-            modelBuilder.Entity("SpecializationRoom", b =>
-                {
-                    b.Property<int>("SpecializationID")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("RoomID")
-                        .HasColumnType("integer");
-
-                    b.HasKey("SpecializationID", "RoomID");
-
-                    b.HasIndex("RoomID");
-
-                    b.ToTable("SpecializationRooms");
-
-                    b.HasData(
-                        new
-                        {
-                            SpecializationID = 1,
-                            RoomID = 1
-                        },
-                        new
-                        {
-                            SpecializationID = 2,
-                            RoomID = 2
-                        },
-                        new
-                        {
-                            SpecializationID = 3,
-                            RoomID = 3
-                        });
-                });
-
             modelBuilder.Entity("DoctorSpecialization", b =>
                 {
                     b.HasOne("MediCare.Server.Entities.Doctor", null)
@@ -580,25 +551,6 @@ namespace MediCare.Server.Migrations
                     b.Navigation("Room");
 
                     b.Navigation("Status");
-                });
-
-            modelBuilder.Entity("SpecializationRoom", b =>
-                {
-                    b.HasOne("MediCare.Server.Entities.Room", "Room")
-                        .WithMany()
-                        .HasForeignKey("RoomID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MediCare.Server.Entities.Specialization", "Specialization")
-                        .WithMany()
-                        .HasForeignKey("SpecializationID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Room");
-
-                    b.Navigation("Specialization");
                 });
 
             modelBuilder.Entity("MediCare.Server.Entities.Doctor", b =>

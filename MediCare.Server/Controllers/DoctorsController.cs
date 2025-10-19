@@ -118,6 +118,23 @@ namespace MediCare.Server.Controllers
             return Ok(result);
         }
 
+        [HttpGet("doctorsBySpecialization/{id}")]
+        public async Task<ActionResult<List<DoctorApointmentsDto>>> GetDoctorsBySpecialization(int id)
+        {
+            List<DoctorApointmentsDto> doctors = await context.Doctors.Include(d => d.Specializations)
+                .Where(d => d.Specializations.Any(s => s.ID == id))
+                    .Select(d => new DoctorApointmentsDto
+                    {
+                        ID = d.ID,
+                        StartHour = d.StartHour,
+                        EndHour = d.EndHour,
+                        Name = d.Name,
+                        surname = d.Surname,
+                    }).ToListAsync();
+
+            return Ok(doctors);
+        }
+
         /// <summary>
         /// Retrieves a specific doctor by their unique identifier.
         /// </summary>
@@ -574,6 +591,18 @@ namespace MediCare.Server.Controllers
             public required string PhoneNumber { get; set; }
             public TimeOnly StartHour { get; set; }
             public TimeOnly EndHour { get; set; }
+        }
+
+        /// <summary>
+        /// Data Transfer Object (DTO) used when patient try to book apointment.
+        /// </summary>
+        public class DoctorApointmentsDto
+        {
+            public required int ID { get; set; }
+            public required string Name { get; set; }
+            public required string surname { get; set; }
+            public required TimeOnly StartHour { get; set; }
+            public required TimeOnly EndHour { get; set; }
         }
 
         /// <summary>
