@@ -5,9 +5,11 @@ import { FaCalendarAlt } from "react-icons/fa";
 import "react-datepicker/dist/react-datepicker.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Appointments.css";
+import { useAuth } from "../../../context/AuthContext";
 import { getSpecializationNames } from "../../../services/specializationsService";
 import { getDoctorsBySpecialization } from "../../../services/doctorsService";
 import { getVisitsTime } from "../../../services/visitsService";
+import { getVisitsRoom } from "../../../services/visitsService";
 import { getPatientMe } from "../../../services/patientsService";
 
 const BookingPage = () => {
@@ -24,6 +26,7 @@ const BookingPage = () => {
     }
     interface VisitTimeDto {
         visitTime: string;
+        room: string;
     }
     interface Patient {
         id: number;
@@ -33,14 +36,22 @@ const BookingPage = () => {
         email: string;
         phoneNumber: string;
     }
+    interface RoomDto {
+        roomType: string;
+        roomNumber: string;
+    }
 
     // data
     const [specializations, setSpecializations] = useState<SpecializationsNamesID[]>([]);
     const [doctors, setDoctors] = useState<DoctorApointmentsDto[]>([]);
     const [selectedSpecialization, setSelectedSpecialization] = useState("");
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-    const [bookedTimes, setBookedTimes] = useState<string[]>([]);
+    const [bookedTimes, setBookedTimes] = useState<{ time: string, room: string }[]>([]);
+    const [selectedRoom, setSelectedRoom] = useState<RoomDto | null>(null);
+
+    // data form logged patient
     const [loggedPatient, setLoggedPatienet] = useState<Patient>();
+
     const [selectedReason, setSelectedReason] = useState<number>(1);
     const [selectedDoctor, setSelectedDoctor] = useState("");
     const [selectedSlot, setSelectedSlot] = useState("");
@@ -50,6 +61,8 @@ const BookingPage = () => {
 
     const [loadingSpecs, setLoadingSpecs] = useState(true);
     const [loadingDoctors, setloadingDoctors] = useState(false);
+
+    const {userRole} = useAuth();
 
     const visitReasons = [
         { id: 1, label: "Consultation" },
@@ -87,20 +100,39 @@ const BookingPage = () => {
 
             getVisitsTime(doctorObj.id, selectedDate!)
                 .then((data: VisitTimeDto[]) => {
-                    console.log("Backend response:", data);
-                    const times = data.map(v => v.visitTime.slice(0, 5));
-                    console.log("Booked times parsed:", times);
-                    setBookedTimes(times);
-                })
+
+                    const timesWithRooms = data.map(v => ({
+                        time: v.visitTime.slice(0, 5),
+                        room: v.room
+                    }));
+
+                    setBookedTimes(timesWithRooms);
+                });
         }
     }, [selectedDoctor, selectedDate]);
 
     // get loged patient data
     useEffect(() => {
+        if (userRole !== "Patient") return;
+
         getPatientMe()
             .then(data => setLoggedPatienet(data))
-            .catch(err => console.error(err))
-    },[])
+            .catch(err => {
+                console.error("Not logged in or error fetching patient:", err);
+                setLoggedPatienet(undefined);
+            });
+    }, [userRole]);
+
+    useEffect(() => {
+        if (!selectedSpecialization) {
+            setSelectedRoom(null);
+            return;
+        }
+
+        getVisitsRoom(Number(selectedSpecialization))
+            .then(data => setSelectedRoom(data))
+            .catch(err => console.error(err));
+    }, [selectedSpecialization]);
 
     const getSpecializationByID = () => {
         const spec = specializations.find(s => s.id == parseInt(selectedSpecialization, 10));
@@ -112,7 +144,7 @@ const BookingPage = () => {
         const [startH, startM] = start.split(":").map(Number);
         const [endH, endM] = end.split(":").map(Number);
 
-        let current = new Date();
+        const current = new Date();
         current.setHours(startH, startM, 0, 0);
 
         const endTime = new Date();
@@ -133,7 +165,7 @@ const BookingPage = () => {
 
     const timeSlots = selectedDocObj && selectedDate
         ? generateTimeSlots(selectedDocObj.startHour, selectedDocObj.endHour)
-            .filter(slot => !bookedTimes.includes(slot))
+            .filter(slot => !bookedTimes.some(b => b.time === slot))
         : [];
 
     const handleCreateVisit = async () => {
@@ -172,8 +204,6 @@ const BookingPage = () => {
             });
 
             if (response.ok) {
-                const createdVisit = await response.json();
-                console.log("Visit created:", createdVisit);
                 alert("Appointment successfully booked!");
             } else {
                 const error = await response.text();
@@ -195,6 +225,13 @@ const BookingPage = () => {
                 <h1 className="fw-bold text-primary">Book an appointment</h1>
                 <p className="text-muted">Choose a doctor, date, and time to schedule your visit</p>
             </div>
+
+            {!userRole && (
+                <div className="alert alert-warning text-center">
+                    You must be logged in to book an appointment.
+                    <Link to="/login/patient" className="alert-link ms-2">Log in</Link>
+                </div>
+            )}
 
             <div className="row g-4">
                 {/* Left: Booking form */}
@@ -269,16 +306,19 @@ const BookingPage = () => {
                                 <span className="badge bg-light text-dark">Monday &ndash; Friday</span>
                             </div>
                             <div className="timeslots-grid">
-                                {timeSlots.map((t) => (
-                                    <button
-                                        key={t}
-                                        type="button"
-                                        className={`btn timeslot-btn ${selectedSlot === t ? "btn-primary" : "btn-outline-primary"}`}
-                                        onClick={() => setSelectedSlot(t)}
-                                    >
-                                        {t}
-                                    </button>
-                                ))}
+                                {timeSlots.map((t) => {
+                                    const room = bookedTimes.find(b => b.time === t)?.room;
+                                    return (
+                                        <button
+                                            key={t}
+                                            type="button"
+                                            className={`btn timeslot-btn ${selectedSlot === t ? "btn-primary" : "btn-outline-primary"}`}
+                                            onClick={() => setSelectedSlot(t)}
+                                        >
+                                            {t} {room && <span className="badge bg-secondary ms-2">{room}</span>}
+                                        </button>
+                                    );
+                                })}
                             </div>
                             <div className="form-text mt-2">Select a slot or use the time input above.</div>
                         </div>
@@ -353,10 +393,10 @@ const BookingPage = () => {
                                 type="button"
                                 className="btn btn-success btn-lg px-4"
                                 onClick={handleCreateVisit}
+                                disabled={!userRole}
                             >
                                 Confirm appointment
                             </button>
-
                         </div>
                     </div>
                 </div>
@@ -369,6 +409,13 @@ const BookingPage = () => {
                             <li><strong>Specialization:</strong> <span className="text-muted">{getSpecializationByID() || ""}</span></li>
                             <li><strong>Doctor:</strong> <span className="text-muted">{selectedDoctor || ""}</span></li>
                             <li><strong>Time slot:</strong> <span className="text-muted">{selectedSlot || ""}</span></li>
+                            <li>
+                                <strong>Room:</strong>{" "}
+                                <span className="text-muted">
+                                    {selectedRoom ? `${selectedRoom.roomType} (${selectedRoom.roomNumber})` : ""}
+                                </span>
+                            </li>
+
                         </ul>
                         <div className="alert alert-info mt-3 mb-0">
                             Please arrive 10 minutes before your scheduled time.

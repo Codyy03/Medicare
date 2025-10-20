@@ -34,7 +34,6 @@ namespace MediCare.Server.Data
             NewsSeeds(modelBuilder);
             SpecializationRoomSeeds(modelBuilder);
             SpecializationRelationships(modelBuilder);
-
         }
 
         #region Relationships configuration

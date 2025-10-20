@@ -46,20 +46,41 @@ namespace MediCare.Server.Controllers
             });
         }
 
+        [HttpGet("roomBySpecialization/{specId}")]
+        public async Task<ActionResult<RoomDto>> GetRoomBySpecialization(int specId)
+        {
+            var room = await context.SpecializationRooms
+                .Where(sr => sr.SpecializationID == specId)
+                .Select(sr => new RoomDto
+                {
+                    RoomType = sr.Room.RoomType,
+                    RoomNumber = sr.Room.RoomNumber
+                })
+                .FirstOrDefaultAsync();
+
+            if (room == null)
+                return NotFound("No room assigned to this specialization.");
+
+            return Ok(room);
+        }
 
         [HttpGet("visitsTime")]
         public async Task<ActionResult<VisitTimeDto>> GetVisitsTime(
             [FromQuery] int id,
             [FromQuery] DateOnly date)
         {
-            var visitsTime = await context.Visits.Where(v => v.DoctorID == id && v.VisitDate == date)
+            var visitsTime = await context.Visits
+                .Where(v => v.DoctorID == id && v.VisitDate == date)
                 .Select(v => new VisitTimeDto
                 {
-                    VisitTime = v.VisitTime, 
-                }).ToListAsync();
+                    VisitTime = v.VisitTime,
+                    Room = v.Room.RoomType
+                })
+                .ToListAsync();
 
             return Ok(visitsTime);
         }
+
         [HttpPost]
         public async Task<IActionResult> CreateVisit([FromBody] VisitCreateDto dto)
         {
@@ -147,6 +168,7 @@ namespace MediCare.Server.Controllers
         public class VisitTimeDto
         { 
             public required TimeOnly VisitTime {  get; set; }
+            public string Room { get; set; } = string.Empty;
         }
 
         public class VisitCreateDto
@@ -171,6 +193,11 @@ namespace MediCare.Server.Controllers
             public string Status { get; set; }
             public string Reason { get; set; }
             public string? AdditionalNotes { get; set; }
+        }
+        public class RoomDto
+        {
+            public string RoomType { get; set; } = string.Empty;
+            public int RoomNumber { get; set; }
         }
 
     }
