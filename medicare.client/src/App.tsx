@@ -15,6 +15,7 @@ import DoctorProfile from "./pages/Doctor/DoctorProfile/DoctorProfile";
 import DoctorsList from "./pages/Doctor/DoctorsList/DoctorsList";
 import DoctorInfo from "./pages/Doctor/DoctorInfo/DoctorInfo";
 import Appointments from "./pages/Patient/Appointments/Appointments";
+import BookingSuccessPage from "./pages/Patient/BookingSuccessPage/BookingSuccessPage";
 import DoctorsResetPassword from "./pages/Doctor/DoctorResetPassword/DoctorResetPassword";
 import PatientsResetPassword from "./pages/Patient/PatientResetPassword/PatientResetPassword";
 import { AuthProvider } from "./context/AuthContext";
@@ -64,6 +65,8 @@ function App() {
                     <Route path="/resetPasswordDoctor" element={<DoctorsResetPassword />} />
                     <Route path="/resetPasswordPatient" element={<PatientsResetPassword />} />
                     <Route path="/appointments" element={<Appointments />} />
+                    <Route path="/booking-success" element={<BookingSuccessPage />} />
+
                     <Route path="/doctorInfo/:id" element={<DoctorInfo />} />
                     <Route path="*" element={<NotFoundPage />} />
                 </Route>

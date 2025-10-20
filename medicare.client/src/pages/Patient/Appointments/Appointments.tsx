@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import { FaCalendarAlt } from "react-icons/fa";
 import "react-datepicker/dist/react-datepicker.css";
@@ -63,6 +63,7 @@ const BookingPage = () => {
     const [loadingDoctors, setloadingDoctors] = useState(false);
 
     const {userRole} = useAuth();
+    const navigate = useNavigate();
 
     const visitReasons = [
         { id: 1, label: "Consultation" },
@@ -204,7 +205,14 @@ const BookingPage = () => {
             });
 
             if (response.ok) {
-                alert("Appointment successfully booked!");
+                navigate("/booking-success", {
+                    state: {
+                        specialization: getSpecializationByID(),
+                        doctor: selectedDoctor,
+                        timeSlot: selectedSlot,
+                        room: `${selectedRoom?.roomType} (${selectedRoom?.roomNumber})`
+                    }
+                });
             } else {
                 const error = await response.text();
                 alert("Error: " + error);
@@ -214,7 +222,6 @@ const BookingPage = () => {
             alert("Unexpected error while booking appointment.");
         }
     };
-
 
     if (loadingSpecs || loadingDoctors) return <p>Loading...</p>
 
