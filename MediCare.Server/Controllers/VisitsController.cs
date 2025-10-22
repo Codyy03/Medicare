@@ -131,7 +131,7 @@ namespace MediCare.Server.Controllers
                 return BadRequest("Invalid visit reason.");
 
             // validation of visit date and time
-            var errors = ValidateVisitDate(dto.VisitDate.ToDateTime(dto.VisitTime), dto.VisitTime);
+            var errors = ValidateVisitDateTime(dto.VisitDate, dto.VisitTime);
             if (errors.Any())
                 return BadRequest(errors);
 
@@ -178,26 +178,26 @@ namespace MediCare.Server.Controllers
         /// <returns>
         /// A list of error messages. If the list is empty, the date and time are valid.
         /// </returns>
-        List<string> ValidateVisitDateTime(DateTime dto.VisitDate, TimeOnly dto.VisitTime)
+        List<string> ValidateVisitDateTime(DateOnly visitDate, TimeOnly visitTime)
         {
             var errors = new List<string>();
-
-            if (dto.VisitDate <= DateTime.Today)
+            var dateNow = DateOnly.FromDateTime(DateTime.Now);
+            if (visitDate <= dateNow)
             {
                 errors.Add("Visit date must be at least tomorrow.");
             }
 
-            if (dto.VisitDate.DayOfWeek == DayOfWeek.Saturday || dto.VisitDate.DayOfWeek == DayOfWeek.Sunday)
+            if (visitDate.DayOfWeek == DayOfWeek.Saturday || visitDate.DayOfWeek == DayOfWeek.Sunday)
             {
                 errors.Add("Visits cannot be scheduled on weekends.");
             }
 
-            if (dto.VisitTime.Hour < 8 || dto.VisitTime.Hour > 16)
+            if (visitTime.Hour < 8 || visitTime.Hour > 16)
             {
                 errors.Add("Visits can only be scheduled between 8 AM and 5 PM.");
             }
 
-            if (dto.VisitTime.Minute != 0 && dto.VisitTime.Minute != 30)
+            if (visitTime.Minute != 0 && visitTime.Minute != 30)
             {
                 errors.Add("Visits can only be scheduled on the hour or half-hour.");
             }
