@@ -138,7 +138,7 @@ function DoctorsList() {
                                 className="btn btn-primary w-100 mb-2"
                                 onClick={() => applyFilters(selectedSpec, surname, availableAt)}
                             >
-                                Szukaj
+                                Search
                             </button>
 
                             <button

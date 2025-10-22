@@ -87,10 +87,7 @@ namespace MediCare.Server.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (dto.VisitDate <= DateOnly.FromDateTime(DateTime.Today))
-                return BadRequest("Visit date must be at least tomorrow.");
-
-            // Pobierz lekarza z jego specjalizacjami
+            // Get doctor with specializations
             var doctor = await context.Doctors
                 .Include(d => d.Specializations)
                 .FirstOrDefaultAsync(d => d.ID == dto.DoctorID);
@@ -98,12 +95,12 @@ namespace MediCare.Server.Controllers
             if (doctor == null)
                 return NotFound($"Doctor with ID {dto.DoctorID} not found.");
 
-            // Sprawdź pacjenta
+            // Check if patient exists
             var patientExists = await context.Patients.AnyAsync(p => p.ID == dto.PatientID);
             if (!patientExists)
                 return NotFound($"Patient with ID {dto.PatientID} not found.");
 
-            // Sprawdź kolizję terminów
+            // Check for scheduling conflicts
             bool conflict = await context.Visits.AnyAsync(v =>
                 v.DoctorID == dto.DoctorID &&
                 v.VisitDate == dto.VisitDate &&
@@ -112,10 +109,10 @@ namespace MediCare.Server.Controllers
             if (conflict)
                 return Conflict("This doctor already has a visit scheduled at the given time.");
 
-            // Automatyczny status
+            // Assign initial status
             int statusId = 1; // Scheduled
 
-            // Automatyczne przypisanie pokoju na podstawie specjalizacji
+            // Assign room based on doctor's specializations
             var specializationIds = doctor.Specializations.Select(s => s.ID).ToList();
 
             int roomId = await context.SpecializationRooms
@@ -129,11 +126,19 @@ namespace MediCare.Server.Controllers
             if (roomId == 0)
                 return BadRequest("No room available for this doctor's specializations.");
 
-            // Walidacja enuma Reason
+            // Validation of visit reason
             if (!Enum.IsDefined(typeof(VisitReason), dto.Reason))
                 return BadRequest("Invalid visit reason.");
 
-            // Utworzenie wizyty
+            // validation of visit date and time
+            var errors = ValidateVisitDate(dto.VisitDate.ToDateTime(dto.VisitTime), dto.VisitTime);
+            if (errors.Any())
+                return BadRequest(errors);
+
+
+
+
+            // Create and save the visit
             var visit = new Visit
             {
                 VisitDate = dto.VisitDate,
@@ -164,6 +169,42 @@ namespace MediCare.Server.Controllers
             });
 
         }
+
+        /// <summary>
+        /// Validates the visit date and time.
+        /// </summary>
+        /// <param name="dto.VisitDate">Date of visit</param>
+        /// <param name="dto.VisitTime">Time of visit</param>
+        /// <returns>
+        /// A list of error messages. If the list is empty, the date and time are valid.
+        /// </returns>
+        List<string> ValidateVisitDateTime(DateTime dto.VisitDate, TimeOnly dto.VisitTime)
+        {
+            var errors = new List<string>();
+
+            if (dto.VisitDate <= DateTime.Today)
+            {
+                errors.Add("Visit date must be at least tomorrow.");
+            }
+
+            if (dto.VisitDate.DayOfWeek == DayOfWeek.Saturday || dto.VisitDate.DayOfWeek == DayOfWeek.Sunday)
+            {
+                errors.Add("Visits cannot be scheduled on weekends.");
+            }
+
+            if (dto.VisitTime.Hour < 8 || dto.VisitTime.Hour > 16)
+            {
+                errors.Add("Visits can only be scheduled between 8 AM and 5 PM.");
+            }
+
+            if (dto.VisitTime.Minute != 0 && dto.VisitTime.Minute != 30)
+            {
+                errors.Add("Visits can only be scheduled on the hour or half-hour.");
+            }
+            
+            return errors;
+        }
+
 
         public class VisitTimeDto
         { 

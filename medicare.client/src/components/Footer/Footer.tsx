@@ -17,7 +17,7 @@ function Footer() {
                     <div className="col-md-2 mb-4">
                         <h5>MediCare</h5>
                         <ul className="list-unstyled">
-                            <li><Link to="/about" className="info">About us</Link></li>
+                            <li><Link to="/aboutUs" className="info">About us</Link></li>
                             <li><Link to="/contact" className="info">Contact</Link></li>
                         </ul>
                     </div>
