@@ -3,6 +3,7 @@ using System;
 using MediCare.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MediCare.Server.Migrations
 {
     [DbContext(typeof(MediCareDbContext))]
-    partial class MediCareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251021192611_ReplaceStatusTableWithEnumAndAddNewRoomSeeds")]
+    partial class ReplaceStatusTableWithEnumAndAddNewRoomSeeds
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -324,6 +327,42 @@ namespace MediCare.Server.Migrations
                             ID = 4,
                             RoomNumber = 201,
                             RoomType = "Operating Room"
+                        },
+                        new
+                        {
+                            ID = 5,
+                            RoomNumber = 104,
+                            RoomType = "Cardiology Consultation Room"
+                        },
+                        new
+                        {
+                            ID = 6,
+                            RoomNumber = 105,
+                            RoomType = "Cardiology Consultation Room"
+                        },
+                        new
+                        {
+                            ID = 7,
+                            RoomNumber = 106,
+                            RoomType = "Orthopedic Consultation Room"
+                        },
+                        new
+                        {
+                            ID = 8,
+                            RoomNumber = 107,
+                            RoomType = "Dermatology Consultation Room"
+                        },
+                        new
+                        {
+                            ID = 9,
+                            RoomNumber = 202,
+                            RoomType = "Operating Room"
+                        },
+                        new
+                        {
+                            ID = 10,
+                            RoomNumber = 203,
+                            RoomType = "Operating Room"
                         });
                 });
 
@@ -406,7 +445,7 @@ namespace MediCare.Server.Migrations
                     b.Property<int>("RoomID")
                         .HasColumnType("integer");
 
-                    b.Property<int>("StatusID")
+                    b.Property<int>("Status")
                         .HasColumnType("integer");
 
                     b.Property<DateOnly>("VisitDate")
@@ -423,8 +462,6 @@ namespace MediCare.Server.Migrations
 
                     b.HasIndex("RoomID");
 
-                    b.HasIndex("StatusID");
-
                     b.ToTable("Visits");
 
                     b.HasData(
@@ -436,7 +473,7 @@ namespace MediCare.Server.Migrations
                             PatientID = 1,
                             Reason = 1,
                             RoomID = 1,
-                            StatusID = 1,
+                            Status = 1,
                             VisitDate = new DateOnly(2025, 10, 20),
                             VisitTime = new TimeOnly(10, 30, 0)
                         },
@@ -447,7 +484,7 @@ namespace MediCare.Server.Migrations
                             PatientID = 2,
                             Reason = 3,
                             RoomID = 2,
-                            StatusID = 1,
+                            Status = 1,
                             VisitDate = new DateOnly(2025, 10, 21),
                             VisitTime = new TimeOnly(13, 0, 0)
                         },
@@ -459,44 +496,9 @@ namespace MediCare.Server.Migrations
                             PatientID = 2,
                             Reason = 2,
                             RoomID = 1,
-                            StatusID = 2,
+                            Status = 2,
                             VisitDate = new DateOnly(2025, 10, 22),
                             VisitTime = new TimeOnly(9, 30, 0)
-                        });
-                });
-
-            modelBuilder.Entity("MediCare.Server.Entities.VisitStatus", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ID"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("VisitStatuses");
-
-                    b.HasData(
-                        new
-                        {
-                            ID = 1,
-                            Name = "Scheduled"
-                        },
-                        new
-                        {
-                            ID = 2,
-                            Name = "Completed"
-                        },
-                        new
-                        {
-                            ID = 3,
-                            Name = "Cancelled"
                         });
                 });
 
@@ -567,19 +569,11 @@ namespace MediCare.Server.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("MediCare.Server.Entities.VisitStatus", "Status")
-                        .WithMany()
-                        .HasForeignKey("StatusID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Doctor");
 
                     b.Navigation("Patient");
 
                     b.Navigation("Room");
-
-                    b.Navigation("Status");
                 });
 
             modelBuilder.Entity("SpecializationRoom", b =>

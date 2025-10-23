@@ -10,7 +10,6 @@ namespace MediCare.Server.Data
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Specialization> Specializations { get; set; }
         public DbSet<Visit> Visits { get; set; }
-        public DbSet<VisitStatus> VisitStatuses { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<SpecializationRoom> SpecializationRooms { get; set; }
         public DbSet<NewsItem> NewsItems { get; set; }
@@ -25,7 +24,6 @@ namespace MediCare.Server.Data
             base.OnModelCreating(modelBuilder);
 
             // tables seeds
-            VisitStatusesSeeds(modelBuilder);
             SpecializationsSeeds(modelBuilder);
             RoomsSeeds(modelBuilder);
             DoctorsSeeds(modelBuilder);
@@ -55,16 +53,15 @@ namespace MediCare.Server.Data
               .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Visit>()
-              .HasOne(v => v.Status)
-              .WithMany()
-              .HasForeignKey(v => v.StatusID)
-              .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Visit>()
               .HasOne(v => v.Room)
               .WithMany()
               .HasForeignKey(v => v.RoomID)
               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Visit>()
+            .Property(v => v.Status)
+            .HasConversion<int>();
+
         }
         /// <summary>
         /// Configures many-to-many relationships between entities in the model.
@@ -161,18 +158,6 @@ namespace MediCare.Server.Data
         }
 
         /// <summary>
-        /// Seeds initial data for the VisitStatus table.
-        /// </summary>
-        void VisitStatusesSeeds(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<VisitStatus>().HasData(
-                new VisitStatus { ID = 1, Name = "Scheduled" },
-                new VisitStatus { ID = 2, Name = "Completed" },
-                new VisitStatus { ID = 3, Name = "Cancelled" }
-            );
-        }
-
-        /// <summary>
         /// Seeds initial data for the Room table.
         /// </summary>
         void RoomsSeeds(ModelBuilder modelBuilder)
@@ -201,8 +186,45 @@ namespace MediCare.Server.Data
                     ID = 4,
                     RoomNumber = 201,
                     RoomType = "Operating Room"
+                },
+                new Room
+                {
+                    ID = 5,
+                    RoomNumber = 104,
+                    RoomType = "Cardiology Consultation Room"
+                },
+                new Room
+                {
+                    ID = 6,
+                    RoomNumber = 105,
+                    RoomType = "Cardiology Consultation Room"
+                },
+                new Room
+                {
+                    ID = 7,
+                    RoomNumber = 106,
+                    RoomType = "Orthopedic Consultation Room"
+                },
+                new Room
+                {
+                    ID = 8,
+                    RoomNumber = 107,
+                    RoomType = "Dermatology Consultation Room"
+                },
+                new Room
+                {
+                    ID = 9,
+                    RoomNumber = 202,
+                    RoomType = "Operating Room"
+                },
+                new Room
+                {
+                    ID = 10,
+                    RoomNumber = 203,
+                    RoomType = "Operating Room"
                 }
             );
+
         }
 
         /// <summary>
@@ -315,11 +337,33 @@ namespace MediCare.Server.Data
         void SpecializationRoomSeeds(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<SpecializationRoom>().HasData(
-                new SpecializationRoom { SpecializationID = 1, RoomID = 1 }, // Cardiologist → Room 101
-                new SpecializationRoom { SpecializationID = 2, RoomID = 2 }, // Orthopedic → Room 102
-                new SpecializationRoom { SpecializationID = 3, RoomID = 3 }  // Dermatologist → Room 103
+                // Kardiologia → 101, 104, 105
+                new SpecializationRoom { SpecializationID = 1, RoomID = 1 },
+                new SpecializationRoom { SpecializationID = 1, RoomID = 5 },
+                new SpecializationRoom { SpecializationID = 1, RoomID = 6 },
+
+                // Ortopedia → 102, 106
+                new SpecializationRoom { SpecializationID = 2, RoomID = 2 },
+                new SpecializationRoom { SpecializationID = 2, RoomID = 7 },
+
+                // Dermatologia → 103, 107
+                new SpecializationRoom { SpecializationID = 3, RoomID = 3 },
+                new SpecializationRoom { SpecializationID = 3, RoomID = 8 },
+
+                new SpecializationRoom { SpecializationID = 1, RoomID = 4 },
+                new SpecializationRoom { SpecializationID = 1, RoomID = 9 },
+                new SpecializationRoom { SpecializationID = 1, RoomID = 10 },
+
+                new SpecializationRoom { SpecializationID = 2, RoomID = 4 },
+                new SpecializationRoom { SpecializationID = 2, RoomID = 9 },
+                new SpecializationRoom { SpecializationID = 2, RoomID = 10 },
+
+                new SpecializationRoom { SpecializationID = 3, RoomID = 4 },
+                new SpecializationRoom { SpecializationID = 3, RoomID = 9 },
+                new SpecializationRoom { SpecializationID = 3, RoomID = 10 }
             );
         }
+
 
         /// <summary>
         /// Seeds initial data for the Visit table, linking doctors, patients, statuses, and rooms with specific dates and times.
@@ -334,7 +378,7 @@ namespace MediCare.Server.Data
                     VisitTime = new TimeOnly(10, 30),
                     DoctorID = 1,   // John Smith
                     PatientID = 1,  // Michael Brown
-                    StatusID = 1,   // Scheduled
+                    Status = (VisitStatus)1,   // Scheduled
                     RoomID = 1,     // Room 101
                     Reason = VisitReason.Consultation,
                     AdditionalNotes = "Please discuss the test results in advance."
@@ -346,7 +390,7 @@ namespace MediCare.Server.Data
                     VisitTime = new TimeOnly(13, 00),
                     DoctorID = 2,   // Emily Johnson
                     PatientID = 2,  // Sarah Williams
-                    StatusID = 1,   // Scheduled
+                    Status = (VisitStatus)1,   // Scheduled
                     RoomID = 2,     // Room 102
                     Reason = VisitReason.Prescription,
                     AdditionalNotes = null
@@ -358,7 +402,7 @@ namespace MediCare.Server.Data
                     VisitTime = new TimeOnly(9, 30),
                     DoctorID = 1,   // John Smith
                     PatientID = 2,  // Sarah Williams
-                    StatusID = 2,   // Completed
+                    Status = (VisitStatus)2,   // Completed
                     RoomID = 1,     // Room 101
                     Reason = VisitReason.FollowUp,
                     AdditionalNotes = "Checkup after previous visit."

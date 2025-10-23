@@ -9,7 +9,7 @@ import { useAuth } from "../../../context/AuthContext";
 import { getSpecializationNames } from "../../../services/specializationsService";
 import { getDoctorsBySpecialization } from "../../../services/doctorsService";
 import { getVisitsTime } from "../../../services/visitsService";
-import { getVisitsRoom } from "../../../services/visitsService";
+import { getFreeRoomsBySpecialization } from "../../../services/visitsService";
 import { getPatientMe } from "../../../services/patientsService";
 
 const BookingPage = () => {
@@ -37,21 +37,23 @@ const BookingPage = () => {
         phoneNumber: string;
     }
     interface RoomDto {
+        id: number;
         roomType: string;
-        roomNumber: string;
+        roomNumber: number;
     }
 
-    // data
     const [specializations, setSpecializations] = useState<SpecializationsNamesID[]>([]);
     const [doctors, setDoctors] = useState<DoctorApointmentsDto[]>([]);
     const [selectedSpecialization, setSelectedSpecialization] = useState("");
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-    const [bookedTimes, setBookedTimes] = useState<{ time: string, room: string }[]>([]);
+    const [bookedTimes, setBookedTimes] = useState<string[]>([]);
     const [selectedRoom, setSelectedRoom] = useState<RoomDto | null>(null);
+    const [availableRooms, setAvailableRooms] = useState<RoomDto[]>([]);
 
-    // data form logged patient
+    // nowy stan dla slotów -> mapujemy godziny na listy dostêpnych pokoi
+    const [slotRooms, setSlotRooms] = useState<Record<string, RoomDto[]>>({});
+
     const [loggedPatient, setLoggedPatienet] = useState<Patient>();
-
     const [selectedReason, setSelectedReason] = useState<number>(1);
     const [selectedDoctor, setSelectedDoctor] = useState("");
     const [selectedSlot, setSelectedSlot] = useState("");
@@ -62,14 +64,14 @@ const BookingPage = () => {
     const [loadingSpecs, setLoadingSpecs] = useState(true);
     const [loadingDoctors, setloadingDoctors] = useState(false);
 
-    const {userRole} = useAuth();
+    const { userRole } = useAuth();
     const navigate = useNavigate();
 
     const visitReasons = [
         { id: 1, label: "Consultation" },
         { id: 2, label: "Follow-up" },
         { id: 3, label: "Prescription" },
-        { id: 4, label: "Checkup" }
+        { id: 4, label: "Checkup" },
     ];
 
     // get specializations
@@ -94,28 +96,22 @@ const BookingPage = () => {
 
     // get available dates 
     useEffect(() => {
-        if (selectedDoctor) {
-            const doctorObj = doctors.find(d => (d.name + " " + d.surname) === selectedDoctor);
+        if (!selectedDoctor || !selectedDate) return;
 
-            if (!doctorObj || !selectedDate) return;
+        const doctorObj = doctors.find(d => (d.name + " " + d.surname) === selectedDoctor);
+        if (!doctorObj) return;
 
-            getVisitsTime(doctorObj.id, selectedDate!)
-                .then((data: VisitTimeDto[]) => {
-
-                    const timesWithRooms = data.map(v => ({
-                        time: v.visitTime.slice(0, 5),
-                        room: v.room
-                    }));
-
-                    setBookedTimes(timesWithRooms);
-                });
-        }
+        getVisitsTime(doctorObj.id, selectedDate)
+            .then((data: { visitTime: string }[]) => {
+                const booked = data.map(v => v.visitTime.slice(0, 5));
+                setBookedTimes(booked);
+            })
+            .catch(console.error);
     }, [selectedDoctor, selectedDate]);
 
     // get loged patient data
     useEffect(() => {
         if (userRole !== "Patient") return;
-
         getPatientMe()
             .then(data => setLoggedPatienet(data))
             .catch(err => {
@@ -125,15 +121,31 @@ const BookingPage = () => {
     }, [userRole]);
 
     useEffect(() => {
-        if (!selectedSpecialization) {
-            setSelectedRoom(null);
+        if (!selectedSpecialization || !selectedDate) {
+            setSlotRooms({});
             return;
         }
 
-        getVisitsRoom(Number(selectedSpecialization))
-            .then(data => setSelectedRoom(data))
-            .catch(err => console.error(err));
-    }, [selectedSpecialization]);
+        const dateStr = selectedDate.toISOString().split("T")[0];
+        const timeSlots = generateTimeSlots("08:00", "16:00");
+        const doctorObj = doctors.find(d => (d.name + " " + d.surname) === selectedDoctor);
+        Promise.all(
+            timeSlots.map(async (slot) => {
+                try {
+                    const rooms = await getFreeRoomsBySpecialization(
+                        Number(selectedSpecialization),
+                        doctorObj!.id,
+                        dateStr,
+                        slot + ":00"
+                    );
+                    setSlotRooms(prev => ({ ...prev, [slot]: rooms }));
+                } catch {
+                    setSlotRooms(prev => ({ ...prev, [slot]: [] }));
+                }
+            })
+        );
+    }, [selectedSpecialization, selectedDate]);
+
 
     const getSpecializationByID = () => {
         const spec = specializations.find(s => s.id == parseInt(selectedSpecialization, 10));
@@ -164,10 +176,14 @@ const BookingPage = () => {
 
     const selectedDocObj = doctors.find(d => (d.name + " " + d.surname) === selectedDoctor);
 
-    const timeSlots = selectedDocObj && selectedDate
+    const allSlots = selectedDocObj && selectedDate
         ? generateTimeSlots(selectedDocObj.startHour, selectedDocObj.endHour)
-            .filter(slot => !bookedTimes.some(b => b.time === slot))
         : [];
+
+    // filtr: pokazuj tylko gdy s¹ wolne pokoje I doktor nie ma wizyty
+    const visibleSlots = allSlots.filter(slot =>
+        (slotRooms[slot]?.length ?? 0) > 0 && !bookedTimes.includes(slot)
+    );
 
     const handleCreateVisit = async () => {
         if (!termsAccepted) {
@@ -179,6 +195,18 @@ const BookingPage = () => {
             alert("Please fill in all required fields.");
             return;
         }
+
+        const freeRoom = availableRooms[0];
+        setSelectedRoom(freeRoom);
+
+        console.log("Available rooms at booking:", availableRooms);
+        console.log("Chosen room:", freeRoom);
+
+        if (!freeRoom) {
+            alert("No free room available for this time slot.");
+            return;
+        }
+
         function formatDateLocal(date: Date): string {
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -192,15 +220,14 @@ const BookingPage = () => {
             doctorID: selectedDocObj.id,
             patientID: loggedPatient.id,
             reason: selectedReason,
-            additionalNotes: additionalNotes
+            additionalNotes: additionalNotes,
+            roomID: freeRoom.id
         };
 
         try {
             const response = await fetch("https://localhost:7014/api/visits", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
             });
 
@@ -210,7 +237,7 @@ const BookingPage = () => {
                         specialization: getSpecializationByID(),
                         doctor: selectedDoctor,
                         timeSlot: selectedSlot,
-                        room: `${selectedRoom?.roomType} (${selectedRoom?.roomNumber})`
+                        room: `${freeRoom.roomType} (${freeRoom.roomNumber})`
                     }
                 });
             } else {
@@ -222,6 +249,7 @@ const BookingPage = () => {
             alert("Unexpected error while booking appointment.");
         }
     };
+
 
     if (loadingSpecs || loadingDoctors) return <p>Loading...</p>
 
@@ -312,22 +340,31 @@ const BookingPage = () => {
                                 <h6 className="mb-0">Available time slots</h6>
                                 <span className="badge bg-light text-dark">Monday &ndash; Friday</span>
                             </div>
+
                             <div className="timeslots-grid">
-                                {timeSlots.map((t) => {
-                                    const room = bookedTimes.find(b => b.time === t)?.room;
-                                    return (
+                                {visibleSlots.length > 0 ? (
+                                    visibleSlots.map((t) => (
                                         <button
                                             key={t}
                                             type="button"
                                             className={`btn timeslot-btn ${selectedSlot === t ? "btn-primary" : "btn-outline-primary"}`}
-                                            onClick={() => setSelectedSlot(t)}
+                                            onClick={() => {
+                                                setSelectedSlot(t);
+                                                setAvailableRooms(slotRooms[t]);
+                                            }}
                                         >
-                                            {t} {room && <span className="badge bg-secondary ms-2">{room}</span>}
+                                            {t}
+                                            {slotRooms[t] && (
+                                                <span className="badge bg-secondary ms-2">
+                                                    {slotRooms[t].length} rooms
+                                                </span>
+                                            )}
                                         </button>
-                                    );
-                                })}
+                                    ))
+                                ) : (
+                                    <p className="text-muted">No available time slots for this day.</p>
+                                )}
                             </div>
-                            <div className="form-text mt-2">Select a slot or use the time input above.</div>
                         </div>
 
                         {/* Patient info */}

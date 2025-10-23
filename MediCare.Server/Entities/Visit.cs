@@ -22,7 +22,6 @@ namespace MediCare.Server.Entities
         public  Patient Patient { get; set; }
 
         [Required]
-        public int StatusID { get; set; }
         public VisitStatus Status { get; set; }
 
         [Required]
@@ -41,13 +40,10 @@ namespace MediCare.Server.Entities
         Prescription = 3,
         Checkup = 4
     }
-
-    public class VisitStatus
+    public enum VisitStatus
     {
-        [Key]
-        public int ID { get; set; }
-
-        [Required, StringLength(255)]
-        public required string Name { get; set; }
+        Scheduled = 1,
+        Completed = 2,
+        Cancelled = 3
     }
 }

@@ -1,5 +1,5 @@
 export async function getVisitsTime(id: number, date: Date) {
-    const dateString = formatDateLocal(date); 
+    const dateString = formatDateLocal(date);
 
     const response = await fetch(
         `https://localhost:7014/api/visits/visitsTime?id=${id}&date=${dateString}`
@@ -12,13 +12,13 @@ export async function getVisitsTime(id: number, date: Date) {
     return response.json();
 }
 
-export async function getVisitsRoom(id: number) {
+export async function getFreeRoomsBySpecialization(id: number, doctorID :number, date: string, time: string) {
     const response = await fetch(
-        `https://localhost:7014/api/visits/roomBySpecialization/${id}`
+        `https://localhost:7014/api/visits/roomsBySpecialization/${id}?doctorID=${doctorID}?date=${date}&time=${time}`
     );
 
     if (!response.ok) {
-        throw new Error("Error when downloading room");
+        throw new Error("Error when downloading free rooms");
     }
 
     return response.json();
