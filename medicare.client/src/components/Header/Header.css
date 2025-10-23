@@ -251,3 +251,17 @@ header {
   border-top: 3px solid var(--primary-light);
   padding-top: 6px;
 }
+.login-choice i,
+.login-choice {
+  color: white;
+}
+
+.login-choice:hover {
+  transform: scale(1.05);
+  background: var(--primary-dark);
+  color: white;
+}
+
+.login-choice:hover i {
+  color: white;
+}
