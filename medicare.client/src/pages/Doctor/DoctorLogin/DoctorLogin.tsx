@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuth } from "../../../context/useAuth";
 import axios from "axios";
 import "./DoctorLogin.css";
 
@@ -16,17 +16,17 @@ export default function DoctorLogin() {
 
         try {
             const res = await axios.post("https://localhost:7014/api/doctors/login", { email, password });
-            const token = res.data.token;
+            const { accessToken, refreshToken } = res.data;
 
-            if (token) {
-                login(token);       
-                navigate("/"); 
+            if (accessToken && refreshToken) {
+                login(accessToken, refreshToken);
+                navigate("/");
             } else {
                 setError("Invalid email or password");
             }
         } catch (err) {
             setError("Invalid email or password");
-        }
+        } 
     };
 
     return (
@@ -49,6 +49,7 @@ export default function DoctorLogin() {
                             placeholder="e.g. joe@medicare.pl"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            required
                         />
                     </div>
 
@@ -58,9 +59,10 @@ export default function DoctorLogin() {
                             type="password"
                             id="password"
                             className="form-control"
-                            placeholder="&bull;&bull;&bull;&bull;&bull;"
+                            placeholder="•••••"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            required
                         />
                     </div>
 

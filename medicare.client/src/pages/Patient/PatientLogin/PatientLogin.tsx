@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuth } from "../../../context/useAuth";
 import "./PatientLogin.css";
 
 export default function PatientLogin() {
@@ -16,11 +16,11 @@ export default function PatientLogin() {
 
         try {
             const res = await axios.post("https://localhost:7014/api/patients/login", { email, password });
-            const token = res.data.token;
+            const { accessToken, refreshToken } = res.data;
 
-            if (token) {
-                login(token);
-                navigate("/"); 
+            if (accessToken && refreshToken) {
+                login(accessToken, refreshToken);
+                navigate("/");
             } else {
                 setError("Invalid email or password");
             }

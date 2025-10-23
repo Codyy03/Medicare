@@ -5,7 +5,7 @@ import { FaCalendarAlt } from "react-icons/fa";
 import "react-datepicker/dist/react-datepicker.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Appointments.css";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuth } from "../../../context/useAuth";
 import { getSpecializationNames } from "../../../services/specializationsService";
 import { getDoctorsBySpecialization } from "../../../services/doctorsService";
 import { getVisitsTime } from "../../../services/visitsService";
@@ -112,7 +112,7 @@ const BookingPage = () => {
         }
     }, [selectedDoctor, selectedDate]);
 
-    // get loged patient data
+    // get logged patient data
     useEffect(() => {
         if (userRole !== "Patient") return;
 

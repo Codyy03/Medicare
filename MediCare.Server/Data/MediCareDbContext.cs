@@ -14,6 +14,7 @@ namespace MediCare.Server.Data
         public DbSet<Room> Rooms { get; set; }
         public DbSet<SpecializationRoom> SpecializationRooms { get; set; }
         public DbSet<NewsItem> NewsItems { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -65,7 +66,18 @@ namespace MediCare.Server.Data
               .WithMany()
               .HasForeignKey(v => v.RoomID)
               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<RefreshToken>()
+                .HasOne(rt => rt.Patient)
+                .WithMany()
+                .HasForeignKey(rt => rt.PatientID);
+
+            modelBuilder.Entity<RefreshToken>()
+                .HasOne(rt => rt.Doctor)
+                .WithMany()
+                .HasForeignKey(rt => rt.DoctorID);
         }
+
         /// <summary>
         /// Configures many-to-many relationships between entities in the model.
         /// </summary>

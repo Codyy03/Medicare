@@ -284,8 +284,22 @@ namespace MediCare.Server.Controllers
             if (string.IsNullOrEmpty(doctor.PasswordHash) || (result == PasswordVerificationResult.Failed))
                 return Unauthorized("Invalid credentials");
 
-            var token = jwtHelper.GenerateJwtToken(doctor.ID.ToString(), doctor.Email, doctor.Name, "Doctor");
-            return Ok(new { token });
+            // Access token
+            var accessToken = jwtHelper.GenerateJwtToken(doctor.ID.ToString(), doctor.Email, doctor.Name, "Doctor");
+
+            // Refresh token
+            var refreshToken = jwtHelper.GenerateRefreshToken();
+            var entity = new RefreshToken
+            {
+                Token = refreshToken,
+                ExpiresAt = DateTime.UtcNow.AddDays(7),
+                IsRevoked = false,
+                DoctorID = doctor.ID
+            };
+            context.RefreshTokens.Add(entity);
+            await context.SaveChangesAsync();
+
+            return Ok(new { accessToken, refreshToken });
         }
 
         /// <summary>
