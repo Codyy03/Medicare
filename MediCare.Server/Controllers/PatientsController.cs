@@ -155,7 +155,7 @@ namespace MediCare.Server.Controllers
         /// otherwise returns an <see cref="OkObjectResult"/> containing a JWT token.
         /// </returns>
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDto dto)
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
             // Find user
             Patient? user = await context.Patients.FirstOrDefaultAsync(u => u.Email == dto.Email);
@@ -169,8 +169,20 @@ namespace MediCare.Server.Controllers
             if (string.IsNullOrEmpty(user.PasswordHash) || (result == PasswordVerificationResult.Failed))
                 return Unauthorized("Invalid credentials");
 
-            var token = jwtHelper.GenerateJwtToken(user.ID.ToString(), user.Email, user.Name, "Patient");
-            return Ok(new { token });
+            var accessToken = jwtHelper.GenerateJwtToken(user.ID.ToString(), user.Email, user.Name, "Patient");
+
+            var refreshToken = jwtHelper.GenerateRefreshToken();
+            var entity = new RefreshToken
+            {
+                Token = refreshToken,
+                ExpiresAt = DateTime.UtcNow.AddDays(7),
+                IsRevoked = false,
+                PatientID = user.ID
+            };
+            context.RefreshTokens.Add(entity);
+            await context.SaveChangesAsync();
+
+            return Ok(new { accessToken, refreshToken });
         }
 
 

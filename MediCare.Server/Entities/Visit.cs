@@ -8,18 +8,18 @@ namespace MediCare.Server.Entities
         public int ID { get; set; }
 
         [Required]
-        public DateOnly VisitDate {  get; set; }
+        public DateOnly VisitDate { get; set; }
 
         [Required]
         public TimeOnly VisitTime { get; set; }
 
         [Required]
         public int DoctorID { get; set; }
-        public Doctor Doctor{ get; set; }
+        public Doctor Doctor { get; set; }
 
         [Required]
         public int PatientID { get; set; }
-        public  Patient Patient { get; set; }
+        public Patient Patient { get; set; }
 
         [Required]
         public VisitStatus Status { get; set; }
@@ -31,6 +31,11 @@ namespace MediCare.Server.Entities
         [Required]
         public int RoomID { get; set; }
         public Room Room { get; set; }
+
+        // 🔥 Nowe pole:
+        [Required]
+        public int SpecializationID { get; set; }
+        public Specialization Specialization { get; set; }
     }
 
     public enum VisitReason
@@ -40,6 +45,7 @@ namespace MediCare.Server.Entities
         Prescription = 3,
         Checkup = 4
     }
+
     public enum VisitStatus
     {
         Scheduled = 1,

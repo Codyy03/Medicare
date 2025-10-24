@@ -5,10 +5,10 @@ import { FaCalendarAlt } from "react-icons/fa";
 import "react-datepicker/dist/react-datepicker.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Appointments.css";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuth } from "../../../context/useAuth";
 import { getSpecializationNames } from "../../../services/specializationsService";
 import { getDoctorsBySpecialization } from "../../../services/doctorsService";
-import { getVisitsTime } from "../../../services/visitsService";
+import { getFreeRoomsForDay, getVisitsTime } from "../../../services/visitsService";
 import { getFreeRoomsBySpecialization } from "../../../services/visitsService";
 import { getPatientMe } from "../../../services/patientsService";
 
@@ -109,7 +109,7 @@ const BookingPage = () => {
             .catch(console.error);
     }, [selectedDoctor, selectedDate]);
 
-    // get loged patient data
+    // get logged patient data
     useEffect(() => {
         if (userRole !== "Patient") return;
         getPatientMe()
@@ -120,31 +120,48 @@ const BookingPage = () => {
             });
     }, [userRole]);
 
+
     useEffect(() => {
-        if (!selectedSpecialization || !selectedDate) {
+        if (!selectedSpecialization || !selectedDate || !selectedDoctor) {
             setSlotRooms({});
+            setAvailableRooms([]);
+            setSelectedSlot("");
+            setSelectedRoom(null);
             return;
         }
 
-        const dateStr = selectedDate.toISOString().split("T")[0];
-        const timeSlots = generateTimeSlots("08:00", "16:00");
+        const formatDateLocal = (date: Date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+            return `${year}-${month}-${day}`;
+        };
+
+        const dateStr = formatDateLocal(selectedDate);
         const doctorObj = doctors.find(d => (d.name + " " + d.surname) === selectedDoctor);
-        Promise.all(
-            timeSlots.map(async (slot) => {
-                try {
-                    const rooms = await getFreeRoomsBySpecialization(
-                        Number(selectedSpecialization),
-                        doctorObj!.id,
-                        dateStr,
-                        slot + ":00"
-                    );
-                    setSlotRooms(prev => ({ ...prev, [slot]: rooms }));
-                } catch {
-                    setSlotRooms(prev => ({ ...prev, [slot]: [] }));
+        if (!doctorObj) return;
+
+        getFreeRoomsForDay(Number(selectedSpecialization), doctorObj.id, dateStr)
+            .then((data) => {
+                setSlotRooms(data);
+
+                // wybierz pierwszy wolny slot
+                const firstFreeSlot = Object.keys(data).find(slot => data[slot].length > 0);
+                if (firstFreeSlot) {
+                    setSelectedSlot(firstFreeSlot);
+                    setAvailableRooms(data[firstFreeSlot]);
+                    setSelectedRoom(data[firstFreeSlot][0] || null);
                 }
             })
-        );
-    }, [selectedSpecialization, selectedDate]);
+            .catch((err) => {
+                console.error("Error fetching rooms for day:", err);
+                setSlotRooms({});
+                setAvailableRooms([]);
+                setSelectedSlot("");
+                setSelectedRoom(null);
+            });
+    }, [selectedSpecialization, selectedDate, selectedDoctor]);
+
 
 
     const getSpecializationByID = () => {
@@ -221,7 +238,8 @@ const BookingPage = () => {
             patientID: loggedPatient.id,
             reason: selectedReason,
             additionalNotes: additionalNotes,
-            roomID: freeRoom.id
+            roomID: freeRoom.id,
+            specializationID: Number(selectedSpecialization) 
         };
 
         try {
@@ -348,10 +366,52 @@ const BookingPage = () => {
                                             key={t}
                                             type="button"
                                             className={`btn timeslot-btn ${selectedSlot === t ? "btn-primary" : "btn-outline-primary"}`}
-                                            onClick={() => {
+                                            onClick={async () => {
+                                                console.log("Klikniêto slot:", t);
                                                 setSelectedSlot(t);
-                                                setAvailableRooms(slotRooms[t]);
+
+                                                const formatDateLocal = (date: Date) => {
+                                                    const year = date.getFullYear();
+                                                    const month = String(date.getMonth() + 1).padStart(2, "0");
+                                                    const day = String(date.getDate()).padStart(2, "0");
+                                                    return `${year}-${month}-${day}`;
+                                                };
+
+                                                try {
+                                                    const response = await fetch("https://localhost:7014/api/visits/checkFreeRooms", {
+                                                        method: "POST",
+                                                        headers: { "Content-Type": "application/json" },
+                                                        body: JSON.stringify({
+                                                            visitDate: selectedDate ? formatDateLocal(selectedDate) : "",
+                                                            visitTime: t + ":00",
+                                                            doctorID: selectedDocObj?.id,
+                                                            patientID: loggedPatient?.id,          
+                                                            reason: selectedReason,                
+                                                            additionalNotes: additionalNotes || "",// opcjonalne
+                                                        })
+                                                    });
+
+                                                    console.log("Response status:", response.status);
+
+                                                    if (response.ok) {
+                                                        const rooms = await response.json();
+                                                        console.log("Rooms from backend:", rooms);
+                                                        setAvailableRooms(rooms);
+                                                        setSelectedRoom(rooms[0] || null);
+                                                    } else {
+                                                        const errText = await response.text();
+                                                        console.error("Backend error:", errText);
+                                                        setAvailableRooms([]);
+                                                        setSelectedRoom(null);
+                                                    }
+                                                } catch (err) {
+                                                    console.error("Error checking free rooms:", err);
+                                                    setAvailableRooms([]);
+                                                    setSelectedRoom(null);
+                                                }
                                             }}
+
+
                                         >
                                             {t}
                                             {slotRooms[t] && (

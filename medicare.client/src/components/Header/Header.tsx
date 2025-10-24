@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './Header.css';
@@ -8,7 +8,10 @@ import './Header.css';
 export default function Header() {
     const { userName, userRole, logout } = useAuth();
     const [showLoginOptions, setShowLoginOptions] = useState(false);
-
+    const rolePaths: Record<string, string> = {
+        Doctor: "/personalDataDoctor",
+        Patient: "/personalData"
+    };
     // padding pod header (¿eby nie nachodzi³ na treœæ)
     useEffect(() => {
         const updatePadding = () => {
@@ -96,12 +99,18 @@ export default function Header() {
                                     </div>
                                     <ul className="dropdown-menu show-on-hover" aria-labelledby="userDropdown">
                                         <li>
-                                            <NavLink className="dropdown-item hover-slide" to={userRole === "Doctor" ? "/personalDataDoctor" : "/personalData"}>
+                                            <NavLink className="dropdown-item hover-slide" to={rolePaths[userRole ?? "Patient"]}>
                                                 My personal data
                                             </NavLink>
                                         </li>
                                         <li>
-                                            <button className="dropdown-item hover-slide" onClick={logout}>
+                                            <button
+                                                className="dropdown-item hover-slide"
+                                                onClick={() => {
+                                                    logout();
+                                                    setShowLoginOptions(false);
+                                                }}
+                                            >
                                                 Logout
                                             </button>
                                         </li>

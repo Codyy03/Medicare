@@ -13,6 +13,7 @@ namespace MediCare.Server.Data
         public DbSet<Room> Rooms { get; set; }
         public DbSet<SpecializationRoom> SpecializationRooms { get; set; }
         public DbSet<NewsItem> NewsItems { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,28 +42,41 @@ namespace MediCare.Server.Data
         void HandleOneToMany(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Visit>()
-             .HasOne(v => v.Doctor)
-             .WithMany(d => d.Visits)
-             .HasForeignKey(v => v.DoctorID)
-             .OnDelete(DeleteBehavior.Restrict);
+                .HasOne(v => v.Doctor)
+                .WithMany(d => d.Visits)
+                .HasForeignKey(v => v.DoctorID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Visit>()
-              .HasOne(v => v.Patient)
-              .WithMany(p => p.Visits)
-              .HasForeignKey(v => v.PatientID)
-              .OnDelete(DeleteBehavior.Cascade);
+                .HasOne(v => v.Patient)
+                .WithMany(p => p.Visits)
+                .HasForeignKey(v => v.PatientID)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Visit>()
-              .HasOne(v => v.Room)
-              .WithMany()
-              .HasForeignKey(v => v.RoomID)
-              .OnDelete(DeleteBehavior.Restrict);
+                .HasOne(v => v.Room)
+                .WithMany()
+                .HasForeignKey(v => v.RoomID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Visit>()
-            .Property(v => v.Status)
-            .HasConversion<int>();
+                .HasOne(v => v.Specialization)
+                .WithMany()
+                .HasForeignKey(v => v.SpecializationID)
+                .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<RefreshToken>()
+                .HasOne(rt => rt.Patient)
+                .WithMany()
+                .HasForeignKey(rt => rt.PatientID);
+
+            modelBuilder.Entity<RefreshToken>()
+                .HasOne(rt => rt.Doctor)
+                .WithMany()
+                .HasForeignKey(rt => rt.DoctorID);
         }
+
+
         /// <summary>
         /// Configures many-to-many relationships between entities in the model.
         /// </summary>
@@ -258,9 +272,50 @@ namespace MediCare.Server.Data
                     EndHour = new TimeOnly(17, 0),
                     Facility = "Building A, Floor 2, MediCare Center",
                     DoctorDescription = "Dr. Emily Johnson is a dedicated neurologist with over 10 years of experience. She focuses on patient-centered care, neurological diagnostics, and innovative treatment methods."
+                },
+                // --- Nowi Kardiolodzy ---
+                new Doctor
+                {
+                    ID = 3,
+                    Name = "Michael",
+                    Surname = "Anderson",
+                    Email = "michael.anderson@medicare.com",
+                    PhoneNumber = "555111222",
+                    PasswordHash = "AQAAAAIAAYagAAAAEP8zA5dHE7nyVqBLoZwbn3FPUcUJDN4lB3E4uIv9H1sF5xW0+2Fi7vsmzJYgPNh8lA==", // pass123
+                    StartHour = new TimeOnly(8, 0),
+                    EndHour = new TimeOnly(14, 0),
+                    Facility = "Room 104, MediCare Center",
+                    DoctorDescription = "Dr. Michael Anderson is a skilled cardiologist specializing in arrhythmia management and cardiac imaging diagnostics."
+                },
+                new Doctor
+                {
+                    ID = 4,
+                    Name = "Sophia",
+                    Surname = "Martinez",
+                    Email = "sophia.martinez@medicare.com",
+                    PhoneNumber = "555333444",
+                    PasswordHash = "AQAAAAIAAYagAAAAEPxZkz/F7fYxzUVEXn9xIQKo5Tk1DbiRdnXx7SC7pPjUJW1xVdYzqk5GfYjxyK6K+w==", // heart123
+                    StartHour = new TimeOnly(10, 0),
+                    EndHour = new TimeOnly(18, 0),
+                    Facility = "Room 105, MediCare Center",
+                    DoctorDescription = "Dr. Sophia Martinez has extensive experience in non-invasive cardiology and preventive heart health."
+                },
+                new Doctor
+                {
+                    ID = 5,
+                    Name = "David",
+                    Surname = "Kowalski",
+                    Email = "david.kowalski@medicare.com",
+                    PhoneNumber = "555666777",
+                    PasswordHash = "AQAAAAIAAYagAAAAEKh2N3ZC1HkP7HhKJ7blQ7tb4jHY0mM3PwOydZx5Lq3yW6SkmtFfw4tq1LZzW9zENg==", // cardio1
+                    StartHour = new TimeOnly(7, 30),
+                    EndHour = new TimeOnly(15, 30),
+                    Facility = "Room 101, MediCare Center",
+                    DoctorDescription = "Dr. David Kowalski is a cardiologist focused on hypertension treatment, cardiac stress testing, and patient education."
                 }
             );
         }
+
 
         /// <summary>
         /// Seeds initial data for the Patient table, including hashed passwords.
@@ -371,41 +426,44 @@ namespace MediCare.Server.Data
         void VisitsSeeds(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Visit>().HasData(
-                new Visit
-                {
-                    ID = 1,
-                    VisitDate = new DateOnly(2025, 10, 20),
-                    VisitTime = new TimeOnly(10, 30),
-                    DoctorID = 1,   // John Smith
-                    PatientID = 1,  // Michael Brown
-                    Status = (VisitStatus)1,   // Scheduled
-                    RoomID = 1,     // Room 101
-                    Reason = VisitReason.Consultation,
-                    AdditionalNotes = "Please discuss the test results in advance."
-                },
+               new Visit
+               {
+                   ID = 1,
+                   VisitDate = new DateOnly(2025, 10, 20),
+                   VisitTime = new TimeOnly(10, 30),
+                   DoctorID = 1,
+                   PatientID = 1,
+                   Status = VisitStatus.Scheduled,
+                   RoomID = 1,
+                   Reason = VisitReason.Consultation,
+                   AdditionalNotes = "Please discuss the test results in advance.",
+                   SpecializationID = 1
+               },
                 new Visit
                 {
                     ID = 2,
                     VisitDate = new DateOnly(2025, 10, 21),
                     VisitTime = new TimeOnly(13, 00),
-                    DoctorID = 2,   // Emily Johnson
-                    PatientID = 2,  // Sarah Williams
-                    Status = (VisitStatus)1,   // Scheduled
-                    RoomID = 2,     // Room 102
+                    DoctorID = 2,
+                    PatientID = 2,
+                    Status = VisitStatus.Scheduled,
+                    RoomID = 2,
                     Reason = VisitReason.Prescription,
-                    AdditionalNotes = null
+                    AdditionalNotes = null,
+                    SpecializationID = 2
                 },
                 new Visit
                 {
                     ID = 3,
                     VisitDate = new DateOnly(2025, 10, 22),
                     VisitTime = new TimeOnly(9, 30),
-                    DoctorID = 1,   // John Smith
-                    PatientID = 2,  // Sarah Williams
-                    Status = (VisitStatus)2,   // Completed
-                    RoomID = 1,     // Room 101
+                    DoctorID = 1,
+                    PatientID = 2,
+                    Status = VisitStatus.Completed,
+                    RoomID = 1,
                     Reason = VisitReason.FollowUp,
-                    AdditionalNotes = "Checkup after previous visit."
+                    AdditionalNotes = "Checkup after previous visit.",
+                    SpecializationID = 1 
                 }
             );
         }
@@ -419,9 +477,14 @@ namespace MediCare.Server.Data
             modelBuilder.Entity("DoctorSpecialization").HasData(
                 new { DoctorID = 1, SpecializationID = 1 }, // John Smith - Cardiologist
                 new { DoctorID = 1, SpecializationID = 3 }, // John Smith - Dermatologist
-                new { DoctorID = 2, SpecializationID = 2 }  // Emily Johnson - Orthopedic Surgeon
+                new { DoctorID = 2, SpecializationID = 2 }, // Emily Johnson - Orthopedic Surgeon
+
+                new { DoctorID = 3, SpecializationID = 1 }, // Michael Anderson
+                new { DoctorID = 4, SpecializationID = 1 }, // Sophia Martinez
+                new { DoctorID = 5, SpecializationID = 1 }  // David Kowalski
             );
         }
+
         #endregion
     }
 }

@@ -45,15 +45,12 @@ namespace MediCare.Server.Controllers
                 AdditionalNotes = visit.AdditionalNotes
             });
         }
-
         [HttpGet("roomsBySpecialization/{specId}")]
         public async Task<ActionResult<List<RoomDto>>> GetFreeRoomsBySpecialization(
-            int specId,
-            [FromQuery] int doctorId,
-            [FromQuery] DateOnly date,
-            [FromQuery] TimeOnly time)
+     int specId,
+     [FromQuery] DateOnly date,
+     [FromQuery] TimeOnly time)
         {
-            // Krok 1: znajdź wszystkie pokoje przypisane do specjalizacji
             var rooms = await context.SpecializationRooms
                 .Where(sr => sr.SpecializationID == specId)
                 .Select(sr => sr.Room)
@@ -63,36 +60,17 @@ namespace MediCare.Server.Controllers
             if (!rooms.Any())
                 return NotFound("No rooms assigned to this specialization.");
 
-            // pobierz wszystkie pokoje przypisane do specjalizacji
-            var specializationRoomIds = await context.SpecializationRooms
-                .Where(sr => sr.SpecializationID == specId)
-                .Select(sr => sr.RoomID)
-                .ToListAsync();
-
-            // pobierz lekarzy, którzy mają tę specjalizację
-            var doctorIds = await context.Doctors
-                .Where(d => d.Specializations.Any(s => s.ID == specId))
-                .Select(d => d.ID)
-                .ToListAsync();
-
-            // tylko wizyty, które są jednocześnie:
-            // - u lekarza z tą specjalizacją,
-            // - w sali przypisanej do tej specjalizacji
+            // sprawdzaj tylko wizyty zaczynające się dokładnie o tej godzinie
             var occupiedRoomIds = await context.Visits
                 .Where(v =>
-                    v.DoctorID == doctorId &&   // teraz masz konkretny lekarz
-                    specializationRoomIds.Contains(v.RoomID) &&
+                    v.SpecializationID == specId &&
                     v.VisitDate == date &&
-                    v.VisitTime >= time &&
-                    v.VisitTime < time.AddMinutes(30))
+                    v.VisitTime == time
+                )
                 .Select(v => v.RoomID)
                 .Distinct()
                 .ToListAsync();
 
-            Console.WriteLine($"Request: date={date}, time={time}");
-            Console.WriteLine("Occupied: " + string.Join(",", occupiedRoomIds));
-
-            // Krok 4: zwróć tylko wolne pokoje przypisane do tej specjalizacji
             var freeRooms = rooms
                 .Where(r => !occupiedRoomIds.Contains(r.ID))
                 .Select(r => new RoomDto
@@ -111,11 +89,10 @@ namespace MediCare.Server.Controllers
         }
 
 
-
         [HttpGet("visitsTime")]
-        public async Task<ActionResult<VisitTimeDto>> GetVisitsTime(
-            [FromQuery] int id,
-            [FromQuery] DateOnly date)
+        public async Task<ActionResult<List<VisitTimeDto>>> GetVisitsTime(
+           [FromQuery] int id,
+           [FromQuery] DateOnly date)
         {
             var visitsTime = await context.Visits
                 .Where(v => v.DoctorID == id && v.VisitDate == date)
@@ -138,7 +115,7 @@ namespace MediCare.Server.Controllers
             if (dto.VisitDate <= DateOnly.FromDateTime(DateTime.Today))
                 return BadRequest("Visit date must be at least tomorrow.");
 
-            // Pobierz lekarza z jego specjalizacjami
+            // 1️⃣ Pobierz lekarza z jego specjalizacjami
             var doctor = await context.Doctors
                 .Include(d => d.Specializations)
                 .FirstOrDefaultAsync(d => d.ID == dto.DoctorID);
@@ -146,12 +123,12 @@ namespace MediCare.Server.Controllers
             if (doctor == null)
                 return NotFound($"Doctor with ID {dto.DoctorID} not found.");
 
-            // Sprawdź pacjenta
+            // 2️⃣ Sprawdź pacjenta
             var patientExists = await context.Patients.AnyAsync(p => p.ID == dto.PatientID);
             if (!patientExists)
                 return NotFound($"Patient with ID {dto.PatientID} not found.");
 
-            // Sprawdź kolizję terminów
+            // 3️⃣ Sprawdź kolizję terminów
             bool conflict = await context.Visits.AnyAsync(v =>
                 v.DoctorID == dto.DoctorID &&
                 v.VisitDate == dto.VisitDate &&
@@ -160,26 +137,28 @@ namespace MediCare.Server.Controllers
             if (conflict)
                 return Conflict("This doctor already has a visit scheduled at the given time.");
 
-
-            // Automatyczne przypisanie pokoju na podstawie specjalizacji
+            // 4️⃣ Znajdź dostępny pokój i specjalizację
             var specializationIds = doctor.Specializations.Select(s => s.ID).ToList();
 
-            int roomId = await context.SpecializationRooms
+            var availableRoom = await context.SpecializationRooms
                 .Where(sr => specializationIds.Contains(sr.SpecializationID))
-                .Select(sr => sr.RoomID)
-                .FirstOrDefaultAsync(rid => !context.Visits.Any(v =>
-                    v.RoomID == rid &&
-                    v.VisitDate == dto.VisitDate &&
-                    v.VisitTime == dto.VisitTime));
+                .FirstOrDefaultAsync(sr =>
+                    !context.Visits.Any(v =>
+                        v.RoomID == sr.RoomID &&
+                        v.VisitDate == dto.VisitDate &&
+                        v.VisitTime == dto.VisitTime));
 
-            if (roomId == 0)
+            if (availableRoom == null)
                 return BadRequest("No room available for this doctor's specializations.");
 
-            // Walidacja enuma Reason
+            int roomId = availableRoom.RoomID;
+            int specializationId = availableRoom.SpecializationID;
+
+            // 5️⃣ Walidacja enuma Reason
             if (!Enum.IsDefined(typeof(VisitReason), dto.Reason))
                 return BadRequest("Invalid visit reason.");
 
-            // Utworzenie wizyty
+            // 6️⃣ Utworzenie wizyty
             var visit = new Visit
             {
                 VisitDate = dto.VisitDate,
@@ -188,6 +167,7 @@ namespace MediCare.Server.Controllers
                 PatientID = dto.PatientID,
                 Status = VisitStatus.Scheduled,
                 RoomID = roomId,
+                SpecializationID = specializationId,
                 Reason = (VisitReason)dto.Reason,
                 AdditionalNotes = dto.AdditionalNotes
             };
@@ -195,21 +175,142 @@ namespace MediCare.Server.Controllers
             context.Visits.Add(visit);
             await context.SaveChangesAsync();
 
+            // 7️⃣ Odpowiedź
+            var doctorName = $"{doctor.Name} {doctor.Surname}";
+            var patientName = (await context.Patients.FindAsync(dto.PatientID))?.Name ?? "";
+            var room = (await context.Rooms.FindAsync(roomId))?.RoomType ?? "";
+
             return CreatedAtAction(nameof(GetVisitById), new { id = visit.ID }, new VisitResponseDto
             {
                 ID = visit.ID,
                 VisitDate = visit.VisitDate,
                 VisitTime = visit.VisitTime,
-                DoctorName = $"{doctor.Name} {doctor.Surname}",
+                DoctorName = doctorName,
                 Specialization = string.Join(", ", doctor.Specializations.Select(s => s.SpecializationName)),
-                PatientName = (await context.Patients.FindAsync(dto.PatientID))?.Name ?? "",
-                Room = (await context.Rooms.FindAsync(roomId))?.RoomType ?? "",
-                Status = VisitStatus.Scheduled,
+                PatientName = patientName,
+                Room = room,
+                Status = visit.Status,
                 Reason = visit.Reason.ToString(),
                 AdditionalNotes = visit.AdditionalNotes
             });
-
         }
+
+        [HttpGet("freeRoomsForDay/{specId}")]
+        public async Task<ActionResult<Dictionary<string, List<RoomDto>>>> GetFreeRoomsForDay(
+     int specId,
+     [FromQuery] DateOnly date)
+        {
+            var rooms = await context.SpecializationRooms
+                .Where(sr => sr.SpecializationID == specId)
+                .Select(sr => sr.Room)
+                .Distinct()
+                .ToListAsync();
+
+            if (!rooms.Any())
+                return NotFound("No rooms assigned to this specialization.");
+
+            var roomIds = rooms.Select(r => r.ID).ToList();
+
+            var result = new Dictionary<string, List<RoomDto>>();
+            var start = new TimeOnly(8, 0);
+            var end = new TimeOnly(16, 0);
+
+            for (var current = start; current < end; current = current.AddMinutes(30))
+            {
+                var slotStartMinutes = current.Hour * 60 + current.Minute;
+                var slotEndMinutes = slotStartMinutes + 30;
+
+                var occupiedRoomIds = await context.Visits
+                    .Where(v =>
+                        roomIds.Contains(v.RoomID) &&
+                        v.VisitDate == date &&
+                        (v.VisitTime.Hour * 60 + v.VisitTime.Minute) < slotEndMinutes &&
+                        ((v.VisitTime.Hour * 60 + v.VisitTime.Minute) + 30) > slotStartMinutes
+                    )
+                    .Select(v => v.RoomID)
+                    .Distinct()
+                    .ToListAsync();
+
+                var freeRooms = rooms
+                    .Where(r => !occupiedRoomIds.Contains(r.ID))
+                    .Select(r => new RoomDto
+                    {
+                        ID = r.ID,
+                        RoomType = r.RoomType,
+                        RoomNumber = r.RoomNumber
+                    })
+                    .OrderBy(r => r.RoomNumber)
+                    .ToList();
+
+                result[current.ToString("HH:mm")] = freeRooms;
+            }
+
+            return Ok(result);
+        }
+
+
+        [HttpPost("checkFreeRooms")]
+        public async Task<ActionResult<List<RoomDto>>> CheckFreeRooms([FromBody] VisitCreateDto dto)
+        {
+            var doctor = await context.Doctors
+    .Include(d => d.Specializations)
+    .FirstOrDefaultAsync(d => d.ID == dto.DoctorID);
+
+            if (doctor == null)
+                return NotFound("Doctor not found.");
+
+            var specializationIds = doctor.Specializations.Select(s => s.ID).ToList();
+            if (!specializationIds.Any())
+                return BadRequest("Doctor has no specializations.");
+
+            // np. wybierasz pierwszą specjalizację
+            int specializationId = specializationIds.First();
+
+            // pobierz wszystkie pokoje przypisane do specjalizacji
+            var rooms = await context.SpecializationRooms
+                .Where(sr => sr.SpecializationID == specializationId)
+                .Select(sr => sr.Room)
+                .Distinct()
+                .ToListAsync();
+
+            if (!rooms.Any())
+                return NotFound("No rooms assigned to this specialization.");
+
+            // sprawdź czy lekarz ma już wizytę w tym czasie
+            bool conflict = await context.Visits.AnyAsync(v =>
+                v.DoctorID == dto.DoctorID &&
+                v.VisitDate == dto.VisitDate &&
+                v.VisitTime == dto.VisitTime);
+
+            if (conflict)
+                return Conflict("This doctor already has a visit scheduled at the given time.");
+
+            // sprawdź zajęte pokoje (niezależnie od lekarza)
+            var occupiedRoomIds = await context.Visits
+                .Where(v =>
+                    v.VisitDate == dto.VisitDate &&
+                    v.VisitTime == dto.VisitTime)
+                .Select(v => v.RoomID)
+                .Distinct()
+                .ToListAsync();
+
+            // zwróć wolne pokoje
+            var freeRooms = rooms
+                .Where(r => !occupiedRoomIds.Contains(r.ID))
+                .Select(r => new RoomDto
+                {
+                    ID = r.ID,
+                    RoomType = r.RoomType,
+                    RoomNumber = r.RoomNumber
+                })
+                .OrderBy(r => r.RoomNumber)
+                .ToList();
+
+            return Ok(freeRooms);
+        }
+
+
+
 
         public class VisitTimeDto
         { 
@@ -246,6 +347,15 @@ namespace MediCare.Server.Controllers
             public string RoomType { get; set; } = string.Empty;
             public int RoomNumber { get; set; }
         }
+
+        public class VisitCheckDto
+        {
+            public DateOnly VisitDate { get; set; }
+            public TimeOnly VisitTime { get; set; }
+            public int DoctorID { get; set; }
+            public int SpecializationID { get; set; }
+        }
+
 
     }
 }
