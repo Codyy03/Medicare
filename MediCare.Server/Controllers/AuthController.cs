@@ -17,19 +17,17 @@ namespace MediCare.Server.Controllers
             this.context = context;
             this.jwtHelper = jwtHelper;
         }
+
         [HttpPost("refresh")]
-        public async Task<IActionResult> Refresh([FromBody] string refreshToken)
+        public async Task<IActionResult> Refresh([FromBody] RefreshRequestDto dto)
         {
             var tokenEntity = await context.RefreshTokens
-                .FirstOrDefaultAsync(rt => rt.Token == refreshToken && !rt.IsRevoked);
+                .FirstOrDefaultAsync(rt => rt.Token == dto.RefreshToken && !rt.IsRevoked);
 
             if (tokenEntity == null || tokenEntity.ExpiresAt < DateTime.UtcNow)
                 return Unauthorized("Invalid or expired refresh token");
 
-            // findUser
-            string role;
-            string email;
-            string name;
+            string role, email, name;
             int id;
 
             if (tokenEntity.Patient != null)
@@ -53,7 +51,17 @@ namespace MediCare.Server.Controllers
 
             var accessToken = jwtHelper.GenerateJwtToken(id.ToString(), email, name, role);
 
-            return Ok(new { accessToken });
+            // opcjonalnie: nowy refresh token
+            var newRefreshToken = jwtHelper.GenerateRefreshToken();
+            tokenEntity.Token = newRefreshToken;
+            tokenEntity.ExpiresAt = DateTime.UtcNow.AddDays(7);
+            await context.SaveChangesAsync();
+
+            return Ok(new { accessToken, refreshToken = newRefreshToken });
+        }
+        public class RefreshRequestDto
+        {
+            public string RefreshToken { get; set; }
         }
 
     }
