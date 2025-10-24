@@ -18,6 +18,11 @@ namespace MediCare.Server.Controllers
             this.jwtHelper = jwtHelper;
         }
 
+        /// <summary>
+        /// Retrieves a single visit by its ID, including doctor, patient, room, and specialization details.
+        /// </summary>
+        /// <param name="id">The unique identifier of the visit.</param>
+        /// <returns>A <see cref="VisitResponseDto"/> with visit details, or 404 if not found.</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<VisitResponseDto>> GetVisitById(int id)
         {
@@ -46,6 +51,12 @@ namespace MediCare.Server.Controllers
             });
         }
 
+        /// <summary>
+        /// Retrieves all visit times for a given doctor on a specific date.
+        /// </summary>
+        /// <param name="id">The doctor's ID.</param>
+        /// <param name="date">The date for which to fetch visit times.</param>
+        /// <returns>A list of <see cref="VisitTimeDto"/> objects with time and room info.</returns>
         [HttpGet("visitsTime")]
         public async Task<ActionResult<List<VisitTimeDto>>> GetVisitsTime(
            [FromQuery] int id,
@@ -63,6 +74,12 @@ namespace MediCare.Server.Controllers
             return Ok(visitsTime);
         }
 
+        /// <summary>
+        /// Creates a new visit for a patient with a doctor, specialization, and room.
+        /// Validates conflicts, specialization-room mapping, and visit reason.
+        /// </summary>
+        /// <param name="dto">The visit creation data transfer object.</param>
+        /// <returns>A <see cref="VisitResponseDto"/> with created visit details, or an error if validation fails.</returns>
         [HttpPost]
         public async Task<IActionResult> CreateVisit([FromBody] VisitCreateDto dto)
         {
@@ -155,6 +172,14 @@ namespace MediCare.Server.Controllers
         }
 
 
+        /// <summary>
+        /// Retrieves all free rooms for a given specialization and doctor on a specific day.
+        /// Returns a dictionary mapping time slots to available rooms.
+        /// </summary>
+        /// <param name="specId">The specialization ID.</param>
+        /// <param name="doctorId">The doctor ID.</param>
+        /// <param name="date">The date to check availability.</param>
+        /// <returns>A dictionary of time slots with lists of free rooms.</returns>
         [HttpGet("freeRoomsForDay/{specId}")]
         public async Task<ActionResult<Dictionary<string, List<RoomDto>>>> GetFreeRoomsForDay(
             int specId,
@@ -221,6 +246,12 @@ namespace MediCare.Server.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Checks free rooms for a specific doctor, specialization, date, and time slot.
+        /// Ensures the doctor has the specialization and validates conflicts.
+        /// </summary>
+        /// <param name="dto">The visit creation DTO containing doctor, specialization, date, and time.</param>
+        /// <returns>A list of available <see cref="RoomDto"/> objects for the given slot.</returns>
         [HttpPost("checkFreeRooms")]
         public async Task<ActionResult<List<RoomDto>>> CheckFreeRooms([FromBody] VisitCreateDto dto)
         {
@@ -259,7 +290,6 @@ namespace MediCare.Server.Controllers
                 .Distinct()
                 .ToListAsync();
 
-            // zwróć wolne pokoje
             var freeRooms = rooms
                 .Where(r => !occupiedRoomIds.Contains(r.ID))
                 .Select(r => new RoomDto
@@ -274,12 +304,19 @@ namespace MediCare.Server.Controllers
             return Ok(freeRooms);
         }
 
+        /// <summary>
+        /// DTO representing a doctor's visit time and assigned room.
+        /// Used when fetching occupied slots for a given doctor and date.
         public class VisitTimeDto
         { 
             public required TimeOnly VisitTime {  get; set; }
             public string Room { get; set; } = string.Empty;
         }
 
+        /// <summary>
+        /// DTO used when creating a new visit.
+        /// Contains all required information for scheduling and validation.
+        /// </summary>
         public class VisitCreateDto
         {
             public required DateOnly VisitDate { get; set; }
@@ -292,6 +329,11 @@ namespace MediCare.Server.Controllers
             public required int RoomID { get; set; }
 
         }
+
+        /// <summary>
+        /// DTO returned after creating or fetching a visit.
+        /// Contains detailed information about the scheduled appointment.
+        /// </summary>
         public class VisitResponseDto
         {
             public int ID { get; set; }
@@ -305,6 +347,10 @@ namespace MediCare.Server.Controllers
             public string Reason { get; set; }
             public string? AdditionalNotes { get; set; }
         }
+
+        /// <summary>
+        /// DTO representing a consultation room.
+        /// </summary>
         public class RoomDto
         {
             public int ID { get; set; }
@@ -312,6 +358,9 @@ namespace MediCare.Server.Controllers
             public int RoomNumber { get; set; }
         }
 
+        /// <summary>
+        /// DTO used to check free rooms for a specific doctor, specialization, date, and time.
+        /// </summary>
         public class VisitCheckDto
         {
             public DateOnly VisitDate { get; set; }
@@ -319,7 +368,5 @@ namespace MediCare.Server.Controllers
             public int DoctorID { get; set; }
             public int SpecializationID { get; set; }
         }
-
-
     }
 }
