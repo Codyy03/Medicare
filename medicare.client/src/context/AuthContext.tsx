@@ -102,10 +102,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
 
         try {
-            const res = await fetch("/api/auth/refresh", {
+            const res = await fetch("/api/Auth/refresh", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(refreshToken),
+                body: JSON.stringify({ refreshToken }),
             });
 
             if (!res.ok) {
