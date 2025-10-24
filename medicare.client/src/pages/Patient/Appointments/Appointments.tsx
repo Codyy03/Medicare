@@ -9,7 +9,6 @@ import { useAuth } from "../../../context/useAuth";
 import { getSpecializationNames } from "../../../services/specializationsService";
 import { getDoctorsBySpecialization } from "../../../services/doctorsService";
 import { getFreeRoomsForDay, getVisitsTime } from "../../../services/visitsService";
-import { getFreeRoomsBySpecialization } from "../../../services/visitsService";
 import { getPatientMe } from "../../../services/patientsService";
 
 const BookingPage = () => {
@@ -23,10 +22,6 @@ const BookingPage = () => {
         surname: string;
         startHour: string;
         endHour: string;
-    }
-    interface VisitTimeDto {
-        visitTime: string;
-        room: string;
     }
     interface Patient {
         id: number;
@@ -50,7 +45,6 @@ const BookingPage = () => {
     const [selectedRoom, setSelectedRoom] = useState<RoomDto | null>(null);
     const [availableRooms, setAvailableRooms] = useState<RoomDto[]>([]);
 
-    // nowy stan dla slotów -> mapujemy godziny na listy dostêpnych pokoi
     const [slotRooms, setSlotRooms] = useState<Record<string, RoomDto[]>>({});
 
     const [loggedPatient, setLoggedPatienet] = useState<Patient>();
@@ -197,7 +191,6 @@ const BookingPage = () => {
         ? generateTimeSlots(selectedDocObj.startHour, selectedDocObj.endHour)
         : [];
 
-    // filtr: pokazuj tylko gdy s¹ wolne pokoje I doktor nie ma wizyty
     const visibleSlots = allSlots.filter(slot =>
         (slotRooms[slot]?.length ?? 0) > 0 && !bookedTimes.includes(slot)
     );
@@ -366,52 +359,13 @@ const BookingPage = () => {
                                             key={t}
                                             type="button"
                                             className={`btn timeslot-btn ${selectedSlot === t ? "btn-primary" : "btn-outline-primary"}`}
-                                            onClick={async () => {
-                                                console.log("Klikniêto slot:", t);
+                                            onClick={() => {
                                                 setSelectedSlot(t);
 
-                                                const formatDateLocal = (date: Date) => {
-                                                    const year = date.getFullYear();
-                                                    const month = String(date.getMonth() + 1).padStart(2, "0");
-                                                    const day = String(date.getDate()).padStart(2, "0");
-                                                    return `${year}-${month}-${day}`;
-                                                };
-
-                                                try {
-                                                    const response = await fetch("https://localhost:7014/api/visits/checkFreeRooms", {
-                                                        method: "POST",
-                                                        headers: { "Content-Type": "application/json" },
-                                                        body: JSON.stringify({
-                                                            visitDate: selectedDate ? formatDateLocal(selectedDate) : "",
-                                                            visitTime: t + ":00",
-                                                            doctorID: selectedDocObj?.id,
-                                                            patientID: loggedPatient?.id,          
-                                                            reason: selectedReason,                
-                                                            additionalNotes: additionalNotes || "",// opcjonalne
-                                                        })
-                                                    });
-
-                                                    console.log("Response status:", response.status);
-
-                                                    if (response.ok) {
-                                                        const rooms = await response.json();
-                                                        console.log("Rooms from backend:", rooms);
-                                                        setAvailableRooms(rooms);
-                                                        setSelectedRoom(rooms[0] || null);
-                                                    } else {
-                                                        const errText = await response.text();
-                                                        console.error("Backend error:", errText);
-                                                        setAvailableRooms([]);
-                                                        setSelectedRoom(null);
-                                                    }
-                                                } catch (err) {
-                                                    console.error("Error checking free rooms:", err);
-                                                    setAvailableRooms([]);
-                                                    setSelectedRoom(null);
-                                                }
+                                                const rooms = slotRooms[t] || [];
+                                                setAvailableRooms(rooms);
+                                                setSelectedRoom(rooms[0] || null);
                                             }}
-
-
                                         >
                                             {t}
                                             {slotRooms[t] && (
@@ -425,6 +379,7 @@ const BookingPage = () => {
                                     <p className="text-muted">No available time slots for this day.</p>
                                 )}
                             </div>
+
                         </div>
 
                         {/* Patient info */}
