@@ -103,6 +103,13 @@ export default function Header() {
                                                 My personal data
                                             </NavLink>
                                         </li>
+                                        {userRole === "Doctor" && (
+                                            <li>
+                                                <NavLink className="dropdown-item hover-slide" to="/doctor/visits">
+                                                    My visits
+                                                </NavLink>
+                                            </li>
+                                        )}
                                         <li>
                                             <button
                                                 className="dropdown-item hover-slide"

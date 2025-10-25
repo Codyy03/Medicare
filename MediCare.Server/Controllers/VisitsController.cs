@@ -3,6 +3,7 @@ using MediCare.Server.Entities;
 using MediCare.Server.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace MediCare.Server.Controllers
 {
@@ -73,6 +74,48 @@ namespace MediCare.Server.Controllers
 
             return Ok(visitsTime);
         }
+
+        [HttpGet("my")]
+        public async Task<ActionResult<List<DoctorVisitsDto>>> GetMyVisits()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null) return Unauthorized();
+
+            // Używamy ID jako klucza głównego lekarza
+            var doctorId = int.Parse(userId);
+
+            var doctor = await context.Doctors
+                .Include(d => d.Specializations)
+                .FirstOrDefaultAsync(d => d.ID == doctorId);
+
+            if (doctor == null) return NotFound();
+
+            var visits = await context.Visits
+                .Where(v => v.DoctorID == doctor.ID)
+                .Include(v => v.Patient)
+                .Include(v => v.Room)
+                .ToListAsync();
+
+            var result = visits.Select(visit => new DoctorVisitsDto
+            {
+                ID = visit.ID,
+                VisitDate = visit.VisitDate,
+                VisitTime = visit.VisitTime,
+                DoctorName = $"{doctor.Name} {doctor.Surname}",
+                Specialization = string.Join(", ", doctor.Specializations.Select(s => s.SpecializationName)),
+                PatientName = $"{visit.Patient.Name} {visit.Patient.Surname}",
+                Room = visit.Room.RoomType,
+                RoomNumber = visit.Room.RoomNumber,
+                Status = visit.Status.ToString(),
+                Reason = visit.Reason.ToString(),
+                AdditionalNotes = visit.AdditionalNotes
+            }).ToList();
+
+            return Ok(result);
+        }
+
+
 
         /// <summary>
         /// Creates a new visit for a patient with a doctor, specialization, and room.
@@ -347,7 +390,20 @@ namespace MediCare.Server.Controllers
             public string Reason { get; set; }
             public string? AdditionalNotes { get; set; }
         }
-
+        public class DoctorVisitsDto
+        {
+            public int ID { get; set; }
+            public DateOnly VisitDate { get; set; }
+            public TimeOnly VisitTime { get; set; }
+            public string DoctorName { get; set; }
+            public string Specialization { get; set; }
+            public string PatientName { get; set; }
+            public string Room { get; set; }
+            public int RoomNumber { get; set; }
+            public string Status { get; set; }
+            public string Reason { get; set; }
+            public string? AdditionalNotes { get; set; }
+        }
         /// <summary>
         /// DTO representing a consultation room.
         /// </summary>

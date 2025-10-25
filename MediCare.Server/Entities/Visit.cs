@@ -32,7 +32,6 @@ namespace MediCare.Server.Entities
         public int RoomID { get; set; }
         public Room Room { get; set; }
 
-        // 🔥 Nowe pole:
         [Required]
         public int SpecializationID { get; set; }
         public Specialization Specialization { get; set; }
