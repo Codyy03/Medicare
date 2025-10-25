@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
-using static MediCare.Server.Controllers.DoctorsController;
+using static MediCare.Server.Controllers.PatientsController;
 
 namespace MediCare.Server.Tests.Controllers
 {
@@ -97,7 +97,7 @@ namespace MediCare.Server.Tests.Controllers
 
             var updateDto = new PatientUpdateDto
             {
-                Name = "New name",
+                Name = "NewName",
                 Surname = existing.Surname,
                 PESEL = "12345678901",
                 Birthday = existing.Birthday,
@@ -114,7 +114,7 @@ namespace MediCare.Server.Tests.Controllers
 
             var updated = await response.Content.ReadFromJsonAsync<PatientDto>();
             Assert.NotNull(updated);
-            Assert.Equal("New name", updated!.Name);
+            Assert.Equal("NewName", updated!.Name);
         }
 
         [Fact]
@@ -180,5 +180,62 @@ namespace MediCare.Server.Tests.Controllers
             Assert.Equal("michael.brown@example.com", dto.Email);
             Assert.False(string.IsNullOrEmpty(dto.PhoneNumber));
         }
+
+        [Fact]
+        public async Task ReestPassword_ReturnsNoContent_WhenValid()
+        {
+            var factory = new SeededDbFactory();
+            var client = factory.CreateClient();
+
+            var token = TestJwtTokenHelper.GenerateTestToken("1", "michael.brown@example.com", "Michael", "Patient");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            PasswordResetDto passwordResetDto = new PasswordResetDto
+            {
+                OldPassword = "doctor1",
+                NewPassword = "NewPass123!"
+            };
+
+            var response = await client.PutAsJsonAsync("/api/patients/password-reset", passwordResetDto);
+
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+            var loginOld = await client.PostAsJsonAsync("/api/patients/login", new LoginDto
+            {
+                Email = "michael.brown@example.com",
+                Password = "NewPass123!!"
+            });
+            Assert.Equal(HttpStatusCode.Unauthorized, loginOld.StatusCode);
+
+            var loginNew = await client.PostAsJsonAsync("/api/patients/login", new LoginDto
+            {
+                Email = "michael.brown@example.com",
+                Password = "NewPass123!"
+            });
+            Assert.Equal(HttpStatusCode.OK, loginNew.StatusCode);
+        }
+
+        [Fact]
+        public async Task ResetPassword_ReturnsBadRequest_WhenOldPasswordIncorrect()
+        {
+            var client = new SeededDbFactory().CreateClient();
+
+            var token = TestJwtTokenHelper.GenerateTestToken("1", "michael.brown@example.com", "Michael", "Patient");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var dto = new PasswordResetDto
+            {
+                OldPassword = "WrongPass",
+                NewPassword = "NewPass123"
+            };
+
+            var response = await client.PutAsJsonAsync("/api/patients/password-reset", dto);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            var content = await response.Content.ReadAsStringAsync();
+            Assert.Contains("Old password is incorrect", content);
+        }
+
     }
 }

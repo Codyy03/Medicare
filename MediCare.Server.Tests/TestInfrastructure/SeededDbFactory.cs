@@ -4,14 +4,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection.Emit;
 
 namespace MediCare.Server.Tests.TestInfrastructure
 {
     /// <summary>
     /// A custom <see cref="WebApplicationFactory{TEntryPoint}"/> that configures
     /// an in-memory database named "TestDb" and pre-populates it with sample
-    /// specialization records for integration testing.
+    /// data for integration testing.
     /// The database is cleared before seeding to ensure a consistent state
     /// across tests.
     /// </summary>
@@ -39,17 +38,15 @@ namespace MediCare.Server.Tests.TestInfrastructure
 
                 db.ChangeTracker.Clear();
 
-                if (db.Specializations.Any())
-                    db.Specializations.RemoveRange(db.Specializations);
+                db.Visits.RemoveRange(db.Visits);
+                db.SpecializationRooms.RemoveRange(db.SpecializationRooms);
+                db.Rooms.RemoveRange(db.Rooms);
+                db.Doctors.RemoveRange(db.Doctors);
+                db.Patients.RemoveRange(db.Patients);
+                db.Specializations.RemoveRange(db.Specializations);
+                db.NewsItems.RemoveRange(db.NewsItems);
 
-                if (db.NewsItems.Any())
-                    db.NewsItems.RemoveRange(db.NewsItems);
-
-                if (db.Patients.Any())
-                    db.Patients.RemoveRange(db.Patients);
-
-                if (db.Doctors.Any())
-                    db.Doctors.RemoveRange(db.Doctors);
+                db.SaveChanges();
 
                 db.Specializations.AddRange(
                     new Specialization
@@ -137,34 +134,96 @@ namespace MediCare.Server.Tests.TestInfrastructure
                    }
                 );
 
-              db.Doctors.AddRange(
-                new Doctor
-                {
-                    ID = 1,
-                    Name = "John",
-                    Surname = "Smith",
-                    Email = "john.smith@medicare.com",
-                    PhoneNumber = "123456789",
-                    PasswordHash = "AQAAAAIAAYagAAAAENK5qXUBaMBuUFBpttYV0aR626yy171wqlX3Fr6lZ3A63GhTGmRFWptH6uZm1Eu9Og==", //1234
-                    StartHour = new TimeOnly(8, 0),
-                    EndHour = new TimeOnly(16, 0),
-                    Facility = "Room 203, MediCare Center",
-                    DoctorDescription = "Dr. John Smith is an experienced cardiologist and surgeon with over 15 years of practice. He specializes in preventive cardiology, minimally invasive surgery, and patient-centered care."
-                },
-                new Doctor
-                {
-                    ID = 2,
-                    Name = "Emily",
-                    Surname = "Johnson",
-                    Email = "emily.johnson@medicare.com",
-                    PhoneNumber = "987654321",
-                    PasswordHash = "AQAAAAIAAYagAAAAEK2wr62/vPT1IadjOSNuOLLQ9ECj5CKYZbod4yvHThIexqGnCcp5Yry6PpFG9WRYYw==", //password1
-                    StartHour = new TimeOnly(9, 0),
-                    EndHour = new TimeOnly(17, 0),
-                    Facility = "Building A, Floor 2, MediCare Center",
-                    DoctorDescription = "Dr. Emily Johnson is a dedicated neurologist with over 10 years of experience. She focuses on patient-centered care, neurological diagnostics, and innovative treatment methods."
-                }
+                db.Doctors.AddRange(
+                  new Doctor
+                  {
+                      ID = 1,
+                      Name = "John",
+                      Surname = "Smith",
+                      Email = "john.smith@medicare.com",
+                      PhoneNumber = "123456789",
+                      PasswordHash = "AQAAAAIAAYagAAAAENK5qXUBaMBuUFBpttYV0aR626yy171wqlX3Fr6lZ3A63GhTGmRFWptH6uZm1Eu9Og==", //1234
+                      StartHour = new TimeOnly(8, 0),
+                      EndHour = new TimeOnly(16, 0),
+                      Facility = "Room 203, MediCare Center",
+                      DoctorDescription = "Dr. John Smith is an experienced cardiologist and surgeon with over 15 years of practice. He specializes in preventive cardiology, minimally invasive surgery, and patient-centered care."
+                  },
+                  new Doctor
+                  {
+                      ID = 2,
+                      Name = "Emily",
+                      Surname = "Johnson",
+                      Email = "emily.johnson@medicare.com",
+                      PhoneNumber = "987654321",
+                      PasswordHash = "AQAAAAIAAYagAAAAEK2wr62/vPT1IadjOSNuOLLQ9ECj5CKYZbod4yvHThIexqGnCcp5Yry6PpFG9WRYYw==", //password1
+                      StartHour = new TimeOnly(9, 0),
+                      EndHour = new TimeOnly(17, 0),
+                      Facility = "Building A, Floor 2, MediCare Center",
+                      DoctorDescription = "Dr. Emily Johnson is a dedicated neurologist with over 10 years of experience. She focuses on patient-centered care, neurological diagnostics, and innovative treatment methods."
+                  }
+                  );
+                db.Rooms.AddRange(
+                    new Room { ID = 1, RoomNumber = 101, RoomType = "Cardiology Consultation Room" },
+                    new Room { ID = 2, RoomNumber = 102, RoomType = "Orthopedic Consultation Room" },
+                    new Room { ID = 3, RoomNumber = 103, RoomType = "Dermatology Consultation Room" },
+                    new Room { ID = 5, RoomNumber = 104, RoomType = "Cardiology Consultation Room" },
+                    new Room { ID = 6, RoomNumber = 105, RoomType = "Cardiology Consultation Room" },
+                    new Room { ID = 7, RoomNumber = 106, RoomType = "Orthopedic Consultation Room" },
+                    new Room { ID = 8, RoomNumber = 107, RoomType = "Dermatology Consultation Room" }
                 );
+
+                db.SpecializationRooms.AddRange(
+                    new SpecializationRoom { SpecializationID = 1, RoomID = 1 },
+                    new SpecializationRoom { SpecializationID = 1, RoomID = 5 },
+                    new SpecializationRoom { SpecializationID = 1, RoomID = 6 },
+                    new SpecializationRoom { SpecializationID = 2, RoomID = 2 },
+                    new SpecializationRoom { SpecializationID = 2, RoomID = 7 },
+                    new SpecializationRoom { SpecializationID = 3, RoomID = 3 },
+                    new SpecializationRoom { SpecializationID = 3, RoomID = 8 }
+                );
+
+                db.Visits.AddRange(
+                    new Visit
+                    {
+                        ID = 1,
+                        VisitDate = new DateOnly(2025, 10, 20),
+                        VisitTime = new TimeOnly(10, 30),
+                        DoctorID = 1,
+                        PatientID = 1,
+                        Status = VisitStatus.Scheduled,
+                        RoomID = 1,
+                        Reason = VisitReason.Consultation,
+                        AdditionalNotes = "Please discuss the test results in advance.",
+                        SpecializationID = 1
+                    },
+                    new Visit
+                    {
+                        ID = 2,
+                        VisitDate = new DateOnly(2025, 10, 21),
+                        VisitTime = new TimeOnly(13, 00),
+                        DoctorID = 2,
+                        PatientID = 2,
+                        Status = VisitStatus.Scheduled,
+                        RoomID = 2,
+                        Reason = VisitReason.Prescription,
+                        AdditionalNotes = null,
+                        SpecializationID = 2
+                    },
+                    new Visit
+                    {
+                        ID = 3,
+                        VisitDate = new DateOnly(2025, 10, 22),
+                        VisitTime = new TimeOnly(9, 30),
+                        DoctorID = 1,
+                        PatientID = 1,
+                        Status = VisitStatus.Scheduled,
+                        RoomID = 1,
+                        Reason = VisitReason.Consultation,
+                        SpecializationID = 1
+                    }
+
+                );
+
                 db.SaveChanges();
             });
         }

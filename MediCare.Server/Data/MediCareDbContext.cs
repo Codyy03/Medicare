@@ -76,7 +76,6 @@ namespace MediCare.Server.Data
                 .HasForeignKey(rt => rt.DoctorID);
         }
 
-
         /// <summary>
         /// Configures many-to-many relationships between entities in the model.
         /// </summary>
