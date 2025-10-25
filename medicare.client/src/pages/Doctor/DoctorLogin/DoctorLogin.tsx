@@ -59,7 +59,7 @@ export default function DoctorLogin() {
                             type="password"
                             id="password"
                             className="form-control"
-                            placeholder="•••••"
+                            placeholder="&bull;&bull;&bull;&bull;&bull;"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
