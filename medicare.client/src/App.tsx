@@ -14,6 +14,7 @@ import PatientProfile from "./pages/Patient/PatientProfile/PatientProfile";
 import DoctorProfile from "./pages/Doctor/DoctorProfile/DoctorProfile";
 import DoctorsList from "./pages/Doctor/DoctorsList/DoctorsList";
 import DoctorInfo from "./pages/Doctor/DoctorInfo/DoctorInfo";
+import DoctorVisits from "./pages/Doctor/DoctorVisits/DoctorVisits";
 import Appointments from "./pages/Patient/Appointments/Appointments";
 import BookingSuccessPage from "./pages/Patient/BookingSuccessPage/BookingSuccessPage";
 import DoctorsResetPassword from "./pages/Doctor/DoctorResetPassword/DoctorResetPassword";
@@ -61,6 +62,12 @@ function App() {
                             }
                         />
 
+                        <Route path="/doctor/visits"
+                            element={
+                            <ProtectedRoute role="Doctor">
+                                <DoctorVisits />
+                            </ProtectedRoute>
+                        } />
                     <Route path="/doctors" element={<DoctorsList />} />
                     <Route path="/resetPasswordDoctor" element={<DoctorsResetPassword />} />
                     <Route path="/resetPasswordPatient" element={<PatientsResetPassword />} />
