@@ -12,6 +12,10 @@ namespace MediCare.Server.Tests.Controllers;
 
 public class DoctorsControllerTests : IClassFixture<WebApplicationFactory<Program>>
 {
+    /// <summary>
+    /// Verifies that <c>GET /api/doctors</c> returns a list of doctors with valid data.
+    /// Ensures response is 200 OK and each doctor has required fields populated.
+    /// </summary>
     [Fact]
     public async Task GetDoctors_ReturnOk()
     {
@@ -40,6 +44,10 @@ public class DoctorsControllerTests : IClassFixture<WebApplicationFactory<Progra
         });
     }
 
+    /// <summary>
+    /// Verifies that <c>GET /api/doctors</c> returns an empty list when no doctors exist.
+    /// Ensures response is 200 OK and the list is empty.
+    /// </summary>
     [Fact]
     public async Task GetDoctors_Empty()
     {
@@ -57,6 +65,10 @@ public class DoctorsControllerTests : IClassFixture<WebApplicationFactory<Progra
         Assert.Empty(list);
     }
 
+    /// <summary>
+    /// Verifies that <c>POST /api/doctors/register</c> creates a new doctor.
+    /// Ensures response is 201 Created and returned doctor matches input data.
+    /// </summary>
     [Fact]
     public async Task CreateDoctor_ReturnsCreated()
     {
@@ -83,6 +95,10 @@ public class DoctorsControllerTests : IClassFixture<WebApplicationFactory<Progra
         Assert.Equal("Smith", created.Surname);
     }
 
+    /// <summary>
+    /// Verifies that <c>PUT /api/doctors/update</c> updates an existing doctor.
+    /// Ensures response is 200 OK and returned doctor reflects updated values.
+    /// </summary>
     [Fact]
     public async Task UpdateDoctor_ReturnsOkWithUpdatedDoctor()
     {
@@ -118,6 +134,10 @@ public class DoctorsControllerTests : IClassFixture<WebApplicationFactory<Progra
         Assert.Equal("Newname", updatedData!.Name);
     }
 
+    /// <summary>
+    /// Verifies that <c>DELETE /api/doctors/{id}</c> removes a doctor.
+    /// Ensures response is 204 NoContent.
+    /// </summary>
     [Fact]
     public async Task DeleteDoctor_ReturnsNoContent()
     {
@@ -134,6 +154,9 @@ public class DoctorsControllerTests : IClassFixture<WebApplicationFactory<Progra
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 
+    /// <summary>
+    /// Verifies that <c>GET /api/doctors/me</c> without a token returns 401 Unauthorized.
+    /// </summary>
     [Fact]
     public async Task GetMe_Unauthorized_WithoutToken()
     {
@@ -144,6 +167,10 @@ public class DoctorsControllerTests : IClassFixture<WebApplicationFactory<Progra
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
+    /// <summary>
+    /// Verifies that <c>GET /api/doctors/me</c> with a valid token returns the authenticated doctor.
+    /// Ensures response is 200 OK and doctor details match the token identity.
+    /// </summary>
     [Fact]
     public async Task GetMe_ReturnsDoctor_WhenAuthorized()
     {
@@ -172,6 +199,10 @@ public class DoctorsControllerTests : IClassFixture<WebApplicationFactory<Progra
         Assert.NotEmpty(dto.Specializations);
     }
 
+    /// <summary>
+    /// Verifies that <c>PUT /api/doctors/password-reset</c> succeeds with correct old password.
+    /// Ensures response is 204 NoContent and login works only with the new password.
+    /// </summary>
     [Fact]
     public async Task ReestPassword_ReturnsNoContent_WhenValid()
     {
@@ -206,6 +237,10 @@ public class DoctorsControllerTests : IClassFixture<WebApplicationFactory<Progra
         Assert.Equal(HttpStatusCode.OK, loginNew.StatusCode);
     }
 
+    /// <summary>
+    /// Verifies that <c>PUT /api/doctors/password-reset</c> fails with incorrect old password.
+    /// Ensures response is 400 BadRequest and error message indicates invalid old password.
+    /// </summary>
     [Fact]
     public async Task ResetPassword_ReturnsBadRequest_WhenOldPasswordIncorrect()
     {
@@ -228,6 +263,10 @@ public class DoctorsControllerTests : IClassFixture<WebApplicationFactory<Progra
         Assert.Contains("Old password is incorrect", content);
     }
 
+    /// <summary>
+    /// Verifies that <c>GET /api/doctors/by-filter?surname=Smith</c> returns only doctors with matching surname.
+    /// Ensures response is 200 OK and all returned doctors contain "Smith" in surname.
+    /// </summary>
     [Fact]
     public async Task GetDoctors_ReturnSortedBySurnname_ReturnOk()
     {
@@ -261,6 +300,10 @@ public class DoctorsControllerTests : IClassFixture<WebApplicationFactory<Progra
         });
     }
 
+    /// <summary>
+    /// Verifies that <c>GET /api/doctors/by-filter?availableAt=HH:mm</c> returns only doctors available at the given time.
+    /// Ensures response is 200 OK and all returned doctors have working hours covering the requested time.
+    /// </summary>
     [Fact]
     public async Task GetDoctors_FilterByAvailableAt_ReturnsOnlyMatching()
     {
@@ -291,7 +334,10 @@ public class DoctorsControllerTests : IClassFixture<WebApplicationFactory<Progra
         });
     }
 
-
+    /// <summary>
+    /// Verifies that <c>GET /api/doctors/by-filter?specializationID=1</c> returns only doctors with the given specialization.
+    /// Ensures response is 200 OK and all returned doctors include the specialization.
+    /// </summary>
     [Fact]
     public async Task GetDoctors_FilterBySpecialization_ReturnsOnlyMatching()
     {
@@ -325,6 +371,11 @@ public class DoctorsControllerTests : IClassFixture<WebApplicationFactory<Progra
         });
     }
 
+    /// <summary>
+    /// Verifies that <c>GET /api/doctors/by-filter?specializationID=1&amp;surname=Smith</c> 
+    /// returns only doctors matching both filters.
+    /// Ensures response is 200 OK and all returned doctors have the specialization and surname.
+    /// </summary>
     [Fact]
     public async Task GetDoctors_FilterBySurnameAndSpecialization_ReturnsOnlyMatching()
     {

@@ -12,6 +12,12 @@ namespace MediCare.Server.Tests.Controllers
 {
     public class VisitsControllerTests : IClassFixture<WebApplicationFactory<Program>>
     {
+        /// <summary>
+        /// Verifies that the endpoint <c>GET api/visits/visitsTime</c> 
+        /// returns a JSON list of visit times for a given doctor and date.
+        /// Ensures the response is 200 OK, content type is JSON, 
+        /// and that the returned visit matches the seeded data.
+        /// </summary>
         [Fact]
         public async Task GetVisitsTimeReturn_Ok()
         {
@@ -34,6 +40,12 @@ namespace MediCare.Server.Tests.Controllers
             Assert.Equal("Cardiology Consultation Room", visits[0].Room);
         }
 
+        /// <summary>
+        /// Verifies that the endpoint <c>POST api/visits</c> 
+        /// successfully creates a new visit when valid data is provided.
+        /// Ensures the response is 201 Created, content type is JSON, 
+        /// and that the returned visit details match the request payload.
+        /// </summary>
         [Fact]
         public async Task CreateVisit_ReturnsCreatedVisit_WhenValid()
         {
@@ -73,6 +85,11 @@ namespace MediCare.Server.Tests.Controllers
             Assert.Equal("Cardiology Consultation Room", created.Room);
         }
 
+        /// <summary>
+        /// Verifies that the endpoint <c>POST api/visits</c> 
+        /// returns 400 BadRequest when attempting to create a visit 
+        /// with today's date (which is not allowed by business rules).
+        /// </summary>
         [Fact]
         public async Task CreateVisit_ReturnsBadRequest_WhenDateIsToday()
         {

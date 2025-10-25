@@ -45,6 +45,12 @@ namespace MediCare.Server.Tests.Controllers
             });
         }
 
+        /// <summary>
+        /// Verifies that the endpoint <c>GET /api/specializations/specializationsNames</c>
+        /// returns a JSON list of specialization IDs and names.
+        /// Ensures the response is 200 OK, content type is JSON, 
+        /// and that each specialization has a non-empty name and a valid positive ID.
+        /// </summary>
         [Fact]
         public async Task GetSpecializationsNamesIDs_ReturnOk()
         {

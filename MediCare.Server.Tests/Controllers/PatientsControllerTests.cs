@@ -12,6 +12,10 @@ namespace MediCare.Server.Tests.Controllers
 {
     public class PatientsControllerTests : IClassFixture<WebApplicationFactory<Program>>
     {
+        /// <summary>
+        /// Verifies that <c>GET /api/patients</c> returns a list of patients with valid data.
+        /// Ensures response is 200 OK and each patient has required fields populated.
+        /// </summary>
         [Fact]
         public async Task GetPatients_ReturnOk()
         {
@@ -39,6 +43,10 @@ namespace MediCare.Server.Tests.Controllers
             });
         }
 
+        /// <summary>
+        /// Verifies that <c>GET /api/patients</c> returns an empty list when no patients exist.
+        /// Ensures response is 200 OK and the list is empty.
+        /// </summary>
         [Fact]
         public async Task GetPatients_Empty()
         {
@@ -56,6 +64,10 @@ namespace MediCare.Server.Tests.Controllers
             Assert.Empty(list);
         }
 
+        /// <summary>
+        /// Verifies that <c>POST /api/patients/register</c> creates a new patient.
+        /// Ensures response is 201 Created and returned patient matches input data.
+        /// </summary>
         [Fact]
         public async Task CreatePatient_ReturnsCreated()
         {
@@ -83,6 +95,10 @@ namespace MediCare.Server.Tests.Controllers
             Assert.Equal("Smith", created.Surname);
         }
 
+        /// <summary>
+        /// Verifies that <c>PUT /api/patients/update</c> updates an existing patient.
+        /// Ensures response is 200 OK and returned patient reflects updated values.
+        /// </summary>
         [Fact]
         public async Task UpdatePatient_ReturnsOkWithUpdatedPatient()
         {
@@ -117,6 +133,10 @@ namespace MediCare.Server.Tests.Controllers
             Assert.Equal("NewName", updated!.Name);
         }
 
+        /// <summary>
+        /// Verifies that <c>DELETE /api/patients/{id}</c> removes a patient.
+        /// Ensures response is 204 NoContent and subsequent GET returns 404 NotFound.
+        /// </summary>
         [Fact]
         public async Task DeletePatient_ReturnsNoContent()
         {
@@ -144,6 +164,9 @@ namespace MediCare.Server.Tests.Controllers
             Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
         }
 
+        /// <summary>
+        /// Verifies that <c>GET /api/patients/me</c> without a token returns 401 Unauthorized.
+        /// </summary>
         [Fact]
         public async Task GetMe_Unauthorized_WithoutToken()
         {
@@ -154,6 +177,11 @@ namespace MediCare.Server.Tests.Controllers
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
+
+        /// <summary>
+        /// Verifies that <c>GET /api/patients/me</c> with a valid token returns the authenticated patient.
+        /// Ensures response is 200 OK and patient details match the token identity.
+        /// </summary>
         [Fact]
         public async Task GetMe_ReturnsDoctor_WhenAuthorized()
         {
@@ -181,6 +209,10 @@ namespace MediCare.Server.Tests.Controllers
             Assert.False(string.IsNullOrEmpty(dto.PhoneNumber));
         }
 
+        /// <summary>
+        /// Verifies that <c>PUT /api/patients/password-reset</c> succeeds with correct old password.
+        /// Ensures response is 204 NoContent and login works only with the new password.
+        /// </summary>
         [Fact]
         public async Task ReestPassword_ReturnsNoContent_WhenValid()
         {
@@ -215,6 +247,10 @@ namespace MediCare.Server.Tests.Controllers
             Assert.Equal(HttpStatusCode.OK, loginNew.StatusCode);
         }
 
+        /// <summary>
+        /// Verifies that <c>PUT /api/patients/password-reset</c> fails with incorrect old password.
+        /// Ensures response is 400 BadRequest and error message indicates invalid old password.
+        /// </summary>
         [Fact]
         public async Task ResetPassword_ReturnsBadRequest_WhenOldPasswordIncorrect()
         {
