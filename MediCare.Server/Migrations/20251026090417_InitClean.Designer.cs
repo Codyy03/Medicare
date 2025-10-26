@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MediCare.Server.Migrations
 {
     [DbContext(typeof(MediCareDbContext))]
-    [Migration("20251023184746_AddNewDoctorSeeds")]
-    partial class AddNewDoctorSeeds
+    [Migration("20251026090417_InitClean")]
+    partial class InitClean
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,6 +54,21 @@ namespace MediCare.Server.Migrations
                         {
                             DoctorID = 2,
                             SpecializationID = 2
+                        },
+                        new
+                        {
+                            DoctorID = 3,
+                            SpecializationID = 1
+                        },
+                        new
+                        {
+                            DoctorID = 4,
+                            SpecializationID = 1
+                        },
+                        new
+                        {
+                            DoctorID = 5,
+                            SpecializationID = 1
                         });
                 });
 
@@ -316,6 +331,28 @@ namespace MediCare.Server.Migrations
                             PasswordHash = "AQAAAAIAAYagAAAAELo4ftbkWmWkCzg4YbZhATzJFIRg6s7HBY322tgk4mquh9bHdQy3NraDhJLvnhjJEQ==",
                             PhoneNumber = "555333444",
                             Surname = "Williams"
+                        },
+                        new
+                        {
+                            ID = 3,
+                            Birthday = new DateTime(1980, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "anna.kowalska@example.com",
+                            Name = "Anna",
+                            PESEL = "80010112345",
+                            PasswordHash = "...",
+                            PhoneNumber = "555777888",
+                            Surname = "Kowalska"
+                        },
+                        new
+                        {
+                            ID = 4,
+                            Birthday = new DateTime(1975, 5, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "piotr.nowak@example.com",
+                            Name = "Piotr",
+                            PESEL = "75050567890",
+                            PasswordHash = "...",
+                            PhoneNumber = "555999000",
+                            Surname = "Nowak"
                         });
                 });
 
@@ -396,12 +433,6 @@ namespace MediCare.Server.Migrations
                         },
                         new
                         {
-                            ID = 4,
-                            RoomNumber = 201,
-                            RoomType = "Operating Room"
-                        },
-                        new
-                        {
                             ID = 5,
                             RoomNumber = 104,
                             RoomType = "Cardiology Consultation Room"
@@ -409,12 +440,6 @@ namespace MediCare.Server.Migrations
                         new
                         {
                             ID = 6,
-                            RoomNumber = 105,
-                            RoomType = "Cardiology Consultation Room"
-                        },
-                        new
-                        {
-                            ID = 7,
                             RoomNumber = 106,
                             RoomType = "Orthopedic Consultation Room"
                         },
@@ -423,18 +448,6 @@ namespace MediCare.Server.Migrations
                             ID = 8,
                             RoomNumber = 107,
                             RoomType = "Dermatology Consultation Room"
-                        },
-                        new
-                        {
-                            ID = 9,
-                            RoomNumber = 202,
-                            RoomType = "Operating Room"
-                        },
-                        new
-                        {
-                            ID = 10,
-                            RoomNumber = 203,
-                            RoomType = "Operating Room"
                         });
                 });
 
@@ -511,6 +524,9 @@ namespace MediCare.Server.Migrations
                     b.Property<int>("PatientID")
                         .HasColumnType("integer");
 
+                    b.Property<string>("PrescriptionText")
+                        .HasColumnType("text");
+
                     b.Property<int>("Reason")
                         .HasColumnType("integer");
 
@@ -525,6 +541,9 @@ namespace MediCare.Server.Migrations
 
                     b.Property<DateOnly>("VisitDate")
                         .HasColumnType("date");
+
+                    b.Property<string>("VisitNotes")
+                        .HasColumnType("text");
 
                     b.Property<TimeOnly>("VisitTime")
                         .HasColumnType("time without time zone");
@@ -573,12 +592,41 @@ namespace MediCare.Server.Migrations
                             AdditionalNotes = "Checkup after previous visit.",
                             DoctorID = 1,
                             PatientID = 2,
+                            PrescriptionText = "Vitamin D 2000 IU daily for 3 months",
                             Reason = 2,
                             RoomID = 1,
                             SpecializationID = 1,
                             Status = 2,
                             VisitDate = new DateOnly(2025, 10, 22),
+                            VisitNotes = "Patient recovering well, continue current treatment.",
                             VisitTime = new TimeOnly(9, 30, 0)
+                        },
+                        new
+                        {
+                            ID = 4,
+                            AdditionalNotes = "Routine annual checkup.",
+                            DoctorID = 3,
+                            PatientID = 3,
+                            Reason = 4,
+                            RoomID = 3,
+                            SpecializationID = 3,
+                            Status = 2,
+                            VisitDate = new DateOnly(2025, 10, 25),
+                            VisitNotes = "All vitals normal, recommend regular exercise.",
+                            VisitTime = new TimeOnly(11, 0, 0)
+                        },
+                        new
+                        {
+                            ID = 5,
+                            AdditionalNotes = "Patient complains of recurring headaches.",
+                            DoctorID = 2,
+                            PatientID = 4,
+                            Reason = 1,
+                            RoomID = 2,
+                            SpecializationID = 2,
+                            Status = 1,
+                            VisitDate = new DateOnly(2025, 10, 27),
+                            VisitTime = new TimeOnly(15, 0, 0)
                         });
                 });
 
@@ -609,18 +657,13 @@ namespace MediCare.Server.Migrations
                         },
                         new
                         {
-                            SpecializationID = 1,
-                            RoomID = 6
-                        },
-                        new
-                        {
                             SpecializationID = 2,
                             RoomID = 2
                         },
                         new
                         {
                             SpecializationID = 2,
-                            RoomID = 7
+                            RoomID = 6
                         },
                         new
                         {
@@ -631,51 +674,6 @@ namespace MediCare.Server.Migrations
                         {
                             SpecializationID = 3,
                             RoomID = 8
-                        },
-                        new
-                        {
-                            SpecializationID = 1,
-                            RoomID = 4
-                        },
-                        new
-                        {
-                            SpecializationID = 1,
-                            RoomID = 9
-                        },
-                        new
-                        {
-                            SpecializationID = 1,
-                            RoomID = 10
-                        },
-                        new
-                        {
-                            SpecializationID = 2,
-                            RoomID = 4
-                        },
-                        new
-                        {
-                            SpecializationID = 2,
-                            RoomID = 9
-                        },
-                        new
-                        {
-                            SpecializationID = 2,
-                            RoomID = 10
-                        },
-                        new
-                        {
-                            SpecializationID = 3,
-                            RoomID = 4
-                        },
-                        new
-                        {
-                            SpecializationID = 3,
-                            RoomID = 9
-                        },
-                        new
-                        {
-                            SpecializationID = 3,
-                            RoomID = 10
                         });
                 });
 

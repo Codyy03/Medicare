@@ -89,7 +89,7 @@ export default function Header() {
                         </li>
 
                         <li className="nav-item"><NavLink className="nav-link" to="/doctors">Doctors</NavLink></li>
-                        <li className="nav-item"><NavLink className="nav-link" to="/appointments">Appointment</NavLink></li>
+                        <li className="nav-item"><NavLink className="nav-link" to={userRole === "Doctor" ? "/doctorAppointments" : "/appointments"}>Appointment</NavLink></li>
 
                         <li className="nav-item">
                             {userName ? (

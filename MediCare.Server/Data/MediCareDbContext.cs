@@ -176,68 +176,13 @@ namespace MediCare.Server.Data
         void RoomsSeeds(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Room>().HasData(
-                new Room
-                {
-                    ID = 1,
-                    RoomNumber = 101,
-                    RoomType = "Cardiology Consultation Room"
-                },
-                new Room
-                {
-                    ID = 2,
-                    RoomNumber = 102,
-                    RoomType = "Orthopedic Consultation Room"
-                },
-                new Room
-                {
-                    ID = 3,
-                    RoomNumber = 103,
-                    RoomType = "Dermatology Consultation Room"
-                },
-                new Room
-                {
-                    ID = 4,
-                    RoomNumber = 201,
-                    RoomType = "Operating Room"
-                },
-                new Room
-                {
-                    ID = 5,
-                    RoomNumber = 104,
-                    RoomType = "Cardiology Consultation Room"
-                },
-                new Room
-                {
-                    ID = 6,
-                    RoomNumber = 105,
-                    RoomType = "Cardiology Consultation Room"
-                },
-                new Room
-                {
-                    ID = 7,
-                    RoomNumber = 106,
-                    RoomType = "Orthopedic Consultation Room"
-                },
-                new Room
-                {
-                    ID = 8,
-                    RoomNumber = 107,
-                    RoomType = "Dermatology Consultation Room"
-                },
-                new Room
-                {
-                    ID = 9,
-                    RoomNumber = 202,
-                    RoomType = "Operating Room"
-                },
-                new Room
-                {
-                    ID = 10,
-                    RoomNumber = 203,
-                    RoomType = "Operating Room"
-                }
+                new Room { ID = 1, RoomNumber = 101, RoomType = "Cardiology Consultation Room" },
+                new Room { ID = 2, RoomNumber = 102, RoomType = "Orthopedic Consultation Room" },
+                new Room { ID = 3, RoomNumber = 103, RoomType = "Dermatology Consultation Room" },
+                new Room { ID = 5, RoomNumber = 104, RoomType = "Cardiology Consultation Room" },
+                new Room { ID = 6, RoomNumber = 106, RoomType = "Orthopedic Consultation Room" },
+                new Room { ID = 8, RoomNumber = 107, RoomType = "Dermatology Consultation Room" }
             );
-
         }
 
         /// <summary>
@@ -272,7 +217,7 @@ namespace MediCare.Server.Data
                     Facility = "Building A, Floor 2, MediCare Center",
                     DoctorDescription = "Dr. Emily Johnson is a dedicated neurologist with over 10 years of experience. She focuses on patient-centered care, neurological diagnostics, and innovative treatment methods."
                 },
-                // --- Nowi Kardiolodzy ---
+
                 new Doctor
                 {
                     ID = 3,
@@ -343,6 +288,28 @@ namespace MediCare.Server.Data
                     Email = "sarah.williams@example.com",
                     PhoneNumber = "555333444",
                     PasswordHash = "AQAAAAIAAYagAAAAELo4ftbkWmWkCzg4YbZhATzJFIRg6s7HBY322tgk4mquh9bHdQy3NraDhJLvnhjJEQ==" // doctor1
+                },
+                new Patient
+                {
+                    ID = 3,
+                    PESEL = "80010112345",
+                    Name = "Anna",
+                    Surname = "Kowalska",
+                    Birthday = new DateTime(1980, 1, 1),
+                    Email = "anna.kowalska@example.com",
+                    PhoneNumber = "555777888",
+                    PasswordHash = "..."
+                },
+                new Patient
+                {
+                    ID = 4,
+                    PESEL = "75050567890",
+                    Name = "Piotr",
+                    Surname = "Nowak",
+                    Birthday = new DateTime(1975, 5, 5),
+                    Email = "piotr.nowak@example.com",
+                    PhoneNumber = "555999000",
+                    PasswordHash = "..."
                 }
             );
         }
@@ -391,33 +358,16 @@ namespace MediCare.Server.Data
         void SpecializationRoomSeeds(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<SpecializationRoom>().HasData(
-                // Kardiologia → 101, 104, 105
                 new SpecializationRoom { SpecializationID = 1, RoomID = 1 },
                 new SpecializationRoom { SpecializationID = 1, RoomID = 5 },
-                new SpecializationRoom { SpecializationID = 1, RoomID = 6 },
 
-                // Ortopedia → 102, 106
                 new SpecializationRoom { SpecializationID = 2, RoomID = 2 },
-                new SpecializationRoom { SpecializationID = 2, RoomID = 7 },
+                new SpecializationRoom { SpecializationID = 2, RoomID = 6 },
 
-                // Dermatologia → 103, 107
                 new SpecializationRoom { SpecializationID = 3, RoomID = 3 },
-                new SpecializationRoom { SpecializationID = 3, RoomID = 8 },
-
-                new SpecializationRoom { SpecializationID = 1, RoomID = 4 },
-                new SpecializationRoom { SpecializationID = 1, RoomID = 9 },
-                new SpecializationRoom { SpecializationID = 1, RoomID = 10 },
-
-                new SpecializationRoom { SpecializationID = 2, RoomID = 4 },
-                new SpecializationRoom { SpecializationID = 2, RoomID = 9 },
-                new SpecializationRoom { SpecializationID = 2, RoomID = 10 },
-
-                new SpecializationRoom { SpecializationID = 3, RoomID = 4 },
-                new SpecializationRoom { SpecializationID = 3, RoomID = 9 },
-                new SpecializationRoom { SpecializationID = 3, RoomID = 10 }
+                new SpecializationRoom { SpecializationID = 3, RoomID = 8 }
             );
         }
-
 
         /// <summary>
         /// Seeds initial data for the Visit table, linking doctors, patients, statuses, and rooms with specific dates and times.
@@ -425,19 +375,21 @@ namespace MediCare.Server.Data
         void VisitsSeeds(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Visit>().HasData(
-               new Visit
-               {
-                   ID = 1,
-                   VisitDate = new DateOnly(2025, 10, 20),
-                   VisitTime = new TimeOnly(10, 30),
-                   DoctorID = 1,
-                   PatientID = 1,
-                   Status = VisitStatus.Scheduled,
-                   RoomID = 1,
-                   Reason = VisitReason.Consultation,
-                   AdditionalNotes = "Please discuss the test results in advance.",
-                   SpecializationID = 1
-               },
+                new Visit
+                {
+                    ID = 1,
+                    VisitDate = new DateOnly(2025, 10, 20),
+                    VisitTime = new TimeOnly(10, 30),
+                    DoctorID = 1,
+                    PatientID = 1,
+                    Status = VisitStatus.Scheduled,
+                    RoomID = 1,
+                    Reason = VisitReason.Consultation,
+                    AdditionalNotes = "Please discuss the test results in advance.",
+                    SpecializationID = 1,
+                    VisitNotes = null,
+                    PrescriptionText = null
+                },
                 new Visit
                 {
                     ID = 2,
@@ -449,7 +401,9 @@ namespace MediCare.Server.Data
                     RoomID = 2,
                     Reason = VisitReason.Prescription,
                     AdditionalNotes = null,
-                    SpecializationID = 2
+                    SpecializationID = 2,
+                    VisitNotes = null,
+                    PrescriptionText = null
                 },
                 new Visit
                 {
@@ -462,7 +416,39 @@ namespace MediCare.Server.Data
                     RoomID = 1,
                     Reason = VisitReason.FollowUp,
                     AdditionalNotes = "Checkup after previous visit.",
-                    SpecializationID = 1 
+                    SpecializationID = 1,
+                    VisitNotes = "Patient recovering well, continue current treatment.",
+                    PrescriptionText = "Vitamin D 2000 IU daily for 3 months"
+                },
+                new Visit
+                {
+                    ID = 4,
+                    VisitDate = new DateOnly(2025, 10, 25),
+                    VisitTime = new TimeOnly(11, 00),
+                    DoctorID = 3,
+                    PatientID = 3,
+                    Status = VisitStatus.Completed,
+                    RoomID = 3,
+                    Reason = VisitReason.Checkup,
+                    AdditionalNotes = "Routine annual checkup.",
+                    SpecializationID = 3,
+                    VisitNotes = "All vitals normal, recommend regular exercise.",
+                    PrescriptionText = null
+                },
+                new Visit
+                {
+                    ID = 5,
+                    VisitDate = new DateOnly(2025, 10, 27),
+                    VisitTime = new TimeOnly(15, 00),
+                    DoctorID = 2,
+                    PatientID = 4,
+                    Status = VisitStatus.Scheduled,
+                    RoomID = 2,
+                    Reason = VisitReason.Consultation,
+                    AdditionalNotes = "Patient complains of recurring headaches.",
+                    SpecializationID = 2,
+                    VisitNotes = null,
+                    PrescriptionText = null
                 }
             );
         }

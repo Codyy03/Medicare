@@ -82,7 +82,6 @@ namespace MediCare.Server.Controllers
 
             if (userId == null) return Unauthorized();
 
-            // Używamy ID jako klucza głównego lekarza
             var doctorId = int.Parse(userId);
 
             var doctor = await context.Doctors
@@ -115,7 +114,67 @@ namespace MediCare.Server.Controllers
             return Ok(result);
         }
 
+        [HttpGet("visitsToday")]
+        public async Task<ActionResult<TodayVisitsResponse>> GetTodayVisits()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
 
+            var doctorId = int.Parse(userId);
+
+            var doctor = await context.Doctors
+                .Include(d => d.Specializations)
+                .FirstOrDefaultAsync(d => d.ID == doctorId);
+
+            if (doctor == null) return NotFound();
+
+            var today = new DateOnly(2025, 10, 27);
+
+            var visits = await context.Visits
+                .Where(v => v.DoctorID == doctor.ID && v.VisitDate == today && v.Status == VisitStatus.Scheduled)
+                .Include(v => v.Patient)
+                .Include(v => v.Room)
+                .Include(v => v.Specialization)
+                .OrderBy(v => v.VisitTime)
+                .ToListAsync();
+
+            var result = new TodayVisitsResponse
+            {
+                Visits = visits.Select(visit => new TodayVisitsDto
+                {
+                    ID = visit.ID,
+                    PatientName = $"{visit.Patient.Name} {visit.Patient.Surname}",
+                    Specialization = visit.Specialization.SpecializationName,
+                    Reason = visit.Reason.ToString(),
+                    Room = $"{visit.Room.RoomType} {visit.Room.RoomNumber}",
+                    VisitTime = visit.VisitTime,
+                }).ToList(),
+
+                Specializations = doctor.Specializations
+                    .Select(s => new SpecializationDto
+                    {
+                        ID = s.ID,
+                        Name = s.SpecializationName
+                    })
+                    .ToList()
+            };
+
+            return Ok(result);
+        }
+
+        [HttpPut("startVisit/{id}")]
+        public async Task<IActionResult> StartVisit(int id, [FromBody] StartVisitDto dto)
+        {
+            var visit = await context.Visits.Include(v => v.Patient).FirstOrDefaultAsync(v => v.ID == id);
+            if (visit == null) return NotFound();
+
+            visit.VisitNotes = dto.Notes;
+            visit.PrescriptionText = dto.Prescription;
+            visit.Status = VisitStatus.Completed;
+
+            await context.SaveChangesAsync();
+            return Ok();
+        }
 
         /// <summary>
         /// Creates a new visit for a patient with a doctor, specialization, and room.
@@ -390,6 +449,32 @@ namespace MediCare.Server.Controllers
             public string Reason { get; set; }
             public string? AdditionalNotes { get; set; }
         }
+
+        public class TodayVisitsDto
+        {
+            public int ID { get; set; }
+            public TimeOnly VisitTime { get; set; }
+            public string PatientName { get; set; }
+            public string Reason { get; set; }
+            public string Room { get; set; }
+            public string Specialization { get; set; }
+        }
+        public class TodayVisitsResponse
+        {
+            public List<TodayVisitsDto> Visits { get; set; } = new();
+            public List<SpecializationDto> Specializations { get; set; } = new();
+        }
+        public class StartVisitDto
+        {
+            public string? Notes { get; set; }
+            public string? Prescription { get; set; }
+        }
+        public class SpecializationDto
+        {
+            public int ID { get; set; }
+            public string Name { get; set; } = string.Empty;
+        }
+
         public class DoctorVisitsDto
         {
             public int ID { get; set; }

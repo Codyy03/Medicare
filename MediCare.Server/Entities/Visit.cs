@@ -35,6 +35,9 @@ namespace MediCare.Server.Entities
         [Required]
         public int SpecializationID { get; set; }
         public Specialization Specialization { get; set; }
+
+        public string? VisitNotes { get; set; }
+        public string? PrescriptionText { get; set; }
     }
 
     public enum VisitReason

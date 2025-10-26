@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MediCare.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class AddSpecializationToVisit : Migration
+    public partial class InitClean : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -189,7 +189,9 @@ namespace MediCare.Server.Migrations
                     Reason = table.Column<int>(type: "integer", nullable: false),
                     AdditionalNotes = table.Column<string>(type: "text", nullable: true),
                     RoomID = table.Column<int>(type: "integer", nullable: false),
-                    SpecializationID = table.Column<int>(type: "integer", nullable: false)
+                    SpecializationID = table.Column<int>(type: "integer", nullable: false),
+                    VisitNotes = table.Column<string>(type: "text", nullable: true),
+                    PrescriptionText = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -226,7 +228,10 @@ namespace MediCare.Server.Migrations
                 values: new object[,]
                 {
                     { 1, "Dr. John Smith is an experienced cardiologist and surgeon with over 15 years of practice. He specializes in preventive cardiology, minimally invasive surgery, and patient-centered care.", "john.smith@medicare.com", new TimeOnly(16, 0, 0), "Room 203, MediCare Center", "John", "AQAAAAIAAYagAAAAENK5qXUBaMBuUFBpttYV0aR626yy171wqlX3Fr6lZ3A63GhTGmRFWptH6uZm1Eu9Og==", "123456789", new TimeOnly(8, 0, 0), "Smith" },
-                    { 2, "Dr. Emily Johnson is a dedicated neurologist with over 10 years of experience. She focuses on patient-centered care, neurological diagnostics, and innovative treatment methods.", "emily.johnson@medicare.com", new TimeOnly(17, 0, 0), "Building A, Floor 2, MediCare Center", "Emily", "AQAAAAIAAYagAAAAEK2wr62/vPT1IadjOSNuOLLQ9ECj5CKYZbod4yvHThIexqGnCcp5Yry6PpFG9WRYYw==", "987654321", new TimeOnly(9, 0, 0), "Johnson" }
+                    { 2, "Dr. Emily Johnson is a dedicated neurologist with over 10 years of experience. She focuses on patient-centered care, neurological diagnostics, and innovative treatment methods.", "emily.johnson@medicare.com", new TimeOnly(17, 0, 0), "Building A, Floor 2, MediCare Center", "Emily", "AQAAAAIAAYagAAAAEK2wr62/vPT1IadjOSNuOLLQ9ECj5CKYZbod4yvHThIexqGnCcp5Yry6PpFG9WRYYw==", "987654321", new TimeOnly(9, 0, 0), "Johnson" },
+                    { 3, "Dr. Michael Anderson is a skilled cardiologist specializing in arrhythmia management and cardiac imaging diagnostics.", "michael.anderson@medicare.com", new TimeOnly(14, 0, 0), "Room 104, MediCare Center", "Michael", "AQAAAAIAAYagAAAAEP8zA5dHE7nyVqBLoZwbn3FPUcUJDN4lB3E4uIv9H1sF5xW0+2Fi7vsmzJYgPNh8lA==", "555111222", new TimeOnly(8, 0, 0), "Anderson" },
+                    { 4, "Dr. Sophia Martinez has extensive experience in non-invasive cardiology and preventive heart health.", "sophia.martinez@medicare.com", new TimeOnly(18, 0, 0), "Room 105, MediCare Center", "Sophia", "AQAAAAIAAYagAAAAEPxZkz/F7fYxzUVEXn9xIQKo5Tk1DbiRdnXx7SC7pPjUJW1xVdYzqk5GfYjxyK6K+w==", "555333444", new TimeOnly(10, 0, 0), "Martinez" },
+                    { 5, "Dr. David Kowalski is a cardiologist focused on hypertension treatment, cardiac stress testing, and patient education.", "david.kowalski@medicare.com", new TimeOnly(15, 30, 0), "Room 101, MediCare Center", "David", "AQAAAAIAAYagAAAAEKh2N3ZC1HkP7HhKJ7blQ7tb4jHY0mM3PwOydZx5Lq3yW6SkmtFfw4tq1LZzW9zENg==", "555666777", new TimeOnly(7, 30, 0), "Kowalski" }
                 });
 
             migrationBuilder.InsertData(
@@ -246,7 +251,9 @@ namespace MediCare.Server.Migrations
                 values: new object[,]
                 {
                     { 1, new DateTime(1990, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "michael.brown@example.com", "Michael", "90010112345", "AQAAAAIAAYagAAAAELg5sSlJ9Z8pG1rKefpy1Pbfql3D+S2J7bXiM77uUOfyfdvsBcOdh75oC42ktQ8h3w==", "555111222", "Brown" },
-                    { 2, new DateTime(1985, 5, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), "sarah.williams@example.com", "Sarah", "85050567890", "AQAAAAIAAYagAAAAELo4ftbkWmWkCzg4YbZhATzJFIRg6s7HBY322tgk4mquh9bHdQy3NraDhJLvnhjJEQ==", "555333444", "Williams" }
+                    { 2, new DateTime(1985, 5, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), "sarah.williams@example.com", "Sarah", "85050567890", "AQAAAAIAAYagAAAAELo4ftbkWmWkCzg4YbZhATzJFIRg6s7HBY322tgk4mquh9bHdQy3NraDhJLvnhjJEQ==", "555333444", "Williams" },
+                    { 3, new DateTime(1980, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "anna.kowalska@example.com", "Anna", "80010112345", "...", "555777888", "Kowalska" },
+                    { 4, new DateTime(1975, 5, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), "piotr.nowak@example.com", "Piotr", "75050567890", "...", "555999000", "Nowak" }
                 });
 
             migrationBuilder.InsertData(
@@ -257,13 +264,9 @@ namespace MediCare.Server.Migrations
                     { 1, 101, "Cardiology Consultation Room" },
                     { 2, 102, "Orthopedic Consultation Room" },
                     { 3, 103, "Dermatology Consultation Room" },
-                    { 4, 201, "Operating Room" },
                     { 5, 104, "Cardiology Consultation Room" },
-                    { 6, 105, "Cardiology Consultation Room" },
-                    { 7, 106, "Orthopedic Consultation Room" },
-                    { 8, 107, "Dermatology Consultation Room" },
-                    { 9, 202, "Operating Room" },
-                    { 10, 203, "Operating Room" }
+                    { 6, 106, "Orthopedic Consultation Room" },
+                    { 8, 107, "Dermatology Consultation Room" }
                 });
 
             migrationBuilder.InsertData(
@@ -283,7 +286,10 @@ namespace MediCare.Server.Migrations
                 {
                     { 1, 1 },
                     { 1, 3 },
-                    { 2, 2 }
+                    { 2, 2 },
+                    { 3, 1 },
+                    { 4, 1 },
+                    { 5, 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -292,31 +298,23 @@ namespace MediCare.Server.Migrations
                 values: new object[,]
                 {
                     { 1, 1 },
-                    { 4, 1 },
                     { 5, 1 },
-                    { 6, 1 },
-                    { 9, 1 },
-                    { 10, 1 },
                     { 2, 2 },
-                    { 4, 2 },
-                    { 7, 2 },
-                    { 9, 2 },
-                    { 10, 2 },
+                    { 6, 2 },
                     { 3, 3 },
-                    { 4, 3 },
-                    { 8, 3 },
-                    { 9, 3 },
-                    { 10, 3 }
+                    { 8, 3 }
                 });
 
             migrationBuilder.InsertData(
                 table: "Visits",
-                columns: new[] { "ID", "AdditionalNotes", "DoctorID", "PatientID", "Reason", "RoomID", "SpecializationID", "Status", "VisitDate", "VisitTime" },
+                columns: new[] { "ID", "AdditionalNotes", "DoctorID", "PatientID", "PrescriptionText", "Reason", "RoomID", "SpecializationID", "Status", "VisitDate", "VisitNotes", "VisitTime" },
                 values: new object[,]
                 {
-                    { 1, "Please discuss the test results in advance.", 1, 1, 1, 1, 1, 1, new DateOnly(2025, 10, 20), new TimeOnly(10, 30, 0) },
-                    { 2, null, 2, 2, 3, 2, 2, 1, new DateOnly(2025, 10, 21), new TimeOnly(13, 0, 0) },
-                    { 3, "Checkup after previous visit.", 1, 2, 2, 1, 1, 2, new DateOnly(2025, 10, 22), new TimeOnly(9, 30, 0) }
+                    { 1, "Please discuss the test results in advance.", 1, 1, null, 1, 1, 1, 1, new DateOnly(2025, 10, 20), null, new TimeOnly(10, 30, 0) },
+                    { 2, null, 2, 2, null, 3, 2, 2, 1, new DateOnly(2025, 10, 21), null, new TimeOnly(13, 0, 0) },
+                    { 3, "Checkup after previous visit.", 1, 2, "Vitamin D 2000 IU daily for 3 months", 2, 1, 1, 2, new DateOnly(2025, 10, 22), "Patient recovering well, continue current treatment.", new TimeOnly(9, 30, 0) },
+                    { 4, "Routine annual checkup.", 3, 3, null, 4, 3, 3, 2, new DateOnly(2025, 10, 25), "All vitals normal, recommend regular exercise.", new TimeOnly(11, 0, 0) },
+                    { 5, "Patient complains of recurring headaches.", 2, 4, null, 1, 2, 2, 1, new DateOnly(2025, 10, 27), null, new TimeOnly(15, 0, 0) }
                 });
 
             migrationBuilder.CreateIndex(

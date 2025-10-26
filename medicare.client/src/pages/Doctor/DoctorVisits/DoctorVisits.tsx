@@ -5,8 +5,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import { FaCalendarAlt } from "react-icons/fa";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-
-
 interface VisitsResponseDto {
     id: number;
     visitDate: Date;
