@@ -22,6 +22,8 @@ namespace MediCare.Server.Controllers
         public async Task<IActionResult> Refresh([FromBody] RefreshRequestDto dto)
         {
             var tokenEntity = await context.RefreshTokens
+                .Include(rt => rt.Patient)
+                .Include(rt => rt.Doctor)
                 .FirstOrDefaultAsync(rt => rt.Token == dto.RefreshToken && !rt.IsRevoked);
 
             if (tokenEntity == null || tokenEntity.ExpiresAt < DateTime.UtcNow)
@@ -51,7 +53,6 @@ namespace MediCare.Server.Controllers
 
             var accessToken = jwtHelper.GenerateJwtToken(id.ToString(), email, name, role);
 
-            // opcjonalnie: nowy refresh token
             var newRefreshToken = jwtHelper.GenerateRefreshToken();
             tokenEntity.Token = newRefreshToken;
             tokenEntity.ExpiresAt = DateTime.UtcNow.AddDays(7);
@@ -59,6 +60,7 @@ namespace MediCare.Server.Controllers
 
             return Ok(new { accessToken, refreshToken = newRefreshToken });
         }
+
         public class RefreshRequestDto
         {
             public string RefreshToken { get; set; }

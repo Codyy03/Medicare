@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
+import api from "../services/api";
 
 interface JwtPayload {
     name?: string;
@@ -102,21 +103,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
 
         try {
-            const res = await fetch("/api/Auth/refresh", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ refreshToken }),
-            });
+            const res = await api.post("/Auth/refresh", { refreshToken });
 
-            if (!res.ok) {
-                logout();
-                return;
-            }
-
-            const data = await res.json();
+            const data = res.data;
             const newAccessToken = data.accessToken;
+            const newRefreshToken = data.refreshToken;
 
             localStorage.setItem("token", newAccessToken);
+            localStorage.setItem("refreshToken", newRefreshToken);
 
             const decoded = jwtDecode<JwtPayload>(newAccessToken);
             setDecodedUser(decoded);
@@ -127,7 +121,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     refreshAccessToken();
                 }, timeout);
             }
-        } catch {
+        } catch (err) {
+            console.error("Refresh failed", err);
             logout();
         }
     };

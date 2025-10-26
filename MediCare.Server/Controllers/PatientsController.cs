@@ -169,6 +169,9 @@ namespace MediCare.Server.Controllers
             if (string.IsNullOrEmpty(user.PasswordHash) || (result == PasswordVerificationResult.Failed))
                 return Unauthorized("Invalid credentials");
 
+            var oldTokens = context.RefreshTokens.Where(rt => rt.PatientID == user.ID);
+            context.RefreshTokens.RemoveRange(oldTokens);
+
             var accessToken = jwtHelper.GenerateJwtToken(user.ID.ToString(), user.Email, user.Name, "Patient");
 
             var refreshToken = jwtHelper.GenerateRefreshToken();
@@ -184,7 +187,6 @@ namespace MediCare.Server.Controllers
 
             return Ok(new { accessToken, refreshToken });
         }
-
 
         /// <summary>
         /// Updates the details of an existing patient.

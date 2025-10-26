@@ -301,7 +301,6 @@ const BookingPage = () => {
                                     {specializations.map((spec) => (
                                         <option
                                             key={spec.id} value={spec.id}>
-                                            <Link to={`/appointments?specializationId=${spec.id}`}></Link>
                                             {spec.specializationName}
                                         </option>
                                     ))}

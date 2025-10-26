@@ -284,6 +284,9 @@ namespace MediCare.Server.Controllers
             if (string.IsNullOrEmpty(doctor.PasswordHash) || (result == PasswordVerificationResult.Failed))
                 return Unauthorized("Invalid credentials");
 
+            var oldTokens = context.RefreshTokens.Where(rt => rt.DoctorID == doctor.ID);
+            context.RefreshTokens.RemoveRange(oldTokens);
+
             // Access token
             var accessToken = jwtHelper.GenerateJwtToken(doctor.ID.ToString(), doctor.Email, doctor.Name, "Doctor");
 
