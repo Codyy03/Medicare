@@ -28,9 +28,7 @@ const DoctorVisitList = () => {
     const [showModal, setShowModal] = useState(false);
     const [selectedVisit, setSelectedVisit] = useState<VisitsResponseDto | null>(null);
 
-
     const [searchName, setSearchName] = useState("");
-    const [searchDate, setSearchDate] = useState("");
     const [upcomingOnly, setUpcomingOnly] = useState(true);
 
     useEffect(() => {
@@ -60,7 +58,6 @@ const DoctorVisitList = () => {
                 matchesDate = true;
             }
 
-
             const isUpcoming = !upcomingOnly || visitDate >= today;
             console.log(visitDate, today, isUpcoming);
             return matchesName && matchesDate && isUpcoming;
@@ -76,6 +73,18 @@ const DoctorVisitList = () => {
         setShowModal(true);
     };
 
+    const getStatusBadgeClass = (status: string) => {
+        switch (status) {
+            case "Scheduled":
+                return "badge bg-warning text-dark";
+            case "Completed":
+                return "badge bg-success";
+            case "Cancelled":
+                return "badge bg-danger";
+            default:
+                return "badge bg-secondary";
+        }
+    };
     return (
         <div className="container py-5">
             <h2 className="mb-4 text-center">
@@ -169,15 +178,18 @@ const DoctorVisitList = () => {
                         )}
                         {filteredVisits.map((visit) => (
                             <tr key={visit.id}>
-                                <td>
-                                    {visit.visitDate.toString()} <br />
-                                    {visit.visitTime.slice(0, 5)}
+                                <td className="text-center">
+                                    <div className="fw-semibold">{new Date(visit.visitDate).toLocaleDateString()}</div>
+                                    <div className="text-muted">{visit.visitTime.slice(0, 5)}</div>
                                 </td>
+
                                 <td>{visit.patientName}</td>
                                 <td>{visit.specialization} - {visit.room} {visit.roomNumber}</td>
                                 <td>{visit.reason}</td>
                                 <td>
-                                    <span className="badge bg-secondary">{visit.status}</span>
+                                    <span className={getStatusBadgeClass(visit.status)}>
+                                        {visit.status}
+                                    </span>
                                 </td>
                                 <td className="text-center align-middle">
                                     <button className="btn btn-outline-primary btn-sm" onClick={() => handleViewDetails(visit)}>
@@ -249,9 +261,11 @@ const DoctorVisitList = () => {
                                 </div>
 
                                 {/* Status */}
-                                <div className="mb-3">
-                                    <label className="form-label fw-bold">Status </label>
-                                    <span className="badge bg-secondary">{selectedVisit.status}</span>
+                                <div className="mb-3 d-flex align-items-center">
+                                    <label className="form-label fw-bold me-2">Status:</label>
+                                    <span className={getStatusBadgeClass(selectedVisit.status)}>
+                                        {selectedVisit.status}
+                                    </span>
                                 </div>
                             </div>
                         )}
