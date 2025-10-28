@@ -23,13 +23,14 @@ import PatientsResetPassword from "./pages/Patient/PatientResetPassword/PatientR
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFoundPage from "./pages/Other/NotFoundPage/NotFoundPage";
+import PatientVisits from "./pages/Patient/PatientVisits/PatientVisits";
 import './App.css';
 
 function App() {
     return (
         <AuthProvider>
             <BrowserRouter>
-                <Routes>
+                <Routes>01
                     <Route path="/" element={<Layout />}>
                         <Route path="patients" element={<PatientsPage />} />
                     </Route>
@@ -69,6 +70,12 @@ function App() {
                                 <DoctorVisits />
                             </ProtectedRoute>
                         } />
+
+                        <Route path="/patient/visits" element={
+                            <ProtectedRoute role="Patient">
+                                <PatientVisits />
+                            </ProtectedRoute>
+                        }/>
                     <Route path="/doctors" element={<DoctorsList />} />
                     <Route path="/resetPasswordDoctor" element={<DoctorsResetPassword />} />
                     <Route path="/resetPasswordPatient" element={<PatientsResetPassword />} />

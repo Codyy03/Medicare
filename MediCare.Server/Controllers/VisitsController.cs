@@ -46,7 +46,7 @@ namespace MediCare.Server.Controllers
                 Specialization = string.Join(", ", visit.Doctor.Specializations.Select(s => s.SpecializationName)),
                 PatientName = visit.Patient.Name,
                 Room = visit.Room.RoomType,
-                Status = VisitStatus.Scheduled,
+                Status = VisitStatus.Scheduled.ToString(),
                 Reason = visit.Reason.ToString(),
                 AdditionalNotes = visit.AdditionalNotes
             });
@@ -75,8 +75,8 @@ namespace MediCare.Server.Controllers
             return Ok(visitsTime);
         }
 
-        [HttpGet("my")]
-        public async Task<ActionResult<List<DoctorVisitsDto>>> GetMyVisits()
+        [HttpGet("doctor")]
+        public async Task<ActionResult<List<DoctorVisitsDto>>> GetDoctorVisits()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -113,7 +113,37 @@ namespace MediCare.Server.Controllers
 
             return Ok(result);
         }
+        [HttpGet("patient")]
+        public async Task<ActionResult<List<VisitResponseDto>>> GetPatientVisits()
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+            if (userId == null) return Unauthorized();
+
+            int patientId = int.Parse(userId);
+
+            List<Visit> visits = await context.Visits
+                .Where(v => v.PatientID == patientId)
+                .Include(v => v.Doctor)
+                .Include(v => v.Room)
+                .Include(v => v.Specialization)
+                .ToListAsync();
+
+            List<VisitResponseDto> result = visits.Select(visit => new VisitResponseDto
+            {
+                ID = visit.ID,
+                VisitDate = visit.VisitDate,
+                VisitTime = visit.VisitTime,
+                DoctorName = $"{visit.Doctor.Name} {visit.Doctor.Surname}",
+                Specialization = visit.Specialization.SpecializationName,
+                Room = $"{visit.Room.RoomType} {visit.Room.RoomNumber}",
+                Status = visit.Status.ToString(),
+                Reason = visit.Reason.ToString(),
+                AdditionalNotes = visit.AdditionalNotes
+            }).ToList();
+
+            return Ok(result);
+        }
         [HttpGet("visitsToday")]
         public async Task<ActionResult<TodayVisitsResponse>> GetTodayVisits()
         {
@@ -267,7 +297,7 @@ namespace MediCare.Server.Controllers
                 Specialization = doctor.Specializations.First(s => s.ID == dto.SpecializationID).SpecializationName,
                 PatientName = patientName,
                 Room = room,
-                Status = visit.Status,
+                Status = visit.Status.ToString(),
                 Reason = visit.Reason.ToString(),
                 AdditionalNotes = visit.AdditionalNotes
             });
@@ -445,7 +475,7 @@ namespace MediCare.Server.Controllers
             public string Specialization { get; set; }
             public string PatientName { get; set; }
             public string Room { get; set; }
-            public VisitStatus Status { get; set; }
+            public string Status { get; set; }
             public string Reason { get; set; }
             public string? AdditionalNotes { get; set; }
         }

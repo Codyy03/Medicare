@@ -43,7 +43,23 @@ export async function getDoctorVisitsToday() {
 export async function getDoctorVisits() {
     const token = localStorage.getItem("token");
 
-    const response = await fetch("https://localhost:7014/api/visits/my", {
+    const response = await fetch("https://localhost:7014/api/visits/doctor", {
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": token ? `Bearer ${token}` : ""
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error("Error when fetching doctor visits");
+    }
+    return response.json();
+}
+
+export async function getPatientVisits() {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch("https://localhost:7014/api/visits/patient", {
         headers: {
             "Content-Type": "application/json",
             "Authorization": token ? `Bearer ${token}` : ""
