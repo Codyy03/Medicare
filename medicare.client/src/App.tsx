@@ -55,6 +55,15 @@ function App() {
                         />
 
                         <Route
+                            path="/resetPasswordPatient"
+                            element={
+                                <ProtectedRoute role="Patient">
+                                    <PatientsResetPassword />
+                                </ProtectedRoute>
+                            }
+                        />
+
+                        <Route
                             path="/personalDataDoctor"
                             element={
                                 <ProtectedRoute role="Doctor">
@@ -69,11 +78,23 @@ function App() {
                                 <DoctorVisits />
                             </ProtectedRoute>
                         } />
+
+                        <Route path="/doctorAppointments"
+                            element={
+                                <ProtectedRoute role="Doctor">
+                                    <DoctorAppointments />
+                                </ProtectedRoute>
+                            } />
+
+                        <Route path="/resetPasswordDoctor"
+                            element={
+                                <ProtectedRoute role="Doctor">
+                                    <DoctorsResetPassword />
+                                </ProtectedRoute>
+                            } />
+
                     <Route path="/doctors" element={<DoctorsList />} />
-                    <Route path="/resetPasswordDoctor" element={<DoctorsResetPassword />} />
-                    <Route path="/resetPasswordPatient" element={<PatientsResetPassword />} />
                     <Route path="/appointments" element={<Appointments />} />
-                    <Route path="/doctorAppointments" element={<DoctorAppointments />} />
                     <Route path="/booking-success" element={<BookingSuccessPage />} />
 
                     <Route path="/doctorInfo/:id" element={<DoctorInfo />} />

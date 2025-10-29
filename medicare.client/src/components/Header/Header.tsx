@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/useAuth";
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -12,6 +12,8 @@ export default function Header() {
         Doctor: "/personalDataDoctor",
         Patient: "/personalData"
     };
+    const navigate = useNavigate();
+
     // padding pod header (¿eby nie nachodzi³ na treœæ)
     useEffect(() => {
         const updatePadding = () => {
@@ -115,6 +117,7 @@ export default function Header() {
                                                 className="dropdown-item hover-slide"
                                                 onClick={() => {
                                                     logout();
+                                                    navigate("/");
                                                     setShowLoginOptions(false);
                                                 }}
                                             >
