@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { getDoctorVisits } from "../../../services/visitsService";
+import { getPatientVisits } from "../../../services/visitsService";
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import { FaCalendarAlt } from "react-icons/fa";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
@@ -9,33 +8,30 @@ interface VisitsResponseDto {
     id: number;
     visitDate: Date;
     visitTime: string;
-    patientName: string;
-    specialization: string;
-    room: string;
-    roomNumber: number;
-    reason: string;
-    status: string;
-    additionalNotes?: string;
     doctorName: string;
+    specialization: string;
+    patientName: string;
+    room: number;
+    status: string;
+    reason: string;
+    additionalNotes?: string;
 }
-
-const DoctorVisit = () => {
+export default function PatientVisits() {
     const [visits, setVisits] = useState<VisitsResponseDto[]>([]);
     const [filteredVisits, setFilteredVisits] = useState<VisitsResponseDto[]>([]);
-    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-    const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    const [showModal, setShowModal] = useState(false);
-    const [selectedVisit, setSelectedVisit] = useState<VisitsResponseDto | null>(null);
-
+    const [loading, setLoading] = useState(true);
     const [searchName, setSearchName] = useState("");
+    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [upcomingOnly, setUpcomingOnly] = useState(true);
+    const [showModal, setShowModal] = useState<VisitsResponseDto | null>(null);
 
     useEffect(() => {
-        getDoctorVisits()
+        getPatientVisits()
             .then((data) => {
                 setVisits(data);
                 setFilteredVisits(data);
+                handleSearch();
             })
             .catch((err) => {
                 console.error(err);
@@ -44,12 +40,11 @@ const DoctorVisit = () => {
             .finally(() => setLoading(false));
     }, []);
 
-
     const handleSearch = () => {
         const today = new Date();
         const filtered = visits.filter((visit) => {
             const visitDate = new Date(visit.visitDate);
-            const matchesName = visit.patientName.toLowerCase().includes(searchName.toLowerCase());
+            const matchesName = visit.doctorName.toLowerCase().includes(searchName.toLowerCase());
             let matchesDate;
             if (selectedDate) {
                 matchesDate = visitDate.toDateString() === selectedDate.toDateString();
@@ -59,6 +54,7 @@ const DoctorVisit = () => {
             }
 
             const isUpcoming = !upcomingOnly || visitDate >= today;
+            console.log(visitDate, today, isUpcoming);
             return matchesName && matchesDate && isUpcoming;
         });
 
@@ -67,12 +63,7 @@ const DoctorVisit = () => {
         setSelectedDate(null);
     };
 
-    const handleViewDetails = (visit: VisitsResponseDto) => {
-        setSelectedVisit(visit);
-        setShowModal(true);
-    };
-
-    const getStatusBadgeClass = (status: string) => {
+    const getStatusBadgeClass = (status: string | undefined) => {
         switch (status) {
             case "Scheduled":
                 return "badge bg-warning text-dark";
@@ -84,6 +75,7 @@ const DoctorVisit = () => {
                 return "badge bg-secondary";
         }
     };
+
     return (
         <div className="container py-5">
             <h2 className="mb-4 text-center">
@@ -95,7 +87,7 @@ const DoctorVisit = () => {
                 <div className="card-body">
                     <div className="row gy-3 align-items-end">
                         <div className="col-md-4">
-                            <label className="form-label">Search by patient name</label>
+                            <label className="form-label">Search by doctor name</label>
                             <input
                                 type="text"
                                 className="form-control"
@@ -150,7 +142,7 @@ const DoctorVisit = () => {
                     <thead className="table-light">
                         <tr>
                             <th>Date</th>
-                            <th>Patient name</th>
+                            <th>Doctor name</th>
                             <th>Room</th>
                             <th>Reason</th>
                             <th>Status</th>
@@ -170,7 +162,7 @@ const DoctorVisit = () => {
                                 </td>
                             </tr>
                         )}
-                        {!loading && filteredVisits.length === 0 && (
+                        {!loading && filteredVisits.length === 0 && !error && (
                             <tr>
                                 <td colSpan={5}>No visits found.</td>
                             </tr>
@@ -181,9 +173,8 @@ const DoctorVisit = () => {
                                     <div className="fw-semibold">{new Date(visit.visitDate).toLocaleDateString()}</div>
                                     <div className="text-muted">{visit.visitTime.slice(0, 5)}</div>
                                 </td>
-
-                                <td>{visit.patientName}</td>
-                                <td>{visit.specialization} - {visit.room} {visit.roomNumber}</td>
+                                <td>{visit.doctorName}</td>
+                                <td>{visit.specialization} - {visit.room}</td>
                                 <td>{visit.reason}</td>
                                 <td>
                                     <span className={getStatusBadgeClass(visit.status)}>
@@ -191,7 +182,7 @@ const DoctorVisit = () => {
                                     </span>
                                 </td>
                                 <td className="text-center align-middle">
-                                    <button className="btn btn-outline-primary btn-sm" onClick={() => handleViewDetails(visit)}>
+                                    <button className="btn btn-outline-primary btn-sm" onClick={() => setShowModal(visit)}>
                                         <i className="bi bi-eye me-1"></i> View details
                                     </button>
                                 </td>
@@ -199,86 +190,66 @@ const DoctorVisit = () => {
                         ))}
                     </tbody>
                 </table>
-
-                {/* Visit Details Modal */}
-                <Modal show={showModal} onHide={() => setShowModal(false)} size="lg" centered>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Visit Details</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        {selectedVisit && (
-                            <div className="card shadow-sm p-4">
-                                <h4 className="mb-4">Reservation details</h4>
-
-                                {/* Specialization & Doctor */}
-                                <div className="row">
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label fw-bold">Specialization</label>
-                                        <p className="form-control-plaintext">{selectedVisit.specialization}</p>
-                                    </div>
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label fw-bold">Doctor</label>
-                                        <p className="form-control-plaintext">{selectedVisit.doctorName}</p>
-                                    </div>
+            </div>
+            {/* Visit Details Modal */}
+            <Modal show={Boolean(showModal)} onHide={() => setShowModal(null)} size="lg" centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Visit Details</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {Boolean(showModal) && (
+                        <div className="card shadow-sm p-4">
+                                                         {/* Specialization & Doctor */}
+                            <div className="row">
+                                <div className="col-md-6 mb-3">
+                                    <label className="form-label fw-bold">Specialization</label>
+                                    <p className="form-control-plaintext">{showModal?.specialization}</p>
                                 </div>
-
-                                {/* Date & Time */}
-                                <div className="row">
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label fw-bold">Date</label>
-                                        <p className="form-control-plaintext">{selectedVisit.visitDate.toString()}</p>
-                                    </div>
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label fw-bold">Time</label>
-                                        <p className="form-control-plaintext">{selectedVisit.visitTime.slice(0, 5)}</p>
-                                    </div>
+                                <div className="col-md-6 mb-3">
+                                    <label className="form-label fw-bold">Doctor</label>
+                                    <p className="form-control-plaintext">{showModal?.doctorName}</p>
                                 </div>
-
-                                {/* Patient Info */}
-                                <div className="row">
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label fw-bold">Patient</label>
-                                        <p className="form-control-plaintext">{selectedVisit.patientName}</p>
-                                    </div>
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label fw-bold">Room</label>
-                                        <p className="form-control-plaintext">{selectedVisit.room} {selectedVisit.roomNumber}</p>
-                                    </div>
+                            </div>
+                                                         {/* Date & Time */}
+                            <div className="row">
+                                <div className="col-md-6 mb-3">
+                                    <label className="form-label fw-bold">Time</label>
+                                    <p className="form-control-plaintext">{showModal?.visitDate.toString()} {showModal?.visitTime.slice(0, 5)}</p>
                                 </div>
-
-                                {/* Reason & Notes */}
+                                <div className="col-md-6 mb-3">
+                                    <label className="form-label fw-bold">Room</label>
+                                    <p className="form-control-plaintext">{showModal?.room}</p>
+                                </div>
+                            </div>
+                                                         {/* Reason & Notes */}
+                            <div className="row">
                                 <div className="mb-3">
                                     <label className="form-label fw-bold">Visit reason</label>
-                                    <p className="form-control-plaintext">{selectedVisit.reason}</p>
+                                    <p className="form-control-plaintext">{showModal?.reason}</p>
                                 </div>
-
                                 <div className="mb-3">
                                     <label className="form-label fw-bold">Additional notes</label>
                                     <p className="form-control-plaintext">
-                                        {selectedVisit.additionalNotes || <span className="text-muted">None</span>}
+                                        {showModal?.additionalNotes || <span className="text-muted">None</span>}
                                     </p>
                                 </div>
-
-                                {/* Status */}
-                                <div className="mb-3 d-flex align-items-center">
-                                    <label className="form-label fw-bold me-2">Status:</label>
-                                    <span className={getStatusBadgeClass(selectedVisit.status)}>
-                                        {selectedVisit.status}
-                                    </span>
-                                </div>
                             </div>
-                        )}
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={() => setShowModal(false)}>
-                            Close
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
-
-            </div>
+                                                         {/* Status */}
+                            <div className="mb-3 d-flex align-items-center">
+                                <label className="form-label fw-bold me-2">Status:</label>
+                                <span className={getStatusBadgeClass(showModal?.status)}>
+                                    {showModal?.status}
+                                </span>
+                            </div>
+                        </div>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowModal(null)}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
-};
-
-export default DoctorVisit;
+}

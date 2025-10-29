@@ -46,7 +46,7 @@ namespace MediCare.Server.Controllers
                 Specialization = string.Join(", ", visit.Doctor.Specializations.Select(s => s.SpecializationName)),
                 PatientName = visit.Patient.Name,
                 Room = visit.Room.RoomType,
-                Status = VisitStatus.Scheduled,
+                Status = VisitStatus.Scheduled.ToString(),
                 Reason = visit.Reason.ToString(),
                 AdditionalNotes = visit.AdditionalNotes
             });
@@ -75,8 +75,13 @@ namespace MediCare.Server.Controllers
             return Ok(visitsTime);
         }
 
-        [HttpGet("my")]
-        public async Task<ActionResult<List<DoctorVisitsDto>>> GetMyVisits()
+        /// <summary>
+        /// Retrieves all visits for the currently authenticated doctor.
+        /// Includes patient, room, and specialization details.
+        /// </summary>
+        /// <returns>A list of <see cref="DoctorVisitsDto"/> objects.</returns>
+        [HttpGet("doctor")]
+        public async Task<ActionResult<List<DoctorVisitsDto>>> GetDoctorVisits()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -114,6 +119,48 @@ namespace MediCare.Server.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Retrieves all visits for the currently authenticated patient.
+        /// Includes doctor, room, and specialization details.
+        /// </summary>
+        /// <returns>A list of <see cref="VisitResponseDto"/> objects.</returns>
+        [HttpGet("patient")]
+        public async Task<ActionResult<List<VisitResponseDto>>> GetPatientVisits()
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null) return Unauthorized();
+
+            int patientId = int.Parse(userId);
+
+            List<Visit> visits = await context.Visits
+                .Where(v => v.PatientID == patientId)
+                .Include(v => v.Doctor)
+                .Include(v => v.Room)
+                .Include(v => v.Specialization)
+                .ToListAsync();
+
+            List<VisitResponseDto> result = visits.Select(visit => new VisitResponseDto
+            {
+                ID = visit.ID,
+                VisitDate = visit.VisitDate,
+                VisitTime = visit.VisitTime,
+                DoctorName = $"{visit.Doctor.Name} {visit.Doctor.Surname}",
+                Specialization = visit.Specialization.SpecializationName,
+                Room = $"{visit.Room.RoomType} {visit.Room.RoomNumber}",
+                Status = visit.Status.ToString(),
+                Reason = visit.Reason.ToString(),
+                AdditionalNotes = visit.AdditionalNotes
+            }).ToList();
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Retrieves all scheduled visits for the authenticated doctor on the current day.
+        /// Includes patient, room, and specialization details.
+        /// </summary>
+        /// <returns>A <see cref="TodayVisitsResponse"/> containing visits and doctor specializations.</returns>
         [HttpGet("visitsToday")]
         public async Task<ActionResult<TodayVisitsResponse>> GetTodayVisits()
         {
@@ -162,6 +209,12 @@ namespace MediCare.Server.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Marks a visit as started and completed by updating notes and prescription.
+        /// </summary>
+        /// <param name="id">The visit ID.</param>
+        /// <param name="dto">The notes and prescription details.</param>
+        /// <returns>200 OK if updated, or 404 if not found.</returns>
         [HttpPut("startVisit/{id}")]
         public async Task<IActionResult> StartVisit(int id, [FromBody] StartVisitDto dto)
         {
@@ -267,12 +320,11 @@ namespace MediCare.Server.Controllers
                 Specialization = doctor.Specializations.First(s => s.ID == dto.SpecializationID).SpecializationName,
                 PatientName = patientName,
                 Room = room,
-                Status = visit.Status,
+                Status = visit.Status.ToString(),
                 Reason = visit.Reason.ToString(),
                 AdditionalNotes = visit.AdditionalNotes
             });
         }
-
 
         /// <summary>
         /// Retrieves all free rooms for a given specialization and doctor on a specific day.
@@ -445,11 +497,14 @@ namespace MediCare.Server.Controllers
             public string Specialization { get; set; }
             public string PatientName { get; set; }
             public string Room { get; set; }
-            public VisitStatus Status { get; set; }
+            public string Status { get; set; }
             public string Reason { get; set; }
             public string? AdditionalNotes { get; set; }
         }
 
+        /// <summary>
+        /// DTO representing today's visits for a doctor.
+        /// </summary>
         public class TodayVisitsDto
         {
             public int ID { get; set; }
@@ -459,22 +514,41 @@ namespace MediCare.Server.Controllers
             public string Room { get; set; }
             public string Specialization { get; set; }
         }
+
+        /// <summary>
+        /// DTO returned by the visitsToday endpoint.
+        /// Contains today's visits and the doctor's specializations.
+        /// </summary>
         public class TodayVisitsResponse
         {
             public List<TodayVisitsDto> Visits { get; set; } = new();
             public List<SpecializationDto> Specializations { get; set; } = new();
         }
+
+        /// <summary>
+        /// DTO used when starting a visit.
+        /// Contains optional notes and prescription text.
+        /// </summary>
         public class StartVisitDto
         {
             public string? Notes { get; set; }
             public string? Prescription { get; set; }
         }
+
+        /// <summary>
+        /// DTO representing a medical specialization.
+        /// Used to return specialization information such as ID and name
+        /// when fetching visits or doctor details.
+        /// </summary>
         public class SpecializationDto
         {
             public int ID { get; set; }
             public string Name { get; set; } = string.Empty;
         }
 
+        /// <summary>
+        /// DTO representing a doctor's visit with patient and room details.
+        /// </summary>
         public class DoctorVisitsDto
         {
             public int ID { get; set; }

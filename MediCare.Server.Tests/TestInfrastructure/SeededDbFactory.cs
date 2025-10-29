@@ -220,6 +220,18 @@ namespace MediCare.Server.Tests.TestInfrastructure
                         RoomID = 1,
                         Reason = VisitReason.Consultation,
                         SpecializationID = 1
+                    },
+                    new Visit
+                    {
+                        ID = 4,
+                        VisitDate = new DateOnly(2025, 10, 27),
+                        VisitTime = new TimeOnly(9, 30),
+                        DoctorID = 1,
+                        PatientID = 1,
+                        Status = VisitStatus.Scheduled,
+                        RoomID = 1,
+                        Reason = VisitReason.Consultation,
+                        SpecializationID = 1
                     }
 
                 );
