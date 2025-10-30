@@ -1,29 +1,11 @@
 import { useEffect, useState } from "react";
 import { getDoctorVisitsToday } from "../../../services/visitsService";
+import type { TodayVisitsDto, SpecializationDto, TodayVisitsResponse  } from "../../../interfaces/visits.types";
 import { FaUserMd, FaClock, FaDoorOpen } from "react-icons/fa";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 
 const DoctorAppointmentsPage = () => {
-    interface TodayVisitsDto {
-        id: number;
-        visitTime: string;
-        patientName: string;
-        reason: string;
-        room: string;
-        specialization: string;
-    }
-
-    interface SpecializationDto {
-        id: number;
-        name: string;
-    }
-
-    interface TodayVisitsResponse {
-        visits: TodayVisitsDto[];
-        specializations: SpecializationDto[];
-    }
-
     const [visitsToday, setVisitsToday] = useState<TodayVisitsDto[]>([]);
     const [specializations, setSpecializations] = useState<SpecializationDto[]>([]);
     const [selectedSpec, setSelectedSpec] = useState<string>("");

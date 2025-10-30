@@ -1,22 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getDoctorMe } from "../../../services/doctorsService";
+import type { DoctorPrifileDto } from "../../../interfaces/doctors.types";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function DoctorProfile() {
-    interface DoctorDto {
-        name: string;
-        surname: string;
-        startHour: string;
-        endHour: string;
-        email: string;
-        phoneNumber: string;
-        specializations: string[];
-    }
-
-    const [doctor, setDoctor] = useState<DoctorDto>();
-    const [formData, setFormData] = useState<DoctorDto | undefined>(doctor);
+    const [doctor, setDoctor] = useState<DoctorPrifileDto>();
+    const [formData, setFormData] = useState<DoctorPrifileDto | undefined>(doctor);
     const [loading, setLoading] = useState(true);
     const [edit, setEdit] = useState(false);
     const [error, setError] = useState("");

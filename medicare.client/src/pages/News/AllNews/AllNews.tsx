@@ -1,17 +1,11 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import { getAllNews } from "../../../services/newsService";
+import type { NewsItem } from "../../../interfaces/news.types";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./AllNews.css";
 
 export default function AllNews() {
-    interface NewsItem {
-        id: number;
-        title: string;
-        description: string;
-        imageURL: string;
-        date: string;
-    }
     const [news, setNews] = useState<NewsItem[]>([]);
     const [loading, setLoading] = useState(true);
 

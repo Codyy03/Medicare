@@ -2,25 +2,10 @@ import { useState, useEffect } from "react"
 import { getDoctors } from "../../../services/doctorsService"
 import { getDoctorsByFilters } from "../../../services/doctorsService"
 import { getSpecializationNames } from "../../../services/specializationsService"
+import type { DoctorDto, SpecializationsNamesID } from "../../../interfaces/doctors.types";
 import { Link } from "react-router-dom";
 
 function DoctorsList() {
-    interface DoctorDto {
-        id: number;
-        name: string;
-        surname: string;
-        email: string;
-        startHour: string;
-        endHour: string;
-        facility: string;
-        doctorDescription: string;
-        specializations: string[];
-    }
-    interface SpecializationsNamesID {
-        id: number;
-        specializationName: string;
-    }
-
     // data
     const [specializations, setSpecializations] = useState<SpecializationsNamesID[]>([]);
     const [doctors, setDoctors] = useState<DoctorDto[]>([]);

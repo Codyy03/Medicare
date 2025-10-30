@@ -1,18 +1,9 @@
 import { Link } from "react-router-dom"
 import { useEffect, useState } from "react";
 import { getPatientMe } from "../../../services/patientsService"
+import type { Patient } from "../../../interfaces/patients.types";
 import axios from "axios";
 export default function PatientProfile() {
-    interface Patient {
-        id: number;
-        name: string;
-        surname: string;
-        pesel: string;
-        birthday: string;
-        email: string;
-        phoneNumber: string;
-    }
-
     const [patient, setPatient] = useState<Patient>();
     const [loading, setLoading] = useState(true);
     const [edit, setEdit] = useState(false);

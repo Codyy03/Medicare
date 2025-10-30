@@ -1,22 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { getDoctorById } from "../../../services/doctorsService";
+import type { DoctorDto } from "../../../interfaces/doctors.types";
 import "./DoctorInfo.css";
 
 const DoctorInfo: React.FC = () => {
-    interface DoctorDto {
-        id: number;
-        name: string;
-        surname: string;
-        email: string;
-        phoneNumber: string,
-        startHour: string;
-        endHour: string;
-        facility: string;
-        doctorDescription: string;
-        specializations: string[];
-    }
-
     const { id } = useParams();
     const location = useLocation();
     const [doctor, setDoctor] = useState<DoctorDto | null>(

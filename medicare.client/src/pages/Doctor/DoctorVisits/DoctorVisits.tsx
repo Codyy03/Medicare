@@ -1,23 +1,12 @@
 import { useEffect, useState } from "react";
 import { getDoctorVisits } from "../../../services/visitsService";
+import type { VisitsResponseDto } from "../../../interfaces/visits.types";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaCalendarAlt } from "react-icons/fa";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-interface VisitsResponseDto {
-    id: number;
-    visitDate: Date;
-    visitTime: string;
-    patientName: string;
-    specialization: string;
-    room: string;
-    roomNumber: number;
-    reason: string;
-    status: string;
-    additionalNotes?: string;
-    doctorName: string;
-}
+
 
 const DoctorVisit = () => {
     const [visits, setVisits] = useState<VisitsResponseDto[]>([]);

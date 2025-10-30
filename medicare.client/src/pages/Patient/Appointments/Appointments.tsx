@@ -10,33 +10,10 @@ import { getSpecializationNames } from "../../../services/specializationsService
 import { getDoctorsBySpecialization } from "../../../services/doctorsService";
 import { getFreeRoomsForDay, getVisitsTime } from "../../../services/visitsService";
 import { getPatientMe } from "../../../services/patientsService";
+import type { SpecializationsNamesID, DoctorApointmentsDto, RoomDto } from "../../../interfaces/visits.types";
+import type { Patient } from "../../../interfaces/patients.types";
 
 const BookingPage = () => {
-    interface SpecializationsNamesID {
-        id: number;
-        specializationName: string;
-    }
-    interface DoctorApointmentsDto {
-        id: number;
-        name: string;
-        surname: string;
-        startHour: string;
-        endHour: string;
-    }
-    interface Patient {
-        id: number;
-        name: string;
-        surname: string;
-        pesel: string;
-        email: string;
-        phoneNumber: string;
-    }
-    interface RoomDto {
-        id: number;
-        roomType: string;
-        roomNumber: number;
-    }
-
     const [specializations, setSpecializations] = useState<SpecializationsNamesID[]>([]);
     const [doctors, setDoctors] = useState<DoctorApointmentsDto[]>([]);
     const [selectedSpecialization, setSelectedSpecialization] = useState("");

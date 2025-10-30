@@ -1,23 +1,11 @@
 import { useEffect, useState } from "react";
 import { getPatientVisits } from "../../../services/visitsService";
+import type { VisitsResponseDto } from "../../../interfaces/visits.types";
 import DatePicker from "react-datepicker";
 import { FaCalendarAlt } from "react-icons/fa";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-interface VisitsResponseDto {
-    id: number;
-    visitDate: Date;
-    visitTime: string;
-    doctorName: string;
-    specialization: string;
-    patientName: string;
-    room: number;
-    status: string;
-    reason: string;
-    additionalNotes?: string;
-    prescriptionText?: string;
-    visitNotes?: string;
-}
+
 export default function PatientVisits() {
     const [visits, setVisits] = useState<VisitsResponseDto[]>([]);
     const [filteredVisits, setFilteredVisits] = useState<VisitsResponseDto[]>([]);
@@ -56,7 +44,6 @@ export default function PatientVisits() {
             }
 
             const isUpcoming = !upcomingOnly || visitDate >= today;
-            console.log(visitDate, today, isUpcoming);
             return matchesName && matchesDate && isUpcoming;
         });
 

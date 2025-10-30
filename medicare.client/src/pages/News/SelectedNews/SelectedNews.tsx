@@ -1,16 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
 import { getNewsByID } from "../../../services/newsService";
+import type { NewsItem } from "../../../interfaces/news.types";
 import "./SelectedNews.css";
 export default function SelectedNews() {
-
-    interface NewsItem {
-        id: number;
-        title: string;
-        description: string;
-        date: Date;
-    }
-
     const [news, setNews] = useState<NewsItem | null>(null);
     const [loading, setLoading] = useState(true);
     const { id } = useParams<{ id: string }>();
