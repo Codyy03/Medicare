@@ -132,6 +132,58 @@ namespace MediCare.Server.Tests.Controllers
             }
         }
 
+        [Fact]
+        public async Task GetDoctorVisit_ReurnOk()
+        {
+            var client = new SeededDbFactory().CreateClient();
+
+            var token = TestJwtTokenHelper.GenerateTestToken("1", "john.smith@medicare.com", "John", "Doctor");
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.GetAsync("api/visits/doctor");
+
+            Assert.Equal("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var result = JsonSerializer.Deserialize<List<DoctorVisitsDto>>(content,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            if (result.Any())
+            {
+                Assert.All(result, v =>
+                {
+                    Assert.True(v.ID > 0);
+                    Assert.InRange(v.VisitDate, DateOnly.MinValue, DateOnly.MaxValue);
+                    Assert.InRange(v.VisitTime, TimeOnly.MinValue, TimeOnly.MaxValue);
+                    Assert.False(string.IsNullOrEmpty(v.DoctorName));
+                    Assert.False(string.IsNullOrEmpty(v.Specialization));
+                    Assert.False(string.IsNullOrEmpty(v.PatientName));
+                    Assert.False(string.IsNullOrEmpty(v.Room));
+                    Assert.True(v.RoomNumber > 0);
+                    Assert.False(string.IsNullOrEmpty(v.Status));
+                    Assert.False(string.IsNullOrEmpty(v.Reason));
+                });
+            }
+            else
+            {
+                Assert.Empty(result);
+            }
+        }
+        //public int ID { get; set; }
+        //public DateOnly VisitDate { get; set; }
+        //public TimeOnly VisitTime { get; set; }
+        //public string DoctorName { get; set; }
+        //public string Specialization { get; set; }
+        //public string PatientName { get; set; }
+        //public string Room { get; set; }
+        //public int RoomNumber { get; set; }
+        //public string Status { get; set; }
+        //public string Reason { get; set; }
+        //public string? AdditionalNotes { get; set; }
 
         /// <summary>
         /// Verifies that the endpoint <c>POST api/visits</c> 

@@ -118,6 +118,14 @@ namespace MediCare.Server.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Retrieves all doctors associated with a given specialization.
+        /// </summary>
+        /// <param name="id">The specialization ID used to filter doctors.</param>
+        /// <returns>
+        /// A list of <see cref="DoctorApointmentsDto"/> objects containing 
+        /// the doctor's ID, working hours, and basic personal details.
+        /// </returns>
         [HttpGet("doctorsBySpecialization/{id}")]
         public async Task<ActionResult<List<DoctorApointmentsDto>>> GetDoctorsBySpecialization(int id)
         {

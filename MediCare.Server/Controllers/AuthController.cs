@@ -18,6 +18,16 @@ namespace MediCare.Server.Controllers
             this.jwtHelper = jwtHelper;
         }
 
+        /// <summary>
+        /// Issues a new access token and refresh token pair based on a valid refresh token.
+        /// </summary>
+        /// <param name="dto">
+        /// The request DTO containing the refresh token to validate.
+        /// </param>
+        /// <returns>
+        /// 200 OK with a new access token and refresh token if the provided refresh token is valid and not expired.  
+        /// 401 Unauthorized if the token is invalid, expired, or does not belong to a recognized user.
+        /// </returns>
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh([FromBody] RefreshRequestDto dto)
         {
@@ -61,10 +71,12 @@ namespace MediCare.Server.Controllers
             return Ok(new { accessToken, refreshToken = newRefreshToken });
         }
 
+        /// <summary>
+        /// DTO used when requesting a new access token using a refresh token.
+        /// </summary>
         public class RefreshRequestDto
         {
             public string RefreshToken { get; set; }
         }
-
     }
 }
