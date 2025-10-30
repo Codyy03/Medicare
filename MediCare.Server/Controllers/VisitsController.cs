@@ -4,6 +4,7 @@ using MediCare.Server.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using static MediCare.Server.Controllers.VisitsController;
 
 namespace MediCare.Server.Controllers
 {
@@ -230,6 +231,42 @@ namespace MediCare.Server.Controllers
 
             await context.SaveChangesAsync();
             return Ok();
+        }
+
+        [HttpPost("canceledVisit/{id}")]
+        public async Task<IActionResult> CancelPatientVisit(int id)
+        {
+            var visit = await context.Visits
+             .Include(v => v.Doctor)
+             .Include(v => v.Specialization)
+             .Include(v => v.Room)
+             .FirstOrDefaultAsync(v => v.ID == id);
+
+
+            if (visit == null) return NotFound();
+
+            if (visit.Status == VisitStatus.Completed || visit.Status == VisitStatus.Cancelled) 
+                return BadRequest();
+
+            visit.Status = VisitStatus.Cancelled; 
+            await context.SaveChangesAsync();
+
+            VisitResponseDto dto = new VisitResponseDto
+            {
+                ID = visit.ID,
+                VisitDate = visit.VisitDate,
+                VisitTime = visit.VisitTime,
+                DoctorName = $"{visit.Doctor.Name} {visit.Doctor.Surname}",
+                Specialization = visit.Specialization.SpecializationName,
+                Room = $"{visit.Room.RoomType} {visit.Room.RoomNumber}",
+                Status = visit.Status.ToString(),
+                Reason = visit.Reason.ToString(),
+                AdditionalNotes = visit.AdditionalNotes,
+                PrescriptionText = visit.PrescriptionText,
+                VisitNotes = visit.VisitNotes
+            };
+
+            return Ok(dto);
         }
 
         /// <summary>

@@ -70,7 +70,6 @@ export default function PatientProfile() {
             setEdit(false);
         }
         else {
-            //kod jesli zaczynamy edytowaæ
             setEdit(true);
         };
     }
@@ -248,7 +247,6 @@ export default function PatientProfile() {
                             <button className="btn btn-outline-primary btn-sm" onClick={() => setShowDeactivateModal(true)}>
                                 <i className="bi bi-arrow-repeat me-1"></i> Deactivate Account
                             </button>
-                            {patient.status}
                         </div>
                     </div>
 
@@ -264,7 +262,7 @@ export default function PatientProfile() {
                 </div>
 
 
-                <Modal show={showDeactivateModal} onHide={() => setShowDeactivateModal(false)} size="sm" centered>
+                <Modal show={showDeactivateModal} onHide={() => setShowDeactivateModal(false)} centered>
                     <Modal.Header closeButton className="border-0">
                         <Modal.Title className="d-flex align-items-center gap-2">
                             <i className="bi bi-person-x-fill text-danger"></i>
@@ -272,59 +270,57 @@ export default function PatientProfile() {
                         </Modal.Title>
                     </Modal.Header>
 
-                    <Modal.Body className="pb-0">
+                    <Modal.Body>
                         <div className="card border-0 shadow-sm">
-                            <div className="card-body pb-3">
-                                <div className="d-flex align-items-center gap-3 mb-3">
-                                    <i className="bi bi-exclamation-triangle-fill text-warning fs-4"></i>
-                                    <p className="mb-0 text-muted">
-                                        Are you sure you want to deactivate your account? This action is irreversible and will log you out immediately.
-                                    </p>
+                            <div className="card-body">
+                                {/* Warning */}
+                                <div className="alert alert-warning d-flex align-items-center gap-2 mb-4">
+                                    <i className="bi bi-exclamation-triangle-fill fs-4"></i>
+                                    <span>
+                                        Are you sure you want to deactivate your account? <br />
+                                        <strong>This action is irreversible</strong> and will log you out immediately.
+                                    </span>
                                 </div>
 
-                                <div className="row g-3">
-                                    <div className="col-12">
-                                        <label className="form-label text-muted text-uppercase small">Enter password</label>
-                                        <input
-                                            type="password"
-                                            className="form-control"
-                                            value={password1}
-                                            onChange={(e) => setPassword1(e.target.value)}
-                                        />
-                                    </div>
-                                    <div className="col-12">
-                                        <label className="form-label text-muted text-uppercase small">Repeat password</label>
-                                        <input
-                                            type="password"
-                                            className="form-control"
-                                            value={password2}
-                                            onChange={(e) => setPassword2(e.target.value)}
-                                        />
-                                    </div>
+                                {/* Password fields */}
+                                <div className="mb-4">
+                                    <label className="form-label fw-semibold">Enter password</label>
+                                    <input
+                                        type="password"
+                                        className="form-control form-control-lg"
+                                        value={password1}
+                                        onChange={(e) => setPassword1(e.target.value)}
+                                    />
+                                </div>
+
+                                <div className="mb-4">
+                                    <label className="form-label fw-semibold">Repeat password</label>
+                                    <input
+                                        type="password"
+                                        className="form-control form-control-lg"
+                                        value={password2}
+                                        onChange={(e) => setPassword2(e.target.value)}
+                                    />
                                 </div>
 
                                 {error && (
-                                    <div className="text-danger mt-3 text-center">
+                                    <div className="text-danger text-center mb-3">
                                         <i className="bi bi-x-circle me-1"></i> {error}
                                     </div>
                                 )}
                             </div>
 
-                            <hr className="my-0" />
-
-                            <div className="card-body pt-3 d-flex justify-content-end gap-2">
-                                <button className="btn btn-outline-secondary" onClick={() => setShowDeactivateModal(false)}>
+                            <div className="card-footer bg-white border-0 d-flex justify-content-end gap-2">
+                                <button className="btn btn-outline-secondary px-4" onClick={() => setShowDeactivateModal(false)}>
                                     Cancel
                                 </button>
-                                <button className="btn btn-danger" onClick={handleDeactivate}>
+                                <button className="btn btn-danger px-4" onClick={handleDeactivate}>
                                     <i className="bi bi-person-x me-1"></i> Deactivate
                                 </button>
                             </div>
                         </div>
                     </Modal.Body>
                 </Modal>
-
-
 
             </div>
         </div>

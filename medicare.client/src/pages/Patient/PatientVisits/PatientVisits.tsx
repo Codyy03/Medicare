@@ -5,6 +5,7 @@ import DatePicker from "react-datepicker";
 import { FaCalendarAlt } from "react-icons/fa";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+import axios from "axios";
 
 export default function PatientVisits() {
     const [visits, setVisits] = useState<VisitsResponseDto[]>([]);
@@ -50,6 +51,13 @@ export default function PatientVisits() {
         setFilteredVisits(filtered);
         setSearchName("");
         setSelectedDate(null);
+    };
+
+    const cancelVisit = async (id: number) => {
+        const response = await axios.post<VisitsResponseDto>(
+            `https://localhost:7014/api/visits/canceledVisit/${id}`
+        );
+        return response.data; // zwróci zaktualizowan¹ wizytê
     };
 
     const getStatusBadgeClass = (status: string | undefined) => {
@@ -296,12 +304,38 @@ export default function PatientVisits() {
                         </div>
                     )}
                 </Modal.Body>
-
                 <Modal.Footer className="border-0">
                     <Button variant="secondary" onClick={() => setShowModal(null)}>
                         Close
                     </Button>
+                    {showModal?.status === "Scheduled" && (
+                        <Button
+                            variant="danger"
+                            onClick={async () => {
+                                try {
+                                    const updatedVisit = await cancelVisit(showModal.id);
+
+                                    // podmieñ wizytê w stanie visits i filteredVisits
+                                    setVisits((prev) =>
+                                        prev.map((v) => (v.id === updatedVisit.id ? updatedVisit : v))
+                                    );
+                                    setFilteredVisits((prev) =>
+                                        prev.map((v) => (v.id === updatedVisit.id ? updatedVisit : v))
+                                    );
+
+                                    // zamknij modal
+                                    setShowModal(null);
+                                } catch (err) {
+                                    console.error(err);
+                                }
+                            }}
+                        >
+                            <i className="bi bi-x-circle me-1"></i> Cancel visit
+                        </Button>
+
+                    )}
                 </Modal.Footer>
+
             </Modal>
 
         </div>

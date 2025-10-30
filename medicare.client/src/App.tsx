@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./layout/Layout";
 import MinimalLayout from "./layout/MinimalLayout";
-import PatientsPage from "./pages/Patient/PatientsPage";
 import AboutUs from "./pages/Other/AboutUs/AboutUs";
 import Contact from "./pages/Other/Contact/Contact";
 import AllNews from "./pages/News/AllNews/AllNews";
@@ -32,7 +31,6 @@ function App() {
             <BrowserRouter>
                 <Routes>01
                     <Route path="/" element={<Layout />}>
-                        <Route path="patients" element={<PatientsPage />} />
                     </Route>
 
                     <Route element={<MinimalLayout />}>
