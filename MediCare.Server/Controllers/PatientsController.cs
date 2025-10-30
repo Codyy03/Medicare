@@ -45,7 +45,7 @@ namespace MediCare.Server.Controllers
                     Surname = d.Surname,
                     Email = d.Email,
                     PhoneNumber = d.PhoneNumber,
-                    Birthday = d.Birthday,
+                    Birthday = d.Birthday
                 })
                 .ToListAsync();
 
@@ -71,7 +71,7 @@ namespace MediCare.Server.Controllers
                   Surname = d.Surname,
                   Email = d.Email,
                   PhoneNumber = d.PhoneNumber,
-                  Birthday = d.Birthday,
+                  Birthday = d.Birthday
               })
               .FirstOrDefaultAsync();
 
@@ -129,7 +129,8 @@ namespace MediCare.Server.Controllers
                 Birthday = dto.Birthday,
                 Email = dto.Email,
                 PhoneNumber = dto.PhoneNumber,
-                PasswordHash = hasher.HashPassword(null!, dto.Password)
+                PasswordHash = hasher.HashPassword(null!, dto.Password),
+                Status = Status.Active
             };
 
             context.Patients.Add(patient);
@@ -142,7 +143,8 @@ namespace MediCare.Server.Controllers
                 Surname = patient.Surname,
                 Email = patient.Email,
                 PhoneNumber = patient.PhoneNumber,
-                Birthday = patient.Birthday
+                Birthday = patient.Birthday,
+                Status = patient.Status
             });
         }
 
@@ -157,17 +159,18 @@ namespace MediCare.Server.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
-            // Find user
             Patient? user = await context.Patients.FirstOrDefaultAsync(u => u.Email == dto.Email);
 
             if (user == null) return Unauthorized("Invalid credentials");
 
-            // Check password
             PasswordHasher<Patient> hasher = new PasswordHasher<Patient>();
             var result = hasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
 
             if (string.IsNullOrEmpty(user.PasswordHash) || (result == PasswordVerificationResult.Failed))
                 return Unauthorized("Invalid credentials");
+
+            if (user.Status == Status.Inactive)
+                return Unauthorized("Account is inactive.");
 
             var oldTokens = context.RefreshTokens.Where(rt => rt.PatientID == user.ID);
             context.RefreshTokens.RemoveRange(oldTokens);
@@ -287,6 +290,45 @@ namespace MediCare.Server.Controllers
 
             return NoContent();
         }
+
+        /// <summary>
+        /// Deactivates the currently authenticated patient's account by setting their status to Inactive.
+        /// Requires the patient's password for verification. If the password is correct and the account exists,
+        /// the account will be deactivated and the user should be logged out on the client side.
+        /// </summary>
+        /// <param name="dto">An object containing the patient's current password for verification.</param>
+        /// <returns>
+        /// Returns 200 OK with a confirmation message if deactivation is successful.
+        /// Returns 400 Bad Request if the password is incorrect.
+        /// Returns 401 Unauthorized if the user is not authenticated.
+        /// Returns 404 Not Found if the patient does not exist.
+        /// </returns>
+
+        [HttpPut("deactivate")]
+        public async Task<IActionResult> DeactivateAccount([FromBody] PasswordDto dto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { message = "Unauthorized access." });
+
+            var patient = await context.Patients.FindAsync(int.Parse(userId));
+            if (patient == null)
+                return NotFound(new { message = "Patient not found." });
+
+            var hasher = new PasswordHasher<Patient>();
+            var verifyResult = hasher.VerifyHashedPassword(patient, patient.PasswordHash, dto.Password);
+
+            if (verifyResult == PasswordVerificationResult.Failed)
+                return BadRequest(new { message = "Password is incorrect." });
+
+
+            patient.Status = Status.Inactive;
+            await context.SaveChangesAsync();
+
+            return Ok(new { message = "Account deactivated. You will be logged out." });
+        }
+
+
 
         /// <summary>
         /// Deletes a patient by their unique identifier.
@@ -432,7 +474,7 @@ namespace MediCare.Server.Controllers
         }
         /// <summary>
         /// Data Transfer Object (DTO) used when registering a new patient.
-        /// Includes personal details, PESEL, contact information, and password.
+        /// Includes personal details, PESEL, contact information,  password and sets account status as 1 (active).
         /// </summary>
         public class PatientRegisterDto
         {
@@ -463,6 +505,7 @@ namespace MediCare.Server.Controllers
             public required string Email { get; set; }
             public required string PhoneNumber { get; set; }
             public DateTime Birthday { get; set; }
+            public Status Status { get; set; }
         }
         /// <summary>
         /// Data Transfer Object (DTO) used when updating an existing patient’s details.
@@ -491,6 +534,10 @@ namespace MediCare.Server.Controllers
         {
             public string OldPassword { get; set; } = string.Empty;
             public string NewPassword { get; set; } = string.Empty;
+        }
+        public class PasswordDto
+        {
+            public string Password { get; set; }
         }
     }
 }

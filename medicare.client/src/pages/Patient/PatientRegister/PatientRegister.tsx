@@ -117,8 +117,10 @@ return (
                     name="birthday"
                     value={form.birthday}
                     onChange={handleChange}
+                    className={errors.birthday ? "invalid" : ""}
                     required
                 />
+                {errors.birthday && <span className="error-text">{errors.birthday}</span>}
 
                 <input
                     type="email"
@@ -164,8 +166,9 @@ return (
                 />
                 {errors.confirmPassword && <span className="error-text">{errors.confirmPassword}</span>}
 
-                 <button type="submit" className="btn btn-primary w-100 mt-3">Register</button>
+                <button type="submit" className="btn btn-primary w-100 mt-3">Register</button>
             </form>
+
         </div>
     </div>
 );

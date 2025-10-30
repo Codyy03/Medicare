@@ -6,4 +6,5 @@ export interface Patient {
     birthday: string;
     email: string;
     phoneNumber: string;
+    status: string;
 }

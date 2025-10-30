@@ -28,7 +28,15 @@ namespace MediCare.Server.Entities
         [Required, StringLength(255)]
         public required string PasswordHash { get; set; }
 
+        [Required]
+        public Status Status { get; set; } = Status.Active;
+
         public ICollection<Visit> Visits { get; set; } = new List<Visit>();
 
+    }
+    public enum Status
+    {
+        Active = 1,
+        Inactive = 2
     }
 }

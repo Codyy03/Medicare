@@ -1,26 +1,15 @@
 ﻿export default function NotFoundPage() {
     return (
-        <div className="text-center mt-10">
-            <h1 className="text-3xl font-bold text-red-600">Ni hao lost Internet user</h1>
-            <h2 className="text-3xl font-bold text-red-600">Well idk how you got there but there you go dumbass</h2>
+        <div className="text-center d-flex flex-column min-vh-100 justify-content-center">
+            <h1 className="text-3xl font-bold text-red-600">Page youre looking for doesn't exist</h1>
+            <h2 className="text-3xl font-bold text-red-600"></h2>
             <p className="mt-4">
-                笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋
-                笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋
-                笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋
-                笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋
-                笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋
-                笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋
-                笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋
-                <a href="/" className="text-blue-500 underline mt-2 inline-block">Get back home</a>
-                笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋
-                笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋
-                笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋
-                笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋
-                笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋
-                笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋
-                笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋
-                笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋笨蛋
-                笨蛋笨蛋
+
+                <h2 className="text-3xl font-bold text-red-600">
+                    <a href="/" className="text-blue-500 underline mt-2 inline-block">Get back home</a>
+                </h2>
+                
+
             </p>
         </div>
     );

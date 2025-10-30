@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { getPatientMe } from "../../../services/patientsService"
 import type { Patient } from "../../../interfaces/patients.types";
 import axios from "axios";
+import { Modal } from "react-bootstrap";
 export default function PatientProfile() {
     const [patient, setPatient] = useState<Patient>();
     const [loading, setLoading] = useState(true);
@@ -10,6 +11,12 @@ export default function PatientProfile() {
     const [formData, setFormData] = useState<Patient | undefined>(patient);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+
+    const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+    const [password1, setPassword1] = useState("");
+    const [password2, setPassword2] = useState("");
+
+
     async function change() {
         setError("");
         setSuccess("");
@@ -67,6 +74,33 @@ export default function PatientProfile() {
             setEdit(true);
         };
     }
+    async function handleDeactivate() {
+        setError("");
+        if (password1 !== password2) {
+            setError("Passwords do not match.");
+            return;
+        }
+
+        try {
+            await axios.put(
+                `https://localhost:7014/api/patients/deactivate`,
+                { password: password1 },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                }
+            );
+            localStorage.removeItem("token");
+            window.location.href = "/login/patient";
+        } catch (err) {
+            if (axios.isAxiosError(err)) {
+                setError(err.response?.data?.message || "Deactivation failed.");
+            }
+        }
+    }
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev!, [name]: value }));
@@ -198,7 +232,7 @@ export default function PatientProfile() {
                         <div className="col-sm-9">&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</div>
                     </div>
 
-                    <div className="row align-items-center">
+                    <div className="row align-items-center mb-3">
                         <div className="col-sm-3 fw-bold">Reset Password</div>
                         <div className="col-sm-9">
                             <Link to="/resetPasswordPatient" className="btn btn-outline-primary btn-sm">
@@ -206,6 +240,19 @@ export default function PatientProfile() {
                             </Link>
                         </div>
                     </div>
+
+
+                    <div className="row align-items-center">
+                        <div className="col-sm-3 fw-bold">Deactivate account</div>
+                        <div className="col-sm-9">
+                            <button className="btn btn-outline-primary btn-sm" onClick={() => setShowDeactivateModal(true)}>
+                                <i className="bi bi-arrow-repeat me-1"></i> Deactivate Account
+                            </button>
+                            {patient.status}
+                        </div>
+                    </div>
+
+
                 </div>
                 {error && <div className="reset-error">{error}</div>}
                 {success && <div className="reset-success">{success}</div>}
@@ -215,6 +262,69 @@ export default function PatientProfile() {
                         {edit ? "Save Changes" : "Edit Data"}
                     </button>
                 </div>
+
+
+                <Modal show={showDeactivateModal} onHide={() => setShowDeactivateModal(false)} size="sm" centered>
+                    <Modal.Header closeButton className="border-0">
+                        <Modal.Title className="d-flex align-items-center gap-2">
+                            <i className="bi bi-person-x-fill text-danger"></i>
+                            Deactivate Account
+                        </Modal.Title>
+                    </Modal.Header>
+
+                    <Modal.Body className="pb-0">
+                        <div className="card border-0 shadow-sm">
+                            <div className="card-body pb-3">
+                                <div className="d-flex align-items-center gap-3 mb-3">
+                                    <i className="bi bi-exclamation-triangle-fill text-warning fs-4"></i>
+                                    <p className="mb-0 text-muted">
+                                        Are you sure you want to deactivate your account? This action is irreversible and will log you out immediately.
+                                    </p>
+                                </div>
+
+                                <div className="row g-3">
+                                    <div className="col-12">
+                                        <label className="form-label text-muted text-uppercase small">Enter password</label>
+                                        <input
+                                            type="password"
+                                            className="form-control"
+                                            value={password1}
+                                            onChange={(e) => setPassword1(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="col-12">
+                                        <label className="form-label text-muted text-uppercase small">Repeat password</label>
+                                        <input
+                                            type="password"
+                                            className="form-control"
+                                            value={password2}
+                                            onChange={(e) => setPassword2(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+
+                                {error && (
+                                    <div className="text-danger mt-3 text-center">
+                                        <i className="bi bi-x-circle me-1"></i> {error}
+                                    </div>
+                                )}
+                            </div>
+
+                            <hr className="my-0" />
+
+                            <div className="card-body pt-3 d-flex justify-content-end gap-2">
+                                <button className="btn btn-outline-secondary" onClick={() => setShowDeactivateModal(false)}>
+                                    Cancel
+                                </button>
+                                <button className="btn btn-danger" onClick={handleDeactivate}>
+                                    <i className="bi bi-person-x me-1"></i> Deactivate
+                                </button>
+                            </div>
+                        </div>
+                    </Modal.Body>
+                </Modal>
+
+
 
             </div>
         </div>

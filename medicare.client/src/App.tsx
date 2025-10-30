@@ -99,7 +99,7 @@ function App() {
                                     <DoctorsResetPassword />
                                 </ProtectedRoute>
                             } />
-                                                    <Route path="/patient/visits" element={
+                        <Route path="/patient/visits" element={
                             <ProtectedRoute role="Patient">
                                 <PatientVisits />
                             </ProtectedRoute>

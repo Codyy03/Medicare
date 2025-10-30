@@ -25,7 +25,14 @@ export default function PatientLogin() {
                 setError("Invalid email or password");
             }
         } catch (err) {
-            setError("Invalid email or password");
+            if (axios.isAxiosError(err)) {
+                const message = err.response?.data;
+                if (typeof message === "string") {
+                    setError(message);
+                }
+            } else {
+                setError("Unexpected error occurred.");
+            }
         }
     };
 
