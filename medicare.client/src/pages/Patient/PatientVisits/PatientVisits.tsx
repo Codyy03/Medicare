@@ -15,6 +15,8 @@ interface VisitsResponseDto {
     status: string;
     reason: string;
     additionalNotes?: string;
+    prescriptionText?: string;
+    visitNotes?: string;
 }
 export default function PatientVisits() {
     const [visits, setVisits] = useState<VisitsResponseDto[]>([]);
@@ -136,120 +138,185 @@ export default function PatientVisits() {
                 </div>
             </div>
 
-            {/* Visit Table */}
-            <div className="table-responsive">
-                <table className="table table-bordered table-hover align-middle">
-                    <thead className="table-light">
-                        <tr>
-                            <th>Date</th>
-                            <th>Doctor name</th>
-                            <th>Room</th>
-                            <th>Reason</th>
-                            <th>Status</th>
-                            <th>Details</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {loading && (
-                            <tr>
-                                <td colSpan={5}>Loading visits...</td>
-                            </tr>
-                        )}
-                        {error && (
-                            <tr>
-                                <td colSpan={5} className="text-danger">
-                                    {error}
-                                </td>
-                            </tr>
-                        )}
-                        {!loading && filteredVisits.length === 0 && !error && (
-                            <tr>
-                                <td colSpan={5}>No visits found.</td>
-                            </tr>
-                        )}
-                        {filteredVisits.map((visit) => (
-                            <tr key={visit.id}>
-                                <td className="text-center">
-                                    <div className="fw-semibold">{new Date(visit.visitDate).toLocaleDateString()}</div>
-                                    <div className="text-muted">{visit.visitTime.slice(0, 5)}</div>
-                                </td>
-                                <td>{visit.doctorName}</td>
-                                <td>{visit.specialization} - {visit.room}</td>
-                                <td>{visit.reason}</td>
-                                <td>
+            {/* Visit Cards */}
+            <div className="row g-4">
+                {loading && <p>Loading visits...</p>}
+                {error && <p className="text-danger">{error}</p>}
+                {!loading && filteredVisits.length === 0 && !error && (
+                    <p>No visits found.</p>
+                )}
+
+                {filteredVisits.map((visit) => (
+                    <div className="col-md-6 col-lg-4" key={visit.id}>
+                        <div className="card shadow-sm h-100">
+                            <div className="card-body d-flex flex-column">
+                                <h5 className="card-title">
+                                    {new Date(visit.visitDate).toLocaleDateString()}{" "}
+                                    <small className="text-muted">{visit.visitTime.slice(0, 5)}</small>
+                                </h5>
+                                <h6 className="card-subtitle mb-2 text-muted">
+                                    {visit.specialization}, {visit.room}
+                                </h6>
+                                <p className="mb-1"><strong>Doctor:</strong> {visit.doctorName}</p>
+                                <p className="mb-1"><strong>Reason:</strong> {visit.reason}</p>
+                                <p className="mb-2">
                                     <span className={getStatusBadgeClass(visit.status)}>
                                         {visit.status}
                                     </span>
-                                </td>
-                                <td className="text-center align-middle">
-                                    <button className="btn btn-outline-primary btn-sm" onClick={() => setShowModal(visit)}>
+                                </p>
+                                <div className="mt-auto text-end">
+                                    <button
+                                        className="btn btn-outline-primary btn-sm"
+                                        onClick={() => setShowModal(visit)}
+                                    >
                                         <i className="bi bi-eye me-1"></i> View details
                                     </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
             </div>
             {/* Visit Details Modal */}
             <Modal show={Boolean(showModal)} onHide={() => setShowModal(null)} size="lg" centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>Visit Details</Modal.Title>
+                <Modal.Header closeButton className="border-0">
+                    <Modal.Title className="d-flex align-items-center gap-2">
+                        <i className="bi bi-file-medical text-primary"></i>
+                        Visit details
+                    </Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
-                    {Boolean(showModal) && (
-                        <div className="card shadow-sm p-4">
-                                                         {/* Specialization & Doctor */}
-                            <div className="row">
-                                <div className="col-md-6 mb-3">
-                                    <label className="form-label fw-bold">Specialization</label>
-                                    <p className="form-control-plaintext">{showModal?.specialization}</p>
-                                </div>
-                                <div className="col-md-6 mb-3">
-                                    <label className="form-label fw-bold">Doctor</label>
-                                    <p className="form-control-plaintext">{showModal?.doctorName}</p>
-                                </div>
-                            </div>
-                                                         {/* Date & Time */}
-                            <div className="row">
-                                <div className="col-md-6 mb-3">
-                                    <label className="form-label fw-bold">Time</label>
-                                    <p className="form-control-plaintext">{showModal?.visitDate.toString()} {showModal?.visitTime.slice(0, 5)}</p>
-                                </div>
-                                <div className="col-md-6 mb-3">
-                                    <label className="form-label fw-bold">Room</label>
-                                    <p className="form-control-plaintext">{showModal?.room}</p>
-                                </div>
-                            </div>
-                                                         {/* Reason & Notes */}
-                            <div className="row">
-                                <div className="mb-3">
-                                    <label className="form-label fw-bold">Visit reason</label>
-                                    <p className="form-control-plaintext">{showModal?.reason}</p>
-                                </div>
-                                <div className="mb-3">
-                                    <label className="form-label fw-bold">Additional notes</label>
-                                    <p className="form-control-plaintext">
-                                        {showModal?.additionalNotes || <span className="text-muted">None</span>}
-                                    </p>
+
+                <Modal.Body className="pb-0">
+                    {showModal && (
+                        <div className="card border-0 shadow-sm">
+                            {/* Header: date, time, status */}
+                            <div className="card-body pb-3">
+                                <div className="d-flex flex-wrap align-items-center gap-3">
+                                    <div className="d-flex align-items-center gap-2">
+                                        <i className="bi bi-calendar3 text-primary"></i>
+                                        <span className="fw-semibold">
+                                            {new Date(showModal.visitDate).toLocaleDateString()}
+                                        </span>
+                                    </div>
+                                    <div className="vr d-none d-md-block" />
+                                    <div className="d-flex align-items-center gap-2">
+                                        <i className="bi bi-clock text-primary"></i>
+                                        <span className="fw-semibold">{showModal.visitTime.slice(0, 5)}</span>
+                                    </div>
+                                    <div className="vr d-none d-md-block" />
+                                    <span className={getStatusBadgeClass(showModal.status)}>
+                                        {showModal.status}
+                                    </span>
                                 </div>
                             </div>
-                                                         {/* Status */}
-                            <div className="mb-3 d-flex align-items-center">
-                                <label className="form-label fw-bold me-2">Status:</label>
-                                <span className={getStatusBadgeClass(showModal?.status)}>
-                                    {showModal?.status}
-                                </span>
+
+                            <hr className="my-0" />
+
+                            {/* Key info cards */}
+                            <div className="card-body pt-3">
+                                <div className="row g-3">
+                                    <div className="col-md-6">
+                                        <div className="p-3 rounded-3 bg-light h-100">
+                                            <div className="d-flex align-items-center gap-2 mb-2">
+                                                <i className="bi bi-person-badge text-secondary"></i>
+                                                <span className="text-muted text-uppercase small">Doctor</span>
+                                            </div>
+                                            <div className="fw-semibold">{showModal.doctorName}</div>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <div className="p-3 rounded-3 bg-light h-100">
+                                            <div className="d-flex align-items-center gap-2 mb-2">
+                                                <i className="bi bi-briefcase text-secondary"></i>
+                                                <span className="text-muted text-uppercase small">Specialization</span>
+                                            </div>
+                                            <div className="fw-semibold">{showModal.specialization}</div>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <div className="p-3 rounded-3 bg-light h-100">
+                                            <div className="d-flex align-items-center gap-2 mb-2">
+                                                <i className="bi bi-hospital text-secondary"></i>
+                                                <span className="text-muted text-uppercase small">Room</span>
+                                            </div>
+                                            <div className="fw-semibold">{showModal.room}</div>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <div className="p-3 rounded-3 bg-light h-100">
+                                            <div className="d-flex align-items-center gap-2 mb-2">
+                                                <i className="bi bi-clipboard2-pulse text-secondary"></i>
+                                                <span className="text-muted text-uppercase small">Reason</span>
+                                            </div>
+                                            <div className="fw-semibold">{showModal.reason}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Notes section */}
+                            <div className="card-body pt-2">
+                                <div className="row g-3">
+                                    <div className="col-12">
+                                        <div className="border rounded-3 p-3">
+                                            <div className="d-flex align-items-center gap-2 mb-2">
+                                                <i className="bi bi-sticky text-secondary"></i>
+                                                <span className="text-muted text-uppercase small">Additional notes</span>
+                                            </div>
+                                            <p className="mb-0">
+                                                {showModal.additionalNotes ? (
+                                                    showModal.additionalNotes
+                                                ) : (
+                                                    <span className="text-muted">None</span>
+                                                )}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="col-md-6">
+                                        <div className="border rounded-3 p-3 h-100">
+                                            <div className="d-flex align-items-center gap-2 mb-2">
+                                                <i className="bi bi-journal-medical text-secondary"></i>
+                                                <span className="text-muted text-uppercase small">Doctor notes</span>
+                                            </div>
+                                            <p className="mb-0">
+                                                {showModal.visitNotes ? (
+                                                    showModal.visitNotes
+                                                ) : (
+                                                    <span className="text-muted">None</span>
+                                                )}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="col-md-6">
+                                        <div className="border rounded-3 p-3 h-100">
+                                            <div className="d-flex align-items-center gap-2 mb-2">
+                                                <i className="bi bi-capsule text-secondary"></i>
+                                                <span className="text-muted text-uppercase small">Prescription</span>
+                                            </div>
+                                            <p className="mb-0">
+                                                {showModal.prescriptionText ? (
+                                                    showModal.prescriptionText
+                                                ) : (
+                                                    <span className="text-muted">None</span>
+                                                )}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     )}
                 </Modal.Body>
-                <Modal.Footer>
+
+                <Modal.Footer className="border-0">
                     <Button variant="secondary" onClick={() => setShowModal(null)}>
                         Close
                     </Button>
                 </Modal.Footer>
             </Modal>
+
         </div>
     );
 }

@@ -150,7 +150,10 @@ namespace MediCare.Server.Controllers
                 Room = $"{visit.Room.RoomType} {visit.Room.RoomNumber}",
                 Status = visit.Status.ToString(),
                 Reason = visit.Reason.ToString(),
-                AdditionalNotes = visit.AdditionalNotes
+                AdditionalNotes = visit.AdditionalNotes,
+                PrescriptionText = visit.PrescriptionText,
+                VisitNotes = visit.VisitNotes
+                
             }).ToList();
 
             return Ok(result);
@@ -175,7 +178,7 @@ namespace MediCare.Server.Controllers
 
             if (doctor == null) return NotFound();
 
-            var today = new DateOnly(2025, 10, 27);
+            var today = new DateOnly(2025, 10, 31);
 
             var visits = await context.Visits
                 .Where(v => v.DoctorID == doctor.ID && v.VisitDate == today && v.Status == VisitStatus.Scheduled)
@@ -500,6 +503,8 @@ namespace MediCare.Server.Controllers
             public string Status { get; set; }
             public string Reason { get; set; }
             public string? AdditionalNotes { get; set; }
+            public string? VisitNotes { get; set; }
+            public string? PrescriptionText { get; set; }
         }
 
         /// <summary>
