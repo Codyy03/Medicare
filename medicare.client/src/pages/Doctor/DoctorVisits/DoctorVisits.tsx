@@ -202,79 +202,104 @@ const DoctorVisit = () => {
 
                 {/* Visit Details Modal */}
                 <Modal show={showModal} onHide={() => setShowModal(false)} size="lg" centered>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Visit Details</Modal.Title>
+                    <Modal.Header closeButton className="border-0">
+                        <Modal.Title className="d-flex align-items-center gap-2">
+                            <i className="bi bi-person-vcard text-primary"></i>
+                            Visit overview
+                        </Modal.Title>
                     </Modal.Header>
+
                     <Modal.Body>
                         {selectedVisit && (
-                            <div className="card shadow-sm p-4">
-                                <h4 className="mb-4">Reservation details</h4>
-
-                                {/* Specialization & Doctor */}
-                                <div className="row">
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label fw-bold">Specialization</label>
-                                        <p className="form-control-plaintext">{selectedVisit.specialization}</p>
+                            <div className="p-3">
+                                {/* Top section: Patient + Status */}
+                                <div className="d-flex justify-content-between align-items-center mb-4">
+                                    <div>
+                                        <h5 className="mb-1">
+                                            <i className="bi bi-person-circle me-2 text-secondary"></i>
+                                            {selectedVisit.patientName}
+                                        </h5>
+                                        <small className="text-muted">Patient</small>
                                     </div>
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label fw-bold">Doctor</label>
-                                        <p className="form-control-plaintext">{selectedVisit.doctorName}</p>
-                                    </div>
-                                </div>
-
-                                {/* Date & Time */}
-                                <div className="row">
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label fw-bold">Date</label>
-                                        <p className="form-control-plaintext">{selectedVisit.visitDate.toString()}</p>
-                                    </div>
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label fw-bold">Time</label>
-                                        <p className="form-control-plaintext">{selectedVisit.visitTime.slice(0, 5)}</p>
-                                    </div>
-                                </div>
-
-                                {/* Patient Info */}
-                                <div className="row">
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label fw-bold">Patient</label>
-                                        <p className="form-control-plaintext">{selectedVisit.patientName}</p>
-                                    </div>
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label fw-bold">Room</label>
-                                        <p className="form-control-plaintext">{selectedVisit.room} {selectedVisit.roomNumber}</p>
-                                    </div>
-                                </div>
-
-                                {/* Reason & Notes */}
-                                <div className="mb-3">
-                                    <label className="form-label fw-bold">Visit reason</label>
-                                    <p className="form-control-plaintext">{selectedVisit.reason}</p>
-                                </div>
-
-                                <div className="mb-3">
-                                    <label className="form-label fw-bold">Additional notes</label>
-                                    <p className="form-control-plaintext">
-                                        {selectedVisit.additionalNotes || <span className="text-muted">None</span>}
-                                    </p>
-                                </div>
-
-                                {/* Status */}
-                                <div className="mb-3 d-flex align-items-center">
-                                    <label className="form-label fw-bold me-2">Status:</label>
                                     <span className={getStatusBadgeClass(selectedVisit.status)}>
                                         {selectedVisit.status}
                                     </span>
                                 </div>
+
+                                {/* Date, Time, Room */}
+                                <div className="row g-3 mb-4">
+                                    <div className="col-md-4">
+                                        <div className="border rounded-3 p-3 h-100">
+                                            <div className="text-muted small mb-1">
+                                                <i className="bi bi-calendar3 me-1"></i>Date
+                                            </div>
+                                            <div className="fw-semibold">
+                                                {new Date(selectedVisit.visitDate).toLocaleDateString()}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-4">
+                                        <div className="border rounded-3 p-3 h-100">
+                                            <div className="text-muted small mb-1">
+                                                <i className="bi bi-clock me-1"></i>Time
+                                            </div>
+                                            <div className="fw-semibold">{selectedVisit.visitTime.slice(0, 5)}</div>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-4">
+                                        <div className="border rounded-3 p-3 h-100">
+                                            <div className="text-muted small mb-1">
+                                                <i className="bi bi-hospital me-1"></i>Room
+                                            </div>
+                                            <div className="fw-semibold">
+                                                {selectedVisit.room} {selectedVisit.roomNumber}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Specialization & Reason */}
+                                <div className="row g-3 mb-4">
+                                    <div className="col-md-6">
+                                        <div className="bg-light rounded-3 p-3 h-100">
+                                            <div className="text-muted small mb-1">
+                                                <i className="bi bi-briefcase me-1"></i>Specialization
+                                            </div>
+                                            <div className="fw-semibold">{selectedVisit.specialization}</div>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <div className="bg-light rounded-3 p-3 h-100">
+                                            <div className="text-muted small mb-1">
+                                                <i className="bi bi-clipboard2-pulse me-1"></i>Reason
+                                            </div>
+                                            <div className="fw-semibold">{selectedVisit.reason}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Notes */}
+                                <div className="mb-3">
+                                    <div className="border rounded-3 p-3">
+                                        <div className="text-muted small mb-1">
+                                            <i className="bi bi-sticky me-1"></i>Additional notes
+                                        </div>
+                                        <p className="mb-0">
+                                            {selectedVisit.additionalNotes || <span className="text-muted">None</span>}
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </Modal.Body>
-                    <Modal.Footer>
+
+                    <Modal.Footer className="border-0">
                         <Button variant="secondary" onClick={() => setShowModal(false)}>
                             Close
                         </Button>
                     </Modal.Footer>
                 </Modal>
+
 
             </div>
         </div>
