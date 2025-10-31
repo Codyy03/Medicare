@@ -1,69 +1,36 @@
+import api from "./api";
+
 export async function getDoctorMe() {
-    const token = localStorage.getItem("token");
-
-    const response = await fetch("https://localhost:7014/api/doctors/me", {
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": token ? `Bearer ${token}` : ""
-        }
-    });
-
-    if (!response.ok) {
-        throw new Error("Error when downloading doctor");
-    }
-    return response.json();
+    const res = await api.get("/doctors/me");
+    return res.data;
 }
 
 export async function getDoctorById(id: number) {
-    const response = await fetch(`https://localhost:7014/api/doctors/${id}`);
-
-    if (!response.ok) {
-        throw new Error("Error when downloading doctor");
-    }
-
-    return response.json();
+    const res = await api.get(`/doctors/${id}`);
+    return res.data;
 }
 
 export async function getDoctors() {
-    const response = await fetch("https://localhost:7014/api/doctors");
-
-    if (!response.ok) {
-        throw new Error("Error when downloading doctors");
-    }
-    return response.json();
+    const res = await api.get("/doctors");
+    return res.data;
 }
 
-export async function getDoctorsByFilters(specializationID?: number, surname?: string, availableAt?: string) {
-    const params = new URLSearchParams();
+export async function getDoctorsByFilters(
+    specializationID?: number,
+    surname?: string,
+    availableAt?: string
+) {
+    const params: Record<string, string> = {};
 
-    if (specializationID) {
-        params.append("specializationID", specializationID.toString());
-    }
+    if (specializationID) params.specializationID = specializationID.toString();
+    if (surname) params.surname = surname;
+    if (availableAt) params.availableAt = availableAt;
 
-    if (surname != null && surname != "") {
-        params.append("surname", surname);
-    }
-
-    if (availableAt) {
-        params.append("availableAt", availableAt);
-    }
-
-    const url = `https://localhost:7014/api/doctors/by-filter?${params.toString()}`;
-
-    const response = await fetch(url);
-
-    if (!response.ok) {
-        throw new Error("Error when downloading doctors");
-    }
-
-    return response.json();
+    const res = await api.get("/doctors/by-filter", { params });
+    return res.data;
 }
 
 export async function getDoctorsBySpecialization(id: number) {
-    const response = await fetch(`https://localhost:7014/api/doctors/doctorsBySpecialization/${id}`);
-
-    if (!response.ok) {
-        throw new Error("Error when downloading doctors");
-    }
-    return response.json();
+    const res = await api.get(`/doctors/doctorsBySpecialization/${id}`);
+    return res.data;
 }

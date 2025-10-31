@@ -22,6 +22,8 @@ import PatientsResetPassword from "./pages/Patient/PatientResetPassword/PatientR
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFoundPage from "./pages/Other/NotFoundPage/NotFoundPage";
+import ServerErrorPage from "./pages/Other/ServerErrorPage/ServerErrorPage";
+import UnauthorizedPage from "./pages/Other/UnauthorizedPage/UnauthorizedPage";
 import PatientVisits from "./pages/Patient/PatientVisits/PatientVisits";
 import './App.css';
 
@@ -108,6 +110,8 @@ function App() {
 
                     <Route path="/doctorInfo/:id" element={<DoctorInfo />} />
                     <Route path="*" element={<NotFoundPage />} />
+                   <Route path="/unauthorized" element={<UnauthorizedPage />} />
+                   <Route path="/server-error" element={<ServerErrorPage />} />
                 </Route>
             </Routes>
             </BrowserRouter>

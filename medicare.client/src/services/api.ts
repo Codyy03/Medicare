@@ -55,6 +55,13 @@ api.interceptors.response.use(
             }
         }
 
+        if (error.response?.status === 500) {
+            window.location.href = "/server-error";
+        }
+        if (error.response?.status === 404) {
+            window.location.href = "/not-found";
+        }
+
         return Promise.reject(error);
     }
 );

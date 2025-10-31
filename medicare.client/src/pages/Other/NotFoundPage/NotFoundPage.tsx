@@ -1,16 +1,14 @@
 ﻿export default function NotFoundPage() {
     return (
-        <div className="text-center d-flex flex-column min-vh-100 justify-content-center">
-            <h1 className="text-3xl font-bold text-red-600">Page youre looking for doesn't exist</h1>
-            <h2 className="text-3xl font-bold text-red-600"></h2>
-            <p className="mt-4">
-
-                <h2 className="text-3xl font-bold text-red-600">
-                    <a href="/" className="text-blue-500 underline mt-2 inline-block">Get back home</a>
-                </h2>
-                
-
+        <div className="d-flex flex-column justify-content-center align-items-center min-vh-100 text-center">
+            <h1 className="display-1 fw-bold text-danger">404</h1>
+            <h2 className="mb-3">Page not found</h2>
+            <p className="text-muted mb-4">
+                The page you’re looking for doesn’t exist or has been moved.
             </p>
+            <a href="/" className="btn btn-primary">
+                <i className="bi bi-house-door me-2"></i> Back to Home
+            </a>
         </div>
     );
 }

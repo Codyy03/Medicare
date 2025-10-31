@@ -1,32 +1,12 @@
+import api from "./api";
+
 export async function getPatients() {
-    const token = localStorage.getItem("token");
-
-    const response = await fetch("https://localhost:7014/api/patients", {
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": token ? `Bearer ${token}` : ""
-        }
-    });
-
-    if (!response.ok) {
-        throw new Error("Error when downolading patients");
-    }
-    return response.json();
+    const res = await api.get("/patients");
+    return res.data;
 }
 
 export async function getPatientMe() {
-    const token = localStorage.getItem("token");
-
-    const response = await fetch("https://localhost:7014/api/patients/me", {
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": token ? `Bearer ${token}` : ""
-        }
-    });
-
-    if (!response.ok) {
-        throw new Error("Error when downloading patient");
-    }
-    return response.json();
+    const res = await api.get("/patients/me");
+    return res.data;
 }
 
