@@ -16,9 +16,6 @@ namespace MediCare.Server.Entities
         [Required]
         public required string SpecializationHighlight { get; set; }
 
-        [Required]
-        public required string Link { get; set; }
-
         public ICollection<Doctor> Doctors { get; set; } = new List<Doctor>();
     }
 }

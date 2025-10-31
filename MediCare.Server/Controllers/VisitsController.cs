@@ -32,7 +32,6 @@ namespace MediCare.Server.Controllers
                 .Include(v => v.Doctor).ThenInclude(d => d.Specializations)
                 .Include(v => v.Patient)
                 .Include(v => v.Room)
-                .Include(v => v.Status)
                 .FirstOrDefaultAsync(v => v.ID == id);
 
             if (visit == null)
@@ -47,7 +46,7 @@ namespace MediCare.Server.Controllers
                 Specialization = string.Join(", ", visit.Doctor.Specializations.Select(s => s.SpecializationName)),
                 PatientName = visit.Patient.Name,
                 Room = visit.Room.RoomType,
-                Status = VisitStatus.Scheduled.ToString(),
+                Status = visit.Status.ToString(),
                 Reason = visit.Reason.ToString(),
                 AdditionalNotes = visit.AdditionalNotes
             });
@@ -233,6 +232,14 @@ namespace MediCare.Server.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Cancels a scheduled patient visit by its ID.
+        /// </summary>
+        /// <param name="id">The unique identifier of the visit to cancel.</param>
+        /// <returns>
+        /// 200 OK with the updated <see cref="VisitResponseDto"/> if the visit was successfully cancelled.  
+        /// 404 NotFound if the visit does not exist.  
+        /// 400 BadRequest if
         [HttpPost("canceledVisit/{id}")]
         public async Task<IActionResult> CancelPatientVisit(int id)
         {

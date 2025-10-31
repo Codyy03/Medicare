@@ -1,5 +1,6 @@
 ﻿using MediCare.Server.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 namespace MediCare.Server.Data
 {
     public class MediCareDbContext : DbContext
@@ -17,6 +18,7 @@ namespace MediCare.Server.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            HandleOneToOne(modelBuilder);
             HandleOneToMany(modelBuilder);
             HandleManyToMany(modelBuilder);
             HandleUniqueIndexes(modelBuilder);
@@ -64,16 +66,22 @@ namespace MediCare.Server.Data
                 .WithMany()
                 .HasForeignKey(v => v.SpecializationID)
                 .OnDelete(DeleteBehavior.Restrict);
+        }
 
+        /// <summary>
+        /// Configures one-to-one relationships between entities in the model.
+        /// </summary>
+        void HandleOneToOne(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<RefreshToken>()
                 .HasOne(rt => rt.Patient)
-                .WithMany()
-                .HasForeignKey(rt => rt.PatientID);
+                .WithOne(p => p.RefreshToken) 
+                .HasForeignKey<RefreshToken>(rt => rt.PatientID);
 
             modelBuilder.Entity<RefreshToken>()
                 .HasOne(rt => rt.Doctor)
-                .WithMany()
-                .HasForeignKey(rt => rt.DoctorID);
+                .WithOne(d => d.RefreshToken)
+                .HasForeignKey<RefreshToken>(rt => rt.DoctorID);
         }
 
         /// <summary>
@@ -149,7 +157,6 @@ namespace MediCare.Server.Data
                    SpecializationName = "Cardiologist",
                    SpecializationDescription = "Specialist in heart diseases",
                    SpecializationHighlight = "Protect your heart with expert cardiovascular care and diagnostics.",
-                   Link = "#"
                },
                new Specialization
                {
@@ -157,7 +164,6 @@ namespace MediCare.Server.Data
                    SpecializationName = "Orthopedic Surgeon",
                    SpecializationDescription = "Specialist in musculoskeletal system injuries and disorders",
                    SpecializationHighlight = "Restore mobility and strength with advanced orthopedic solutions",
-                   Link = "#"
                },
                new Specialization
                {
@@ -165,7 +171,6 @@ namespace MediCare.Server.Data
                    SpecializationName = "Dermatologist",
                    SpecializationDescription = "Specialist in skin conditions",
                    SpecializationHighlight = "Healthy skin starts here comprehensive dermatological treatments for all ages.",
-                   Link = "#"
                }
             );
         }

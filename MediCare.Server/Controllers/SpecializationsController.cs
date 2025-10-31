@@ -85,7 +85,6 @@ namespace MediCare.Server.Controllers
                 {
                     SpecializationName = s.SpecializationName,
                     SpecializationHighlight = s.SpecializationHighlight,
-                    Link = s.Link
                 }).ToListAsync();
 
             return Ok(specializationsHighlightDtos);
@@ -137,7 +136,6 @@ namespace MediCare.Server.Controllers
             existing.SpecializationName = specialization.SpecializationName;
             existing.SpecializationHighlight = specialization.SpecializationHighlight;
             existing.SpecializationDescription = specialization.SpecializationDescription;
-            existing.Link = specialization.Link;
 
             await context.SaveChangesAsync();
 
@@ -173,7 +171,6 @@ namespace MediCare.Server.Controllers
         public class SpecializationHighlightDto
         {
             public string? SpecializationName { get; set; }
-            public string? Link { get; set; }
             public string? SpecializationHighlight { get; set; }
         }
 

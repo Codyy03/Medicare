@@ -173,17 +173,33 @@ namespace MediCare.Server.Tests.Controllers
                 Assert.Empty(result);
             }
         }
-        //public int ID { get; set; }
-        //public DateOnly VisitDate { get; set; }
-        //public TimeOnly VisitTime { get; set; }
-        //public string DoctorName { get; set; }
-        //public string Specialization { get; set; }
-        //public string PatientName { get; set; }
-        //public string Room { get; set; }
-        //public int RoomNumber { get; set; }
-        //public string Status { get; set; }
-        //public string Reason { get; set; }
-        //public string? AdditionalNotes { get; set; }
+
+        /// <summary>
+        /// Integration test verifying that cancelling a scheduled visit
+        /// returns 200 OK and updates the visit status to "Cancelled".
+        /// </summary>
+        [Fact]
+        public async Task CancelVisitReturnOk()
+        {
+            var client = new SeededDbFactory().CreateClient();
+
+            var token = TestJwtTokenHelper.GenerateTestToken("1", "michael.brown@example.com", "Michael", "Patient");
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.PostAsync("api/visits/canceledVisit/1", null);
+
+            Assert.Equal("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var visitResponse = await client.GetAsync("api/visits/1");
+            var content = await visitResponse.Content.ReadAsStringAsync();
+
+            var result = JsonSerializer.Deserialize<VisitResponseDto>(content,
+             new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            Assert.Equal(VisitStatus.Cancelled.ToString(), result.Status);
+        }
 
         /// <summary>
         /// Verifies that the endpoint <c>POST api/visits</c> 

@@ -55,7 +55,6 @@ namespace MediCare.Server.Tests.TestInfrastructure
                         SpecializationName = "Cardiologist",
                         SpecializationDescription = "Specialist in heart diseases",
                         SpecializationHighlight = "Protect your heart with expert cardiovascular care and diagnostics.",
-                        Link = "#"
                     },
                     new Specialization
                     {
@@ -63,7 +62,6 @@ namespace MediCare.Server.Tests.TestInfrastructure
                         SpecializationName = "Orthopedic Surgeon",
                         SpecializationDescription = "Specialist in musculoskeletal system injuries and disorders",
                         SpecializationHighlight = "Restore mobility and strength with advanced orthopedic solutions",
-                        Link = "#"
                     },
                     new Specialization
                     {
@@ -71,7 +69,6 @@ namespace MediCare.Server.Tests.TestInfrastructure
                         SpecializationName = "Dermatologist",
                         SpecializationDescription = "Specialist in skin conditions",
                         SpecializationHighlight = "Healthy skin starts here comprehensive dermatological treatments for all ages.",
-                        Link = "#"
                     }
                 );
                 db.NewsItems.AddRange(

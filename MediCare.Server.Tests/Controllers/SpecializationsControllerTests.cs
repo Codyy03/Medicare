@@ -40,7 +40,6 @@ namespace MediCare.Server.Tests.Controllers
             {
                 Assert.False(string.IsNullOrEmpty(s.SpecializationName));
                 Assert.False(string.IsNullOrEmpty(s.SpecializationDescription));
-                Assert.False(string.IsNullOrEmpty(s.Link));
                 Assert.False(string.IsNullOrEmpty(s.SpecializationHighlight));
             });
         }
@@ -148,7 +147,6 @@ namespace MediCare.Server.Tests.Controllers
             Assert.All(hightlights, h =>
             {
                 Assert.False(string.IsNullOrEmpty(h.SpecializationName));
-                Assert.False(string.IsNullOrEmpty(h.Link));
                 Assert.False(string.IsNullOrEmpty(h.SpecializationHighlight));
             });
         }
@@ -166,7 +164,6 @@ namespace MediCare.Server.Tests.Controllers
                 SpecializationName = "Neurologist",
                 SpecializationDescription = "Specialist in nervous system disorders",
                 SpecializationHighlight = "Expert care for brain and nerve health",
-                Link = "#"
             };
 
             var response = await client.PostAsJsonAsync("/api/specializations", newSpec);

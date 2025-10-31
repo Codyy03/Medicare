@@ -33,6 +33,8 @@ namespace MediCare.Server.Entities
 
         public ICollection<Visit> Visits { get; set; } = new List<Visit>();
 
+        public RefreshToken RefreshToken { get; set; }
+
     }
     public enum Status
     {
