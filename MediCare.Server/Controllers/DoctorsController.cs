@@ -296,7 +296,7 @@ namespace MediCare.Server.Controllers
             context.RefreshTokens.RemoveRange(oldTokens);
 
             // Access token
-            var accessToken = jwtHelper.GenerateJwtToken(doctor.ID.ToString(), doctor.Email, doctor.Name, "Doctor");
+            var accessToken = jwtHelper.GenerateJwtToken(doctor.ID.ToString(), doctor.Email, doctor.Name, doctor.Role.ToString());
 
             // Refresh token
             var refreshToken = jwtHelper.GenerateRefreshToken();

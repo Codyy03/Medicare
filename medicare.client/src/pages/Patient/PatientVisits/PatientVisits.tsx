@@ -101,7 +101,6 @@ export default function PatientVisits() {
                                     selected={selectedDate}
                                     onChange={(date) => setSelectedDate(date)}
                                     filterDate={(date) => date.getDay() !== 0 && date.getDay() !== 6}
-                                    minDate={new Date()}
                                     dateFormat="yyyy-MM-dd"
                                     className="form-control"
                                     placeholderText="Select a date"
@@ -315,7 +314,6 @@ export default function PatientVisits() {
                                 try {
                                     const updatedVisit = await cancelVisit(showModal.id);
 
-                                    // podmieñ wizytê w stanie visits i filteredVisits
                                     setVisits((prev) =>
                                         prev.map((v) => (v.id === updatedVisit.id ? updatedVisit : v))
                                     );
@@ -323,7 +321,6 @@ export default function PatientVisits() {
                                         prev.map((v) => (v.id === updatedVisit.id ? updatedVisit : v))
                                     );
 
-                                    // zamknij modal
                                     setShowModal(null);
                                 } catch (err) {
                                     console.error(err);

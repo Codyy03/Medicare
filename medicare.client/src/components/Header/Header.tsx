@@ -100,16 +100,27 @@ export default function Header() {
                                         {userRole === "Doctor" ? `Dr. ${userName}` : userName}
                                     </div>
                                     <ul className="dropdown-menu show-on-hover" aria-labelledby="userDropdown">
-                                        <li>
-                                            <NavLink className="dropdown-item hover-slide" to={rolePaths[userRole ?? "Patient"]}>
-                                                My personal data
-                                            </NavLink>
-                                        </li>
-                                        <li>
-                                            <NavLink className="dropdown-item hover-slide" to={userRole === "Doctor" ? "/doctor/visits" : "/patient/visits"}>
-                                                My visits
-                                            </NavLink>
-                                        </li>
+                                        {userRole !== "Admin" ? (
+                                            <>
+                                                <li>
+                                                    <NavLink className="dropdown-item hover-slide" to={rolePaths[userRole ?? "Patient"]}>
+                                                        My personal data
+                                                    </NavLink>
+                                                </li>
+                                                <li>
+                                                    <NavLink className="dropdown-item hover-slide" to={userRole === "Doctor" ? "/doctor/visits" : "/patient/visits"}>
+                                                        My visits
+                                                    </NavLink>
+                                                </li>
+                                            </>
+                                        ) : (
+                                            <li>
+                                                <NavLink className="dropdown-item hover-slide" to="/admin">
+                                                    Admin page
+                                                </NavLink>
+                                            </li>
+                                        )}
+
                                         <li>
                                             <button
                                                 className="dropdown-item hover-slide"

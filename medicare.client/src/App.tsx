@@ -25,6 +25,7 @@ import NotFoundPage from "./pages/Other/NotFoundPage/NotFoundPage";
 import ServerErrorPage from "./pages/Other/ServerErrorPage/ServerErrorPage";
 import UnauthorizedPage from "./pages/Other/UnauthorizedPage/UnauthorizedPage";
 import PatientVisits from "./pages/Patient/PatientVisits/PatientVisits";
+import AdminDashboard from "./pages/Admin/AdminDashboard/AdminDashboard";
 import './App.css';
 
 function App() {
@@ -104,14 +105,16 @@ function App() {
                                 <PatientVisits />
                             </ProtectedRoute>
                         }/>
-                    <Route path="/doctors" element={<DoctorsList />} />
+                     <Route path="/doctors" element={<DoctorsList />} />
                     <Route path="/appointments" element={<Appointments />} />
                     <Route path="/booking-success" element={<BookingSuccessPage />} />
 
                     <Route path="/doctorInfo/:id" element={<DoctorInfo />} />
                     <Route path="*" element={<NotFoundPage />} />
                    <Route path="/unauthorized" element={<UnauthorizedPage />} />
-                   <Route path="/server-error" element={<ServerErrorPage />} />
+                        <Route path="/server-error" element={<ServerErrorPage />} />
+
+                  <Route path="/admin" element={<AdminDashboard />} />
                 </Route>
             </Routes>
             </BrowserRouter>

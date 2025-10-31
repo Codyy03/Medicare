@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
+using static MediCare.Server.Entities.Enums;
 
 namespace MediCare.Server.Entities
 {
@@ -35,6 +36,8 @@ namespace MediCare.Server.Entities
 
         public RefreshToken RefreshToken { get; set; }
 
+        [Required]
+        public Role Role { get; set; } = Role.Patient;
     }
     public enum Status
     {

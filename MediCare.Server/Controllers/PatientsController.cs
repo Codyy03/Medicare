@@ -175,7 +175,7 @@ namespace MediCare.Server.Controllers
             var oldTokens = context.RefreshTokens.Where(rt => rt.PatientID == user.ID);
             context.RefreshTokens.RemoveRange(oldTokens);
 
-            var accessToken = jwtHelper.GenerateJwtToken(user.ID.ToString(), user.Email, user.Name, "Patient");
+            var accessToken = jwtHelper.GenerateJwtToken(user.ID.ToString(), user.Email, user.Name, user.Role.ToString());
 
             var refreshToken = jwtHelper.GenerateRefreshToken();
             var entity = new RefreshToken

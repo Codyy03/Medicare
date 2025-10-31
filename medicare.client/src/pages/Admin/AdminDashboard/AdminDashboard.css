@@ -1,0 +1,20 @@
+.admin-card {
+  background-color: #3f8efc;
+  color: white;
+  border-radius: 8px;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.admin-card:hover {
+  transform: scale(1.05);
+  background-color: #2f7ae0;
+  cursor: pointer;
+}
+
+.admin-card {
+    min-height: 100px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}

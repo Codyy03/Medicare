@@ -261,10 +261,23 @@ namespace MediCare.Server.Data
                     EndHour = new TimeOnly(15, 30),
                     Facility = "Room 101, MediCare Center",
                     DoctorDescription = "Dr. David Kowalski is a cardiologist focused on hypertension treatment, cardiac stress testing, and patient education."
+                },
+                new Doctor
+                {
+                    ID = 7,
+                    Name = "Evan",
+                    Surname = "Chris",
+                    Email = "Evan.chris@medicare.com",
+                    PhoneNumber = "888888888",
+                    PasswordHash = "AQAAAAIAAYagAAAAEKh2N3ZC1HkP7HhKJ7blQ7tb4jHY0mM3PwOydZx5Lq3yW6SkmtFfw4tq1LZzW9zENg==", // cardio1
+                    StartHour = new TimeOnly(7, 30),
+                    EndHour = new TimeOnly(15, 30),
+                    Facility = "Room 101, MediCare Center",
+                    DoctorDescription = "Dr. Evan Chris is a cardiologist focused on hypertension treatment, cardiac stress testing, and patient education.",
+                    Role = Enums.Role.Admin
                 }
             );
         }
-
 
         /// <summary>
         /// Seeds initial data for the Patient table, including hashed passwords.
