@@ -1,6 +1,7 @@
 ﻿using MediCare.Server.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
+using static MediCare.Server.Entities.Enums;
 namespace MediCare.Server.Data
 {
     public class MediCareDbContext : DbContext

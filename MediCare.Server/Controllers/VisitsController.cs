@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using static MediCare.Server.Controllers.VisitsController;
+using static MediCare.Server.Entities.Enums;
 
 namespace MediCare.Server.Controllers
 {
