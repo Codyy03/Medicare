@@ -18,7 +18,8 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins("https://localhost:51871") // add fronend
                 .AllowAnyHeader()
-                .AllowAnyMethod();
+                .AllowAnyMethod()
+                .AllowCredentials();
         });
 });
 
@@ -54,24 +55,23 @@ var app = builder.Build();
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+app.UseSwagger();
+app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.UseCors("AllowFrontend");
 
 app.MapFallbackToFile("/index.html");
 
 app.Run();
 public partial class Program { }
+

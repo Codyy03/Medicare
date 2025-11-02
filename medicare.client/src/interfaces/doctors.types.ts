@@ -23,3 +23,16 @@ export interface SpecializationsNamesID {
     id: number;
     specializationName: string;
 }
+export interface DoctorAdminDto {
+    id: number;
+    name: string;
+    surname: string;
+    email: string;
+    phoneNumber: string,
+    startHour: string;
+    endHour: string;
+    facility: string;
+    doctorDescription: string;
+    specializations: string[];
+    role: string;
+}

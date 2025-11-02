@@ -39,9 +39,4 @@ namespace MediCare.Server.Entities
         [Required]
         public Role Role { get; set; } = Role.Patient;
     }
-    public enum Status
-    {
-        Active = 1,
-        Inactive = 2
-    }
 }

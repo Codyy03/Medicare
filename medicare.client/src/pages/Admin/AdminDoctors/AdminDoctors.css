@@ -1,0 +1,9 @@
+table {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+h2 {
+    font-weight: 700;
+    color: #3f8efc;
+}

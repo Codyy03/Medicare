@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using static MediCare.Server.Entities.Enums;
 
 namespace MediCare.Server.Entities
 {
@@ -38,20 +39,5 @@ namespace MediCare.Server.Entities
 
         public string? VisitNotes { get; set; }
         public string? PrescriptionText { get; set; }
-    }
-
-    public enum VisitReason
-    {
-        Consultation = 1,
-        FollowUp = 2,
-        Prescription = 3,
-        Checkup = 4
-    }
-
-    public enum VisitStatus
-    {
-        Scheduled = 1,
-        Completed = 2,
-        Cancelled = 3
     }
 }

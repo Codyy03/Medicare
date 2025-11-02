@@ -14,7 +14,6 @@ export default function Header() {
     };
     const navigate = useNavigate();
 
-    // padding pod header (¿eby nie nachodzi³ na treœæ)
     useEffect(() => {
         const updatePadding = () => {
             const header = document.querySelector("header");

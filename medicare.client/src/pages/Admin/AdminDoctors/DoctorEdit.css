@@ -1,0 +1,22 @@
+.doctor-edit-form .form-label {
+  font-weight: 600;
+  color: #333;
+}
+
+.doctor-edit-form input,
+.doctor-edit-form textarea {
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.doctor-edit-form input:focus,
+.doctor-edit-form textarea:focus {
+  border-color: #3f8efc;
+  box-shadow: 0 0 4px rgba(63, 142, 252, 0.5);
+}
+
+.card {
+  border-radius: 12px;
+  background: #fff;
+}

@@ -44,14 +44,14 @@ namespace MediCare.Server.Controllers
 
             if (tokenEntity.Patient != null)
             {
-                role = "Patient";
+                role = tokenEntity.Patient.Role.ToString();
                 email = tokenEntity.Patient.Email;
                 name = tokenEntity.Patient.Name;
                 id = tokenEntity.Patient.ID;
             }
             else if (tokenEntity.Doctor != null)
             {
-                role = "Doctor";
+                role = tokenEntity.Doctor.Role.ToString();
                 email = tokenEntity.Doctor.Email;
                 name = tokenEntity.Doctor.Name;
                 id = tokenEntity.Doctor.ID;
@@ -70,6 +70,7 @@ namespace MediCare.Server.Controllers
 
             return Ok(new { accessToken, refreshToken = newRefreshToken });
         }
+
 
         /// <summary>
         /// DTO used when requesting a new access token using a refresh token.

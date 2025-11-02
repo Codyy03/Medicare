@@ -15,6 +15,16 @@ export async function getDoctors() {
     return res.data;
 }
 
+export async function deleteDoctor(id: number) {
+    const response = await fetch(`https://localhost:7014/api/doctors/${id}`, {
+        method: "DELETE"
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to delete doctor with id ${id}`);
+    }
+}
+
 export async function getDoctorsByFilters(
     specializationID?: number,
     surname?: string,
