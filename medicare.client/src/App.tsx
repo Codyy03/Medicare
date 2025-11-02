@@ -29,6 +29,8 @@ import AdminDashboard from "./pages/Admin/AdminDashboard/AdminDashboard";
 import AdminDoctors from "./pages/Admin/AdminDoctors/AdminDoctors";
 import DoctorEdit from "./pages/Admin/AdminDoctors/DoctorEdit";
 import AdminDoctorCreate from "./pages/Admin/AdminDoctors/AdminDoctorCreate";
+import AdminSpecializations from "./pages/Admin/AdminSpecializations/AdminSpecializations";
+import SpecializationEdit from "./pages/Admin/AdminSpecializations/SpecializationEdit";
 import './App.css';
 
 function App() {
@@ -140,7 +142,23 @@ function App() {
                                 <AdminDoctorCreate />
                             </ProtectedRoute>
                         } />
-                        
+
+
+                        <Route path="/admin/specializations" element={
+                            <ProtectedRoute role="3">
+                                <AdminSpecializations />
+                            </ProtectedRoute>
+                            } />
+                        <Route path="/admin/specializationEdit/:id" element={
+                            <ProtectedRoute role="3">
+                                <SpecializationEdit />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/admin/specializationCreate" element={
+                            <ProtectedRoute role="3">
+                                <SpecializationEdit />
+                            </ProtectedRoute>
+                        } />
                 </Route>
             </Routes>
             </BrowserRouter>
