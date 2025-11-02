@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using static MediCare.Server.Controllers.DoctorsController;
 using static MediCare.Server.Entities.Enums;
 
 namespace MediCare.Server.Controllers
@@ -23,6 +22,16 @@ namespace MediCare.Server.Controllers
             this.jwtHelper = jwtHelper;
         }
 
+        /// <summary>
+        /// Updates an existing doctor record with new details.
+        /// Only accessible by users with the Admin role.
+        /// </summary>
+        /// <param name="id">The ID of the doctor to update.</param>
+        /// <param name="dto">The DTO containing updated doctor information.</param>
+        /// <returns>
+        /// 200 OK with the updated doctor entity if successful.  
+        /// 404 Not Found if the doctor with the given ID does not exist.
+        /// </returns>
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> AdminUpdateDoctor(int id, AdminDoctorUpdateDto dto)
@@ -46,6 +55,15 @@ namespace MediCare.Server.Controllers
             return Ok(existing);
         }
 
+        /// <summary>
+        /// Creates a new doctor account with all required details.
+        /// Accessible by Admins to register doctors directly.
+        /// </summary>
+        /// <param name="dto">The DTO containing doctor registration details.</param>
+        /// <returns>
+        /// 204 No Content if the doctor was successfully created.  
+        /// 400 Bad Request if validation fails (e.g., duplicate email, invalid password, missing specialization).
+        /// </returns>
         [HttpPost("adminDoctorRegister")]
         public async Task<ActionResult> CreateDoctor(AdminDoctorRegisterDto dto)
         {
@@ -86,6 +104,14 @@ namespace MediCare.Server.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Validates a password against defined security requirements.
+        /// </summary>
+        /// <param name="password">The password string to validate.</param>
+        /// <returns>
+        /// A list of validation error messages.  
+        /// If the list is empty, the password meets all requirements.
+        /// </returns>
         List<string> ValidatePassword(string password)
         {
             var errors = new List<string>();
@@ -108,6 +134,10 @@ namespace MediCare.Server.Controllers
             return errors;
         }
     }
+
+    /// <summary>
+    /// Data Transfer Object used for updating an existing doctor by an Admin.
+    /// </summary>
     public class AdminDoctorUpdateDto
     {
         public required string Name { get; set; }
@@ -120,6 +150,10 @@ namespace MediCare.Server.Controllers
         public string DoctorDescription { get; set; } = string.Empty;
         public Role Role { get; set; }
     }
+
+    /// <summary>
+    /// Data Transfer Object used for registering a new doctor by an Admin.
+    /// </summary>
     public class AdminDoctorRegisterDto
     {
         [Required]
