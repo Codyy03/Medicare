@@ -18,8 +18,11 @@ export default function ProtectedRoute({ children, role }: ProtectedRouteProps) 
         return <Navigate to="/login/patient" replace />;
     }
 
-    if (role && userRole !== role) {
-        return <Navigate to="/" replace />;
+    if (userRole) {
+        const allowedRoles = Array.isArray(userRole) ? userRole : [userRole];
+        if (!allowedRoles.includes(userRole || "")) {
+            return <Navigate to="/unauthorized" replace />;
+        }
     }
 
     return children;
