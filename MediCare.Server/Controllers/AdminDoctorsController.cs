@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using static MediCare.Server.Entities.Enums;
+using static MediCare.Server.Controllers.DoctorsController;
 
 namespace MediCare.Server.Controllers
 {
