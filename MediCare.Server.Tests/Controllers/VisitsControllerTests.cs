@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using static MediCare.Server.Controllers.VisitsController;
+using static MediCare.Server.Entities.Enums;
 
 namespace MediCare.Server.Tests.Controllers
 {

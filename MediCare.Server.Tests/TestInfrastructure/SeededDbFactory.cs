@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using static MediCare.Server.Entities.Enums;
 
 namespace MediCare.Server.Tests.TestInfrastructure
 {
