@@ -153,11 +153,11 @@ export default function DoctorEdit() {
                             <select
                                 name="role"
                                 value={doctor.role}
-                                onChange={(e) => setDoctor({ ...doctor, role: e.target.value })}
+                                onChange={(e) => setDoctor({ ...doctor, role: Number(e.target.value) })}
                                 className="form-select"
                             >
-                                <option value="Doctor">Doctor</option>
-                                <option value="Admin">Admin</option>
+                                <option value={2}>Doctor</option>
+                                <option value={3}>Admin</option>
                             </select>
                         </div>
 

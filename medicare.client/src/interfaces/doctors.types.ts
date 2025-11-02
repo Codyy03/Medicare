@@ -34,5 +34,5 @@ export interface DoctorAdminDto {
     facility: string;
     doctorDescription: string;
     specializations: string[];
-    role: string;
+    role: number;
 }
