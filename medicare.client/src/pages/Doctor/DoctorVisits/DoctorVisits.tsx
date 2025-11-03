@@ -172,7 +172,7 @@ const DoctorVisit = () => {
                                 </td>
 
                                 <td>{visit.patientName}</td>
-                                <td>{visit.specialization} - {visit.room} {visit.roomNumber}</td>
+                                <td>{visit.specialization} - {visit.room} {visit.room}</td>
                                 <td>{visit.reason}</td>
                                 <td>
                                     <span className={getStatusBadgeClass(visit.status)}>
@@ -241,7 +241,7 @@ const DoctorVisit = () => {
                                                 <i className="bi bi-hospital me-1"></i>Room
                                             </div>
                                             <div className="fw-semibold">
-                                                {selectedVisit.room} {selectedVisit.roomNumber}
+                                                {selectedVisit.room} {selectedVisit.room}
                                             </div>
                                         </div>
                                     </div>

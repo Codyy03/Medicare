@@ -64,7 +64,7 @@ export async function updateAdminSpecialization(id: number, specialization: Spec
 
         method: "PUT",
         headers: { "Content-Type": "application/json", ...authHeader() },
-        body: JSON.stringify({ id, ...specialization })
+        body: JSON.stringify({ ...specialization })
 
     });
     if (!response.ok) throw new Error("Error when updating admin specialization");

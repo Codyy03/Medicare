@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import { getSpecializationNames } from "../../../services/specializationsService";
 import type { SpecializationsNamesID } from "../../../interfaces/visits.types";
-import { FaUserMd, FaEnvelope, FaPhone, FaHospital, FaClock, FaAlignLeft, FaSave, FaUserShield, FaKey } from "react-icons/fa";
+import { FaSave } from "react-icons/fa";
 
 interface OptionType {
     value: number;

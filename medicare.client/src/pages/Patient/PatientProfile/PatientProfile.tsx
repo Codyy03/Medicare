@@ -61,11 +61,7 @@ export default function PatientProfile() {
                 setSuccess("Profile updated successfully.");
 
             } catch (err) {
-                if (axios.isAxiosError(err)) {
-                    const message =
-                       err.response?.data?.message ||
-                     "An unexpected error occurred while changing your password.";
-                }
+                
             }
             setEdit(false);
         }
