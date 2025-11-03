@@ -1,0 +1,40 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    # Backend (.NET)
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore ./MediCare.Server
+
+    - name: Build
+      run: dotnet build ./MediCare.Server --no-restore
+
+    - name: Test
+      run: dotnet test ./MediCare.Server.Tests --no-build --verbosity normal
+
+    # Frontend (React)
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install dependencies
+      run: npm install --prefix ./MediCare.Client
+
+    - name: Build React app
+      run: npm run build --prefix ./MediCare.Client
