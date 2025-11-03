@@ -25,13 +25,13 @@ jobs:
       run: dotnet build ./MediCare.Server --no-restore
 
     - name: Test
-      run: dotnet test ./MediCare.Server.Tests --no-build --verbosity normal
+      run: dotnet test ./MediCare.Server.Tests --verbosity normal
 
     # Frontend (React)
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '18'
+        node-version: '22'
 
     - name: Install dependencies
       run: npm install --prefix ./MediCare.Client
