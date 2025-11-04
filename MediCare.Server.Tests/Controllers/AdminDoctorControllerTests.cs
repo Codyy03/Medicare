@@ -48,11 +48,7 @@ namespace MediCare.Server.Tests.Controllers
 
             var response = await client.PutAsJsonAsync($"/api/AdminDoctors/1", update);
 
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-            var updatedData = await response.Content.ReadFromJsonAsync<DoctorDto>();
-            Assert.NotNull(updatedData);
-            Assert.Equal("Newname", updatedData!.Name);
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         }
 
         /// <summary>

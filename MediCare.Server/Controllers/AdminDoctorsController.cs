@@ -55,6 +55,7 @@ namespace MediCare.Server.Controllers
             existing.Role = dto.Role;
 
             existing.Specializations.Clear();
+
             var specializations = await context.Specializations
                 .Where(s => dto.SpecializationsIds.Contains(s.ID))
                 .ToListAsync();
