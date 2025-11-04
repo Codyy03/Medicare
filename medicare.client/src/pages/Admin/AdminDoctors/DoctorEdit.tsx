@@ -32,10 +32,24 @@ export default function DoctorEdit() {
     }, [id]);
 
     useEffect(() => {
-        getSpecializationNames()
-            .then(setSpecializations)
-            .catch(console.error);
-    }, []);
+        Promise.all([
+            fetch(`https://localhost:7014/api/doctors/${id}`).then(res => res.json()),
+            getSpecializationNames()
+        ])
+            .then(([doctorData, specs]) => {
+                const specializationIds = specs
+                    .filter((spec: SpecializationsNamesID) =>
+                        doctorData.specializations.includes(spec.specializationName)
+                    )
+                    .map((spec: SpecializationsNamesID) => spec.id);
+
+
+                setSpecializations(specs);
+                setDoctor({ ...doctorData, specializations: specializationIds });
+            })
+            .catch(console.error)
+            .finally(() => setLoading(false));
+    }, [id]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         if (!doctor) return;
@@ -66,7 +80,7 @@ export default function DoctorEdit() {
             facility: doctor.facility,
             doctorDescription: doctor.doctorDescription,
             role: doctor.role,
-            specializations: doctor.specializations
+            specializationsIds: doctor.specializations
         };
 
         const token = localStorage.getItem("token");
@@ -166,19 +180,16 @@ export default function DoctorEdit() {
                             <label className="form-label"><FaUserMd className="me-2" />Specializations</label>
                             <Select<OptionType, true>
                                 isMulti
-                                className="register-select"
-                                classNamePrefix="register-select"
-                                name="specializations"
                                 options={specializations.map(spec => ({
                                     value: spec.id,
                                     label: spec.specializationName
                                 }))}
                                 value={specializations
-                                    .filter(spec => doctor.specializations.includes(spec.specializationName))
+                                    .filter(spec => doctor.specializations.includes(spec.id))
                                     .map(spec => ({ value: spec.id, label: spec.specializationName }))}
                                 onChange={(selected) => {
-                                    const names = (selected ?? []).map(s => s.label);
-                                    setDoctor({ ...doctor, specializations: names });
+                                    const ids = (selected ?? []).map(s => Number(s.value));
+                                    setDoctor({ ...doctor, specializations: ids });
                                 }}
                             />
                         </div>

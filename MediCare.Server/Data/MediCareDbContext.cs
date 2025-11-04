@@ -136,6 +136,10 @@ namespace MediCare.Server.Data
             modelBuilder.Entity<Doctor>()
                 .HasIndex(d => d.Email)
                 .IsUnique();
+
+            modelBuilder.Entity<Specialization>()
+                .HasIndex(s => s.SpecializationName)
+                .IsUnique();
         }
         void HandleTimeZone(ModelBuilder modelBuilder)
         {

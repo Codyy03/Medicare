@@ -37,7 +37,10 @@ namespace MediCare.Server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> AdminUpdateDoctor(int id, AdminDoctorUpdateDto dto)
         {
-            var existing = await context.Doctors.FindAsync(id);
+            var existing = await context.Doctors
+                .Include(d => d.Specializations)
+                .FirstOrDefaultAsync(d => d.ID == id);
+
             if (existing == null)
                 return NotFound();
 
@@ -51,9 +54,19 @@ namespace MediCare.Server.Controllers
             existing.DoctorDescription = dto.DoctorDescription;
             existing.Role = dto.Role;
 
+            existing.Specializations.Clear();
+            var specializations = await context.Specializations
+                .Where(s => dto.SpecializationsIds.Contains(s.ID))
+                .ToListAsync();
+
+            foreach (var spec in specializations)
+            {
+                existing.Specializations.Add(spec);
+            }
+
             await context.SaveChangesAsync();
 
-            return Ok(existing);
+            return NoContent();
         }
 
         /// <summary>
@@ -150,6 +163,8 @@ namespace MediCare.Server.Controllers
         public string Facility { get; set; } = string.Empty;
         public string DoctorDescription { get; set; } = string.Empty;
         public Role Role { get; set; }
+
+        public List<int> SpecializationsIds { get; set; } = new();
     }
 
     /// <summary>

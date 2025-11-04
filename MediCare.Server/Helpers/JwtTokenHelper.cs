@@ -33,8 +33,8 @@ namespace MediCare.Server.Helpers
             {
             new Claim(ClaimTypes.NameIdentifier, id),
             new Claim(ClaimTypes.Email, email),
-            new Claim("name", name),
-            new Claim("role", role)
+            new Claim(ClaimTypes.Name, name),
+            new Claim(ClaimTypes.Role, role)
         };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));

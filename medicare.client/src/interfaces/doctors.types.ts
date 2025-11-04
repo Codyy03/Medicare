@@ -33,6 +33,6 @@ export interface DoctorAdminDto {
     endHour: string;
     facility: string;
     doctorDescription: string;
-    specializations: string[];
+    specializations: number[];
     role: number;
 }

@@ -169,6 +169,7 @@ namespace MediCare.Server.Controllers
         public async Task<ActionResult<TodayVisitsResponse>> GetTodayVisits()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             if (userId == null) return Unauthorized();
 
             var doctorId = int.Parse(userId);
@@ -179,7 +180,7 @@ namespace MediCare.Server.Controllers
 
             if (doctor == null) return NotFound();
 
-            var today = new DateOnly(2025, 10, 31);
+            var today = new DateOnly(2025, 11, 6);
 
             var visits = await context.Visits
                 .Where(v => v.DoctorID == doctor.ID && v.VisitDate == today && v.Status == VisitStatus.Scheduled)
