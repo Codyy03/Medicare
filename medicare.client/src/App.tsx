@@ -34,6 +34,8 @@ import SpecializationEdit from "./pages/Admin/AdminSpecializations/Specializatio
 import AdminPatients from "./pages/Admin/AdminPatients/AdminPatients";
 import PatientEdit from "./pages/Admin/AdminPatients/PatientEdit";
 import AdminPatientsCreate from "./pages/Admin/AdminPatients/AdminPatientCreate";
+import AdminNews from "./pages/Admin/AdminNews/AdminNews";
+import AdminNewsEdit from "./pages/Admin/AdminNews/AdminNewsEdit";
 import './App.css';
 
 function App() {
@@ -177,6 +179,23 @@ function App() {
                                 <AdminPatientsCreate />
                             </ProtectedRoute>
                         } />
+                        <Route path="/admin/adminNews" element={
+                            <ProtectedRoute role="3">
+                                <AdminNews />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/admin/adminNewsEdit" element={
+                            <ProtectedRoute role="3">
+                                <AdminNewsEdit />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/admin/adminNewsEdit/:id" element={
+                            <ProtectedRoute role="3">
+                                <AdminNewsEdit />
+                            </ProtectedRoute>
+                        } />
+
+                        
                 </Route>
             </Routes>
             </BrowserRouter>

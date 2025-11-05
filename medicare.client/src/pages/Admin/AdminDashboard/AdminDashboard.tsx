@@ -9,7 +9,7 @@ export default function AdminDashboard() {
         { title: "Visits", path: "/admin/visits", icon: <FaCalendarAlt size={25} /> },
         { title: "Rooms", path: "/admin/rooms", icon: <FaDoorOpen size={25} /> },
         { title: "Specializations", path: "/admin/specializations", icon: <FaListAlt size={25} /> },
-        { title: "News", path: "/admin/news", icon: <FaNewspaper size={25} /> },
+        { title: "News", path: "/admin/adminNews", icon: <FaNewspaper size={25} /> },
     ];
 
     return (
