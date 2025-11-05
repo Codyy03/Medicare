@@ -14,7 +14,7 @@ export default function AdminNewsEdit() {
         title: "",
         description: "",
         imageURL: "",
-        date: new Date().toISOString().split("T")[0] // domyœlnie dzisiejsza data
+        date: new Date().toISOString().split("T")[0]
     });
     const [loading, setLoading] = useState(isEdit);
 
@@ -23,7 +23,6 @@ export default function AdminNewsEdit() {
         (async () => {
             try {
                 const data = await getNewsByID(Number(id));
-                // upewniamy siê, ¿e data jest w formacie YYYY-MM-DD dla input[type=date]
                 setNews({ ...data, date: data.date.split("T")[0] });
             } catch (err) {
                 console.error(err);
@@ -63,18 +62,6 @@ export default function AdminNewsEdit() {
         } catch (err: any) {
             console.error(err);
             alert("Error saving news: " + (err.message ?? ""));
-        }
-    };
-
-    const handleDelete = async (id: number) => {
-        if (window.confirm("Are you sure you want to delete this news?")) {
-            try {
-                await deleteDoctor(id);
-                setDoctors(doctors.filter((doc) => doc.id !== id));
-            } catch (err) {
-                console.error(err);
-                alert("Failed to delete news");
-            }
         }
     };
 

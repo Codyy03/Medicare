@@ -2,15 +2,7 @@ import { useState, useEffect } from "react";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { getAllNews, deleteAdminNews } from "../../../services/newsService";
-
-interface NewsItem {
-    id: number;
-    title: string;
-    description: string;
-    imageURL?: string;
-    date: string;
-}
-
+import type { NewsItem } from "../../../interfaces/news.types";
 export default function AdminNews() {
     const navigate = useNavigate();
 
