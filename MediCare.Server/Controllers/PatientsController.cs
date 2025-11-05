@@ -543,7 +543,7 @@ namespace MediCare.Server.Controllers
         }
         public class PasswordDto
         {
-            public string Password { get; set; }
+            public required string Password { get; set; }
         }
     }
 }

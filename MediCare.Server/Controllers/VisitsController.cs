@@ -539,31 +539,30 @@ namespace MediCare.Server.Controllers
         /// </summary>
         public class VisitResponseDto
         {
-            public int ID { get; set; }
-            public DateOnly VisitDate { get; set; }
-            public TimeOnly VisitTime { get; set; }
-            public string DoctorName { get; set; }
-            public string Specialization { get; set; }
+            public required int ID { get; set; }
+            public required DateOnly VisitDate { get; set; }
+            public required TimeOnly VisitTime { get; set; }
+            public required string DoctorName { get; set; }
+            public required string Specialization { get; set; }
             public string PatientName { get; set; }
-            public string Room { get; set; }
-            public string Status { get; set; }
-            public string Reason { get; set; }
+            public required string Room { get; set; }
+            public required string Status { get; set; }
+            public required string Reason { get; set; }
             public string? AdditionalNotes { get; set; }
             public string? VisitNotes { get; set; }
             public string? PrescriptionText { get; set; }
         }
-
         /// <summary>
         /// DTO representing today's visits for a doctor.
         /// </summary>
         public class TodayVisitsDto
         {
-            public int ID { get; set; }
-            public TimeOnly VisitTime { get; set; }
-            public string PatientName { get; set; }
-            public string Reason { get; set; }
-            public string Room { get; set; }
-            public string Specialization { get; set; }
+            public required int ID { get; set; }
+            public required TimeOnly VisitTime { get; set; }
+            public required string PatientName { get; set; }
+            public required string Reason { get; set; }
+            public required string Room { get; set; }
+            public required string Specialization { get; set; }
         }
 
         /// <summary>
@@ -605,13 +604,13 @@ namespace MediCare.Server.Controllers
             public int ID { get; set; }
             public DateOnly VisitDate { get; set; }
             public TimeOnly VisitTime { get; set; }
-            public string DoctorName { get; set; }
-            public string Specialization { get; set; }
-            public string PatientName { get; set; }
-            public string Room { get; set; }
+            public required string DoctorName { get; set; }
+            public required string Specialization { get; set; }
+            public required string PatientName { get; set; }
+            public required string Room { get; set; }
             public int RoomNumber { get; set; }
-            public string Status { get; set; }
-            public string Reason { get; set; }
+            public required string Status { get; set; }
+            public required string Reason { get; set; }
             public string? AdditionalNotes { get; set; }
         }
         /// <summary>

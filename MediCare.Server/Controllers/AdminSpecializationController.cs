@@ -65,8 +65,8 @@ namespace MediCare.Server.Controllers.Admin
             var entity = new Specialization
             {
                 SpecializationName = dto.SpecializationName.Trim(),
-                SpecializationHighlight = dto.SpecializationHighlight,
-                SpecializationDescription = dto.SpecializationDescription
+                SpecializationHighlight = dto.SpecializationHighlight ?? string.Empty,
+                SpecializationDescription = dto.SpecializationDescription ?? string.Empty
             };
 
             _context.Specializations.Add(entity);
@@ -94,8 +94,8 @@ namespace MediCare.Server.Controllers.Admin
             if (existing == null) return NotFound();
 
             existing.SpecializationName = dto.SpecializationName;
-            existing.SpecializationHighlight = dto.SpecializationHighlight;
-            existing.SpecializationDescription = dto.SpecializationDescription;
+            existing.SpecializationHighlight = dto.SpecializationHighlight ?? string.Empty;
+            existing.SpecializationDescription = dto.SpecializationDescription ?? string.Empty;
 
             await _context.SaveChangesAsync();
             return NoContent();

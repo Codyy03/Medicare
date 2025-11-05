@@ -182,24 +182,24 @@ namespace MediCare.Server.Controllers
     public class AdminPatientUpdateModel
     {
         [Required]
-        public string PESEL { get; set; }
+        public required string PESEL { get; set; }
 
         [Required]
-        public string Name { get; set; } 
+        public required string Name { get; set; } 
 
         [Required]
-        public string Surname { get; set; } 
+        public required string Surname { get; set; } 
 
         [Required]
         public DateTime Birthday { get; set; }
 
         [Required]
         [EmailAddress]
-        public string Email { get; set; }
+        public required string Email { get; set; }
 
         [Required]
         [Phone]
-        public string PhoneNumber { get; set; }
+        public required string PhoneNumber { get; set; }
 
         [Required]
         public Status Status { get; set; }
