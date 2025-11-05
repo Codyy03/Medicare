@@ -81,7 +81,7 @@ namespace MediCare.Server.Tests.Controllers
 
             var response = await client.PostAsJsonAsync("/api/AdminPatients", dto);
 
-            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         }
 
         /// <summary>

@@ -61,7 +61,7 @@ export default function AdminPatientsCreate() {
             PESEL: form.pesel,
             Name: form.name,
             Surname: form.surname,
-            Birthday: new Date(form.birthday),
+            Birthday: form.birthday,
             Email: form.email,
             PhoneNumber: form.phoneNumber,
             Password: form.password
@@ -69,7 +69,6 @@ export default function AdminPatientsCreate() {
 
 
         try {
-            console.log(dto);
             await createAdminPatient(dto);
             navigate("/admin/patients");
         } catch (err: any) {
