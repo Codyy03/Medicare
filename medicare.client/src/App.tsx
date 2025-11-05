@@ -31,6 +31,9 @@ import DoctorEdit from "./pages/Admin/AdminDoctors/DoctorEdit";
 import AdminDoctorCreate from "./pages/Admin/AdminDoctors/AdminDoctorCreate";
 import AdminSpecializations from "./pages/Admin/AdminSpecializations/AdminSpecializations";
 import SpecializationEdit from "./pages/Admin/AdminSpecializations/SpecializationEdit";
+import AdminPatients from "./pages/Admin/AdminPatients/AdminPatients";
+import PatientEdit from "./pages/Admin/AdminPatients/PatientEdit";
+import AdminPatientsCreate from "./pages/Admin/AdminPatients/AdminPatientCreate";
 import './App.css';
 
 function App() {
@@ -157,6 +160,21 @@ function App() {
                         <Route path="/admin/specializationCreate" element={
                             <ProtectedRoute role="3">
                                 <SpecializationEdit />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/admin/patients" element={
+                            <ProtectedRoute role="3">
+                                <AdminPatients />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/admin/patientEdit/:id" element={
+                            <ProtectedRoute role="3">
+                                <PatientEdit />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/admin/adminPatientCreate" element={
+                            <ProtectedRoute role="3">
+                                <AdminPatientsCreate />
                             </ProtectedRoute>
                         } />
                 </Route>

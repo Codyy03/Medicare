@@ -44,6 +44,7 @@ namespace MediCare.Server.Controllers
                     ID = d.ID,
                     Name = d.Name,
                     Surname = d.Surname,
+                    PESEL = d.PESEL,
                     Email = d.Email,
                     PhoneNumber = d.PhoneNumber,
                     Birthday = d.Birthday
@@ -70,6 +71,7 @@ namespace MediCare.Server.Controllers
                   ID = d.ID,
                   Name = d.Name,
                   Surname = d.Surname,
+                  PESEL = d.PESEL,
                   Email = d.Email,
                   PhoneNumber = d.PhoneNumber,
                   Birthday = d.Birthday
@@ -142,6 +144,7 @@ namespace MediCare.Server.Controllers
                 ID = patient.ID,
                 Name = patient.Name,
                 Surname = patient.Surname,
+                PESEL = patient.PESEL,
                 Email = patient.Email,
                 PhoneNumber = patient.PhoneNumber,
                 Birthday = patient.Birthday,
@@ -244,6 +247,7 @@ namespace MediCare.Server.Controllers
                 Name = existing.Name,
                 Surname = existing.Surname,
                 Email = existing.Email,
+                PESEL = existing.PESEL,
                 PhoneNumber = existing.PhoneNumber,
                 Birthday = existing.Birthday,
             });
@@ -503,6 +507,7 @@ namespace MediCare.Server.Controllers
             public int ID { get; set; }
             public required string Name { get; set; }
             public required string Surname { get; set; }
+            public required string PESEL { get; set; }
             public required string Email { get; set; }
             public required string PhoneNumber { get; set; }
             public DateTime Birthday { get; set; }
