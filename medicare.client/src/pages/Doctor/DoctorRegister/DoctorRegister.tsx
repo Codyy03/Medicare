@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import { getSpecializationNames } from "../../../services/specializationsService";
+import type { SpecializationNameDto } from "../../../interfaces/specialization.types";
 import "./DoctorRegister.css";
 
 export default function DoctorRegister() {
@@ -15,17 +16,13 @@ export default function DoctorRegister() {
         password: "",
         confirmPassword: ""
     });
-    interface SpecializationsNamesID {
-        id: number;
-        specializationName: string;
-    }
 
     interface OptionType {
         value: number;
         label: string;
     }
 
-    const [specializations, setSpecializations] = useState<SpecializationsNamesID[]>([]);
+    const [specializations, setSpecializations] = useState<SpecializationNameDto[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -113,8 +110,6 @@ export default function DoctorRegister() {
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
-
-
 
     if (loading) return <p>Loading...</p>;
 

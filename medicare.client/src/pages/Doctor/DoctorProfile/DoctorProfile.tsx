@@ -28,7 +28,6 @@ export default function DoctorProfile() {
         setFormData((prev) => ({ ...prev!, [name]: value}));
     };
 
-
     async function change() {
         setError("");
         setSuccess("");

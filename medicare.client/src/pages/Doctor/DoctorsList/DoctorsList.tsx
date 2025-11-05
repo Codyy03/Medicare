@@ -56,7 +56,6 @@ function DoctorsList() {
         }
     };
 
-
     if (loadingDoctors || loadingSpecs) return <p>Loading...</p>
 
     return (
@@ -173,7 +172,6 @@ function DoctorsList() {
                                                 </span>
                                             </small>
                                         </p>
-
                                         <Link
                                             to={`/doctorInfo/${d.id}`}
                                             state={{ doctor: d }}
