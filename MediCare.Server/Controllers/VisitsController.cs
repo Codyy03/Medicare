@@ -21,6 +21,32 @@ namespace MediCare.Server.Controllers
             this.jwtHelper = jwtHelper;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<List<VisitResponseDto>>> GetVisits()
+        {
+            var visits = await context.Visits
+                .Include(v => v.Doctor)
+                    .ThenInclude(d => d.Specializations)
+                .Include(v => v.Patient)
+                .Include(v => v.Room)
+                .Select(visit => new VisitResponseDto
+                {
+                    ID = visit.ID,
+                    VisitDate = visit.VisitDate,
+                    VisitTime = visit.VisitTime,
+                    DoctorName = $"{visit.Doctor.Name} {visit.Doctor.Surname}",
+                    Specialization = visit.Specialization.SpecializationName,
+                    PatientName = $"{visit.Patient.Name} {visit.Patient.Surname}",
+                    Room = visit.Room.RoomType,
+                    Status = visit.Status.ToString(),
+                    Reason = visit.Reason.ToString(),
+                    AdditionalNotes = visit.AdditionalNotes
+                })
+                .ToListAsync();
+
+            return Ok(visits);
+        }
+
         /// <summary>
         /// Retrieves a single visit by its ID, including doctor, patient, room, and specialization details.
         /// </summary>
@@ -212,6 +238,39 @@ namespace MediCare.Server.Controllers
             };
 
             return Ok(result);
+        }
+
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> UpdateVisit(int id, [FromBody] VisitEditDto dto)
+        {
+            if (id != dto.ID)
+                return BadRequest("ID mismatch");
+
+            var visit = await context.Visits.FindAsync(id);
+            if (visit == null)
+                return NotFound();
+
+            // aktualizacja pól
+            visit.VisitDate = DateOnly.FromDateTime(dto.VisitDate);
+            visit.VisitTime = TimeOnly.Parse(dto.VisitTime);
+            visit.AdditionalNotes = dto.AdditionalNotes;
+
+            if (Enum.TryParse<VisitStatus>(dto.Status, out var status))
+                visit.Status = status;
+            else
+                return BadRequest("Invalid status value");
+
+            if (Enum.TryParse<VisitReason>(dto.Reason, out var reason))
+                visit.Reason = reason;
+            else
+                return BadRequest("Invalid reason value");
+
+            visit.PrescriptionText = dto.PrescriptionText;
+            visit.VisitNotes = dto.VisitNotes;
+
+            await context.SaveChangesAsync();
+
+            return NoContent();
         }
 
         /// <summary>
@@ -552,6 +611,19 @@ namespace MediCare.Server.Controllers
             public string? VisitNotes { get; set; }
             public string? PrescriptionText { get; set; }
         }
+
+        public class VisitEditDto
+        {
+            public int ID { get; set; }
+            public DateTime VisitDate { get; set; }
+            public string VisitTime { get; set; } = string.Empty;
+            public string? AdditionalNotes { get; set; }
+            public required string Status { get; set; }
+            public required string Reason { get; set; }
+            public string? VisitNotes { get; set; }
+            public string? PrescriptionText { get; set; }
+        }
+
         /// <summary>
         /// DTO representing today's visits for a doctor.
         /// </summary>

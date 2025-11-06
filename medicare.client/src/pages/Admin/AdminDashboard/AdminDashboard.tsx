@@ -6,7 +6,7 @@ export default function AdminDashboard() {
     const tiles = [
         { title: "Doctors", path: "/admin/doctors", icon: <FaUserMd size={25} /> },
         { title: "Patients", path: "/admin/patients", icon: <FaUsers size={25} /> },
-        { title: "Visits", path: "/admin/visits", icon: <FaCalendarAlt size={25} /> },
+        { title: "Visits", path: "/admin/adminVisits", icon: <FaCalendarAlt size={25} /> },
         { title: "Rooms", path: "/admin/rooms", icon: <FaDoorOpen size={25} /> },
         { title: "Specializations", path: "/admin/specializations", icon: <FaListAlt size={25} /> },
         { title: "News", path: "/admin/adminNews", icon: <FaNewspaper size={25} /> },

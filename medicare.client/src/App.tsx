@@ -36,6 +36,8 @@ import PatientEdit from "./pages/Admin/AdminPatients/PatientEdit";
 import AdminPatientsCreate from "./pages/Admin/AdminPatients/AdminPatientCreate";
 import AdminNews from "./pages/Admin/AdminNews/AdminNews";
 import AdminNewsEdit from "./pages/Admin/AdminNews/AdminNewsEdit";
+import AdminVisits from "./pages/Admin/AdminVisits/AdminVisits";
+import AdminVisitsEdit from "./pages/Admin/AdminVisits/AdminVisitsEdit";
 import './App.css';
 
 function App() {
@@ -195,6 +197,21 @@ function App() {
                             </ProtectedRoute>
                         } />
 
+                        <Route path="/admin/adminVisits" element={
+                            <ProtectedRoute role="3">
+                                <AdminVisits />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/admin/adminVisitsEdit" element={
+                            <ProtectedRoute role="3">
+                                <AdminVisitsEdit />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/admin/adminVisitsEdit/:id" element={
+                            <ProtectedRoute role="3">
+                                <AdminVisitsEdit />
+                            </ProtectedRoute>
+                        } />
                         
                 </Route>
             </Routes>

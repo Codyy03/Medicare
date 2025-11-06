@@ -1,4 +1,21 @@
 import api from "./api";
+import type { VisitsUpdateDto } from "../interfaces/visits.types";
+
+export async function getVisitByID(id: number) {
+    const res = await api.get(`/visits/${id}`);
+    return res.data;
+}
+
+// utworzenie nowej wizyty
+export async function createVisit(dto: Omit<VisitsUpdateDto, "id">) {
+    const res = await api.post("/visits", dto);
+    return res.data;
+}
+
+// aktualizacja istniej¹cej wizyty
+export async function updateVisit(id: number, dto: VisitsUpdateDto) {
+    await api.put(`/visits/update/${id}`, dto);
+}
 
 export async function getVisitsTime(id: number, date: Date) {
     const dateString = formatDateLocal(date);
@@ -31,6 +48,11 @@ export async function getDoctorVisits() {
 
 export async function getPatientVisits() {
     const res = await api.get("/visits/patient");
+    return res.data;
+}
+
+export async function getAllVisits() {
+    const res = await api.get("/visits");
     return res.data;
 }
 
