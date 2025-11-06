@@ -432,7 +432,7 @@ namespace MediCare.Server.Controllers
         /// A list of validation error messages. 
         /// If the list is empty, the password meets all requirements.
         /// </returns>
-        List<string> ValidatePassword(string password)
+        public List<string> ValidatePassword(string password)
         {
             var errors = new List<string>();
 
@@ -460,7 +460,7 @@ namespace MediCare.Server.Controllers
         /// </summary>
         /// <param name="phoneNumber">The phone number to validate.</param>
         /// <returns>A list of validation error messages, or empty if valid.</returns>
-        List<string> ValidatePhoneNumber(string phoneNumber)
+        public List<string> ValidatePhoneNumber(string phoneNumber)
         {
             var errors = new List<string>();
 
@@ -491,7 +491,7 @@ namespace MediCare.Server.Controllers
         /// </summary>
         /// <param name="name">The name to validate.</param>
         /// <returns>A list of validation error messages, or empty if valid.</returns>
-        List<string> ValidateName(string name)
+        public List<string> ValidateName(string name)
         {
             var errors = new List<string>();
 
@@ -513,7 +513,7 @@ namespace MediCare.Server.Controllers
         /// </summary>
         /// <param name="surname">The surname to validate.</param>
         /// <returns>A list of validation error messages, or empty if valid.</returns>
-        List<string> ValidateSurname(string surname)
+        public  List<string> ValidateSurname(string surname)
         {
             var errors = new List<string>();
 
@@ -537,7 +537,7 @@ namespace MediCare.Server.Controllers
         /// <param name="startHour">The start hour of work.</param>
         /// <param name="endHour">The end hour of work.</param>
         /// <returns>A list of validation error messages, or empty if valid.</returns>
-        List<string> ValidateWorkHours(TimeOnly? startHour, TimeOnly? endHour)
+        public List<string> ValidateWorkHours(TimeOnly? startHour, TimeOnly? endHour)
         {
             var errors = new List<string>();
             if (startHour == null || endHour == null)
