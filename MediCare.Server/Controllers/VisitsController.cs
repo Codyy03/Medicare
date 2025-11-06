@@ -21,6 +21,18 @@ namespace MediCare.Server.Controllers
             this.jwtHelper = jwtHelper;
         }
 
+        /// <summary>
+        /// Retrieves all visits from the database with related doctor, patient, room, and specialization information.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint returns a list of <see cref="VisitResponseDto"/> objects. 
+        /// Each visit includes details such as date, time, doctor name, patient name, specialization, room, status, reason, 
+        /// and any additional notes.
+        /// </remarks>
+        /// <returns>
+        /// A list of visits wrapped in an <see cref="ActionResult"/>. 
+        /// Returns HTTP 200 (OK) with the list of visits.
+        /// </returns>
         [HttpGet]
         public async Task<ActionResult<List<VisitResponseDto>>> GetVisits()
         {
@@ -75,7 +87,9 @@ namespace MediCare.Server.Controllers
                 Room = visit.Room.RoomType,
                 Status = visit.Status.ToString(),
                 Reason = visit.Reason.ToString(),
-                AdditionalNotes = visit.AdditionalNotes
+                AdditionalNotes = visit.AdditionalNotes,
+                VisitNotes = visit.VisitNotes,
+                PrescriptionText = visit.PrescriptionText
             });
         }
 
@@ -240,6 +254,25 @@ namespace MediCare.Server.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Updates an existing visit record in the database.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint allows administrators to modify selected fields of a visit, including:
+        /// - Date and time of the visit
+        /// - Status (Scheduled, Completed, Cancelled)
+        /// - Reason (Consultation, Follow-up, Prescription, Checkup)
+        /// - Additional notes, prescription text, and visit notes
+        ///
+        /// The doctor, patient, room, and specialization associations remain unchanged.
+        /// </remarks>
+        /// <param name="id">The unique identifier of the visit to update. Must match the ID in the request body.</param>
+        /// <param name="dto">The <see cref="VisitEditDto"/> containing updated visit details.</param>
+        /// <returns>
+        /// Returns HTTP 204 (No Content) if the update succeeds.  
+        /// Returns HTTP 400 (Bad Request) if the ID does not match or if invalid status/reason values are provided.  
+        /// Returns HTTP 404 (Not Found) if the visit with the given ID does not exist.
+        /// </returns>
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateVisit(int id, [FromBody] VisitEditDto dto)
         {
@@ -250,7 +283,6 @@ namespace MediCare.Server.Controllers
             if (visit == null)
                 return NotFound();
 
-            // aktualizacja pól
             visit.VisitDate = DateOnly.FromDateTime(dto.VisitDate);
             visit.VisitTime = TimeOnly.Parse(dto.VisitTime);
             visit.AdditionalNotes = dto.AdditionalNotes;
@@ -612,6 +644,9 @@ namespace MediCare.Server.Controllers
             public string? PrescriptionText { get; set; }
         }
 
+        /// <summary>
+        /// DTO representing edit data for a visit.
+        /// </summary>
         public class VisitEditDto
         {
             public int ID { get; set; }

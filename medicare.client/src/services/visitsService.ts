@@ -6,13 +6,6 @@ export async function getVisitByID(id: number) {
     return res.data;
 }
 
-// utworzenie nowej wizyty
-export async function createVisit(dto: Omit<VisitsUpdateDto, "id">) {
-    const res = await api.post("/visits", dto);
-    return res.data;
-}
-
-// aktualizacja istniej¹cej wizyty
 export async function updateVisit(id: number, dto: VisitsUpdateDto) {
     await api.put(`/visits/update/${id}`, dto);
 }
