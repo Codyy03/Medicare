@@ -38,6 +38,7 @@ import AdminNews from "./pages/Admin/AdminNews/AdminNews";
 import AdminNewsEdit from "./pages/Admin/AdminNews/AdminNewsEdit";
 import AdminVisits from "./pages/Admin/AdminVisits/AdminVisits";
 import AdminVisitsEdit from "./pages/Admin/AdminVisits/AdminVisitsEdit";
+import AdminVisitStats from "./pages/Admin/AdminVisitStats/AdminVisitStats";
 import './App.css';
 
 function App() {
@@ -94,10 +95,10 @@ function App() {
 
                         <Route path="/doctor/visits"
                             element={
-                            <ProtectedRoute role="2">
-                                <DoctorVisits />
-                            </ProtectedRoute>
-                        } />
+                                <ProtectedRoute role="2">
+                                    <DoctorVisits />
+                                </ProtectedRoute>
+                            } />
 
                         <Route path="/doctorAppointments"
                             element={
@@ -119,14 +120,14 @@ function App() {
                         } />
 
 
-                     <Route path="/doctors" element={<DoctorsList />} />
-                    <Route path="/appointments" element={<Appointments />} />
-                    <Route path="/booking-success" element={<BookingSuccessPage />} />
+                        <Route path="/doctors" element={<DoctorsList />} />
+                        <Route path="/appointments" element={<Appointments />} />
+                        <Route path="/booking-success" element={<BookingSuccessPage />} />
 
-                    <Route path="/doctorInfo/:id" element={<DoctorInfo />} />
-                    <Route path="*" element={<NotFoundPage />} />
-                   <Route path="/unauthorized" element={<UnauthorizedPage />} />
-                   <Route path="/server-error" element={<ServerErrorPage />} />
+                        <Route path="/doctorInfo/:id" element={<DoctorInfo />} />
+                        <Route path="*" element={<NotFoundPage />} />
+                        <Route path="/unauthorized" element={<UnauthorizedPage />} />
+                        <Route path="/server-error" element={<ServerErrorPage />} />
 
 
                         <Route path="/admin" element={
@@ -155,7 +156,7 @@ function App() {
                             <ProtectedRoute role="3">
                                 <AdminSpecializations />
                             </ProtectedRoute>
-                            } />
+                        } />
                         <Route path="/admin/specializationEdit/:id" element={
                             <ProtectedRoute role="3">
                                 <SpecializationEdit />
@@ -212,9 +213,14 @@ function App() {
                                 <AdminVisitsEdit />
                             </ProtectedRoute>
                         } />
-                        
-                </Route>
-            </Routes>
+                        <Route path="/admin/adminVisitStats" element={
+                            <ProtectedRoute role="3">
+                                <AdminVisitStats />
+                            </ProtectedRoute>
+                        } />
+
+                    </Route>
+                </Routes>
             </BrowserRouter>
         </AuthProvider>
     );

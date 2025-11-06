@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { FaUserMd, FaUsers, FaCalendarAlt, FaDoorOpen, FaListAlt, FaNewspaper } from "react-icons/fa";
 import "./AdminDashboard.css";
+import { FaChartBar } from "react-icons/fa6";
 
 export default function AdminDashboard() {
     const tiles = [
@@ -10,6 +11,7 @@ export default function AdminDashboard() {
         { title: "Rooms", path: "/admin/rooms", icon: <FaDoorOpen size={25} /> },
         { title: "Specializations", path: "/admin/specializations", icon: <FaListAlt size={25} /> },
         { title: "News", path: "/admin/adminNews", icon: <FaNewspaper size={25} /> },
+        { title: "Visits statistics", path: "/admin/adminVisitStats", icon: <FaChartBar size={25} /> },
     ];
 
     return (
