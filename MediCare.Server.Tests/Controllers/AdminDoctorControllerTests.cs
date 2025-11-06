@@ -56,7 +56,7 @@ namespace MediCare.Server.Tests.Controllers
         /// returns HTTP 204 NoContent when the doctor is successfully registered.
         /// </summary>
         [Fact]
-        public async Task CreateAdminDoctor_ReturnsCreated()
+        public async Task CreateAdminDoctor_ReturnsNoContent()
         {
             var client = new EmptyDbFactory().CreateClient();
 
