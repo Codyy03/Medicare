@@ -7,7 +7,7 @@ interface ProtectedRouteProps {
     role?: string;
 }
 
-export default function ProtectedRoute({ children }: ProtectedRouteProps) {
+export default function ProtectedRoute({ children, role }: ProtectedRouteProps) {
     const { userName, userRole, loading } = useAuth();
 
     if (loading) {
@@ -15,7 +15,12 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     }
 
     if (!userName) {
-        return <Navigate to="/login/patient" replace />;
+        if (role === "Doctor") {
+            return <Navigate to="/login/doctor" replace />;
+        }
+        if (role === "Patient") {
+            return <Navigate to="/login/patient" replace />;
+        }
     }
 
     if (userRole) {

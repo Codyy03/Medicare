@@ -101,11 +101,13 @@ namespace MediCare.Server.Controllers
         /// <returns>A list of <see cref="VisitTimeDto"/> objects with time and room info.</returns>
         [HttpGet("visitsTime")]
         public async Task<ActionResult<List<VisitTimeDto>>> GetVisitsTime(
-           [FromQuery] int id,
-           [FromQuery] DateOnly date)
+            [FromQuery] int id,
+            [FromQuery] DateOnly date)
         {
             var visitsTime = await context.Visits
-                .Where(v => v.DoctorID == id && v.VisitDate == date)
+                .Where(v => v.DoctorID == id
+                         && v.VisitDate == date
+                         && v.Status != VisitStatus.Cancelled)
                 .Select(v => new VisitTimeDto
                 {
                     VisitTime = v.VisitTime,
@@ -401,11 +403,12 @@ namespace MediCare.Server.Controllers
             if (!patientExists)
                 return NotFound($"Patient with ID {dto.PatientID} not found.");
 
-            // Check doctor appointment conflicts
+            // Check doctor appointment conflicts (ignore cancelled visits)
             bool doctorConflict = await context.Visits.AnyAsync(v =>
                 v.DoctorID == dto.DoctorID &&
                 v.VisitDate == dto.VisitDate &&
-                v.VisitTime == dto.VisitTime);
+                v.VisitTime == dto.VisitTime &&
+                v.Status != VisitStatus.Cancelled);
 
             if (doctorConflict)
                 return Conflict("This doctor already has a visit scheduled at the given time.");
@@ -417,11 +420,12 @@ namespace MediCare.Server.Controllers
             if (!roomValid)
                 return BadRequest("Selected room is not valid for this specialization.");
 
-            // Check room collision
+            // Check room collision (ignore cancelled visits)
             bool roomConflict = await context.Visits.AnyAsync(v =>
                 v.RoomID == dto.RoomID &&
                 v.VisitDate == dto.VisitDate &&
-                v.VisitTime == dto.VisitTime);
+                v.VisitTime == dto.VisitTime &&
+                v.Status != VisitStatus.Cancelled);
 
             if (roomConflict)
                 return Conflict("This room is already occupied at the given time.");
@@ -491,7 +495,7 @@ namespace MediCare.Server.Controllers
             if (!doctor.Specializations.Any(s => s.ID == specId))
                 return BadRequest("This doctor does not have the selected specialization.");
 
-            // download rooms assigned to this specialization
+            // get rooms assigned to this specialization
             var rooms = await context.SpecializationRooms
                 .Where(sr => sr.SpecializationID == specId)
                 .Select(sr => sr.Room)
@@ -512,10 +516,12 @@ namespace MediCare.Server.Controllers
                 var slotStartMinutes = current.Hour * 60 + current.Minute;
                 var slotEndMinutes = slotStartMinutes + 30;
 
+                // only uncancelled visits block the slot
                 var occupiedRoomIds = await context.Visits
                     .Where(v =>
                         roomIds.Contains(v.RoomID) &&
                         v.VisitDate == date &&
+                        v.Status != VisitStatus.Cancelled &&
                         (v.VisitTime.Hour * 60 + v.VisitTime.Minute) < slotEndMinutes &&
                         ((v.VisitTime.Hour * 60 + v.VisitTime.Minute) + 30) > slotStartMinutes
                     )

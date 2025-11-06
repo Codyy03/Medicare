@@ -126,7 +126,7 @@ function App() {
                     <Route path="/doctorInfo/:id" element={<DoctorInfo />} />
                     <Route path="*" element={<NotFoundPage />} />
                    <Route path="/unauthorized" element={<UnauthorizedPage />} />
-                        <Route path="/server-error" element={<ServerErrorPage />} />
+                   <Route path="/server-error" element={<ServerErrorPage />} />
 
 
                         <Route path="/admin" element={
