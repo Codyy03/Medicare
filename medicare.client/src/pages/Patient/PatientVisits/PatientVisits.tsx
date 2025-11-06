@@ -14,7 +14,7 @@ export default function PatientVisits() {
     const [loading, setLoading] = useState(true);
     const [searchName, setSearchName] = useState("");
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-    const [upcomingOnly, setUpcomingOnly] = useState(true);
+    const [upcomingOnly, setUpcomingOnly] = useState(false);
     const [showModal, setShowModal] = useState<VisitsResponseDto | null>(null);
 
     useEffect(() => {
@@ -22,7 +22,6 @@ export default function PatientVisits() {
             .then((data) => {
                 setVisits(data);
                 setFilteredVisits(data);
-                handleSearch();
             })
             .catch((err) => {
                 console.error(err);
@@ -57,7 +56,7 @@ export default function PatientVisits() {
         const response = await axios.post<VisitsResponseDto>(
             `https://localhost:7014/api/visits/canceledVisit/${id}`
         );
-        return response.data; // zwróci zaktualizowan¹ wizytê
+        return response.data;
     };
 
     const getStatusBadgeClass = (status: string | undefined) => {

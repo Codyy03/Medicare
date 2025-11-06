@@ -5,8 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
+using static MediCare.Server.Controllers.AdminNewsController;
 using static MediCare.Server.Controllers.VisitsController;
 using static MediCare.Server.Entities.Enums;
 
@@ -14,6 +16,46 @@ namespace MediCare.Server.Tests.Controllers
 {
     public class VisitsControllerTests : IClassFixture<WebApplicationFactory<Program>>
     {
+        /// <summary>
+        /// Verifies that retrieving all visits returns HTTP 200 OK and valid data.
+        /// </summary>
+        /// <remarks>
+        /// The test calls the /api/visits endpoint, ensures the response is successful,
+        /// and deserializes the JSON into a list of VisitResponseDto objects.
+        /// It asserts that the list is not null and that each visit has valid values for
+        /// ID, date, time, doctor, patient, room, status, and reason.
+        /// </remarks>
+        [Fact]
+        public async Task GetVisitsReturn_Ok()
+        {
+            var client = new SeededDbFactory().CreateClient();
+
+            var date = new DateOnly(2025, 10, 22);
+            var response = await client.GetAsync("api/visits");
+
+            response.EnsureSuccessStatusCode();
+            Assert.Equal("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var visits = JsonSerializer.Deserialize<List<VisitResponseDto>>(content,
+               new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            Assert.NotNull(visits);
+            Assert.All(visits, v =>
+            {
+                Assert.True(v.ID > 0);
+                Assert.InRange(v.VisitDate, DateOnly.MinValue, DateOnly.MaxValue);
+                Assert.InRange(v.VisitTime, TimeOnly.MinValue, TimeOnly.MaxValue);
+                Assert.False(string.IsNullOrEmpty(v.DoctorName));
+                Assert.False(string.IsNullOrEmpty(v.Specialization));
+                Assert.False(string.IsNullOrEmpty(v.PatientName));
+                Assert.False(string.IsNullOrEmpty(v.Room));
+                Assert.False(string.IsNullOrEmpty(v.Reason));
+                Assert.False(string.IsNullOrEmpty(v.Status));
+            });
+        }
+
         /// <summary>
         /// Verifies that the endpoint <c>GET api/visits/visitsTime</c> 
         /// returns a JSON list of visit times for a given doctor and date.
@@ -133,6 +175,15 @@ namespace MediCare.Server.Tests.Controllers
             }
         }
 
+        /// <summary>
+        /// Verifies that retrieving visits for a doctor returns HTTP 200 OK and valid data.
+        /// </summary>
+        /// <remarks>
+        /// The test generates a JWT token for a doctor user, sets it in the request headers,
+        /// and calls the /api/visits/doctor endpoint. It asserts that the response is OK and
+        /// that the returned list of visits contains valid values for all required fields.
+        /// If no visits are returned, it asserts that the result is an empty list.
+        /// </remarks>
         [Fact]
         public async Task GetDoctorVisit_ReurnOk()
         {
@@ -200,6 +251,33 @@ namespace MediCare.Server.Tests.Controllers
              new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             Assert.Equal(VisitStatus.Cancelled.ToString(), result.Status);
+        }
+
+        /// <summary>
+        /// Verifies that updating an existing visit returns HTTP 204 NoContent.
+        /// </summary>
+        /// <remarks>
+        /// The test retrieves an existing visit, modifies several fields (PrescriptionText, VisitNotes,
+        /// AdditionalNotes, Reason, Status), and sends a PUT request to the update endpoint.
+        /// It asserts that the response status code is NoContent, indicating a successful update.
+        /// </remarks>
+        [Fact]
+        public async Task UpdateVisit_ReturnsNoContent()
+        {
+            var client = new SeededDbFactory().CreateClient();
+
+            var existing = await client.GetFromJsonAsync<VisitResponseDto>("/api/visits/1");
+            Assert.NotNull(existing);
+
+            existing.PrescriptionText = "New PrescriptionText";
+            existing.VisitNotes = "vist node";
+            existing.AdditionalNotes = "Additional Notes";
+            existing.Reason = "Checkup";
+            existing.Status = "Completed";
+
+            var response = await client.PutAsJsonAsync($"/api/visits/update/1", existing);
+
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         }
 
         /// <summary>

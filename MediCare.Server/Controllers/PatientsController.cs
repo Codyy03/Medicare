@@ -44,6 +44,7 @@ namespace MediCare.Server.Controllers
                     ID = d.ID,
                     Name = d.Name,
                     Surname = d.Surname,
+                    PESEL = d.PESEL,
                     Email = d.Email,
                     PhoneNumber = d.PhoneNumber,
                     Birthday = d.Birthday
@@ -70,6 +71,7 @@ namespace MediCare.Server.Controllers
                   ID = d.ID,
                   Name = d.Name,
                   Surname = d.Surname,
+                  PESEL = d.PESEL,
                   Email = d.Email,
                   PhoneNumber = d.PhoneNumber,
                   Birthday = d.Birthday
@@ -142,6 +144,7 @@ namespace MediCare.Server.Controllers
                 ID = patient.ID,
                 Name = patient.Name,
                 Surname = patient.Surname,
+                PESEL = patient.PESEL,
                 Email = patient.Email,
                 PhoneNumber = patient.PhoneNumber,
                 Birthday = patient.Birthday,
@@ -244,6 +247,7 @@ namespace MediCare.Server.Controllers
                 Name = existing.Name,
                 Surname = existing.Surname,
                 Email = existing.Email,
+                PESEL = existing.PESEL,
                 PhoneNumber = existing.PhoneNumber,
                 Birthday = existing.Birthday,
             });
@@ -360,7 +364,7 @@ namespace MediCare.Server.Controllers
         /// A list of validation error messages. 
         /// If the list is empty, the password meets all requirements.
         /// </returns>
-        List<string> ValidatePassword(string password)
+        public List<string> ValidatePassword(string password)
         {
             var errors = new List<string>();
 
@@ -386,7 +390,7 @@ namespace MediCare.Server.Controllers
         /// </summary>
         /// <param name="name">The name to validate.</param>
         /// <returns>A list of validation error messages, or empty if valid.</returns>
-        List<string> ValidateName(string name)
+        public List<string> ValidateName(string name)
         {
             var errors = new List<string>();
 
@@ -408,7 +412,7 @@ namespace MediCare.Server.Controllers
         /// </summary>
         /// <param name="surname">The surname to validate.</param>
         /// <returns>A list of validation error messages, or empty if valid.</returns>
-        List<string> ValidateSurname(string surname)
+        public List<string> ValidateSurname(string surname)
         {
             var errors = new List<string>();
 
@@ -432,7 +436,7 @@ namespace MediCare.Server.Controllers
         /// </summary>
         /// <param name="pesel">The PESEL number to validate.</param>
         /// <returns>A validation error message, or empty if valid.</returns>
-        List<string> ValidatePESEL(string pesel)
+        public List<string> ValidatePESEL(string pesel)
         {
             var errors = new List<string>();
 
@@ -460,7 +464,7 @@ namespace MediCare.Server.Controllers
         /// </summary>
         /// <param name="birthday">The date of birth to validate.</param>
         /// <returns>A validation error message, or empty if valid.</returns>
-        List<string> ValidateBirthday(DateTime birthday)
+        public List<string> ValidateBirthday(DateTime birthday)
         {
             var errors = new List<string>();
             if (birthday > DateTime.Now)
@@ -473,6 +477,7 @@ namespace MediCare.Server.Controllers
             }
             return errors;
         }
+
         /// <summary>
         /// Data Transfer Object (DTO) used when registering a new patient.
         /// Includes personal details, PESEL, contact information,  password and sets account status as 1 (active).
@@ -503,6 +508,7 @@ namespace MediCare.Server.Controllers
             public int ID { get; set; }
             public required string Name { get; set; }
             public required string Surname { get; set; }
+            public required string PESEL { get; set; }
             public required string Email { get; set; }
             public required string PhoneNumber { get; set; }
             public DateTime Birthday { get; set; }
@@ -538,7 +544,7 @@ namespace MediCare.Server.Controllers
         }
         public class PasswordDto
         {
-            public string Password { get; set; }
+            public required string Password { get; set; }
         }
     }
 }

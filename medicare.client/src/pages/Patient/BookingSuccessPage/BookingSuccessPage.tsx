@@ -23,7 +23,7 @@ const BookingSuccessPage = () => {
                 </div>
 
                 <div className="mt-4">
-                    <Link to="/profile" className="btn btn-primary me-2">Go to profile</Link>
+                    <Link to="/patient/visits" className="btn btn-primary me-2">Go to profile</Link>
                     <Link to="/" className="btn btn-outline-secondary">Home page</Link>
                 </div>
             </div>

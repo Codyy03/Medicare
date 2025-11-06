@@ -16,7 +16,6 @@ export default function PatientProfile() {
     const [password1, setPassword1] = useState("");
     const [password2, setPassword2] = useState("");
 
-
     async function change() {
         setError("");
         setSuccess("");
@@ -341,7 +340,6 @@ function validatePhoneNumber(phoneNumber: string): string {
     }
     return "";
 }
-
 
 function validatePesel(pesel: string): string {
 
