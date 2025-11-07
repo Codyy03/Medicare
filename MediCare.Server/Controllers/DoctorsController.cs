@@ -35,7 +35,6 @@ namespace MediCare.Server.Controllers
         /// Retrieves all doctors from the system.
         /// </summary>
         /// <returns>A list of <see cref="DoctorDto"/> objects representing all doctors.</returns>
-        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<List<DoctorDto>>> GetDoctors()
         {
