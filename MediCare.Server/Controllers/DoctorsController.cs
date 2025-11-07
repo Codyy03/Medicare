@@ -1,6 +1,7 @@
 ﻿using MediCare.Server.Data;
 using MediCare.Server.Entities;
 using MediCare.Server.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +35,7 @@ namespace MediCare.Server.Controllers
         /// Retrieves all doctors from the system.
         /// </summary>
         /// <returns>A list of <see cref="DoctorDto"/> objects representing all doctors.</returns>
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<List<DoctorDto>>> GetDoctors()
         {

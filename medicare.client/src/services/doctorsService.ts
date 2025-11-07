@@ -11,8 +11,13 @@ export async function getDoctorById(id: number) {
 }
 
 export async function getDoctors() {
-    const res = await api.get("/doctors");
-    return res.data;
+    const response = await fetch(`https://localhost:7014/api/doctors`);
+
+    if (!response.ok) {
+        throw new Error("Error when downolading doctors");
+    }
+
+    return response.json();
 }
 
 export async function deleteDoctor(id: number) {
