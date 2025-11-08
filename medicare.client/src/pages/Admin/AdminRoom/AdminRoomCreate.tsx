@@ -81,7 +81,7 @@ export default function AdminPatientsCreate() {
                         type="number"
                         name="roomNumber"
                         placeholder="Room number"
-                        value={form.roomNumber}
+                        value={form.roomNumber ?? undefined}
                         onChange={handleChange}
                         className={errors["RoomNumber"] ? "invalid" : ""}
                         required
@@ -107,10 +107,10 @@ export default function AdminPatientsCreate() {
                             name="specializations"
                             options={specializations}
                             getOptionLabel={(spec) => spec.specializationName}
-                            getOptionValue={(spec) => spec.id}
+                            getOptionValue={(spec) => spec.id.toString()}
                             value={form.specializations}
                             onChange={(selected) => {
-                                setForm({ ...form, specializations: selected ?? [] });
+                                setForm({ ...form, specializations: selected ? [...selected] : [] });
                             }}
                         />
                     )}

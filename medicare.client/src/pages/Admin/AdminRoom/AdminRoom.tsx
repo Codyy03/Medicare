@@ -5,7 +5,7 @@ import type { RoomsDto } from "../../../interfaces/rooms.types";
 import { getRooms } from "../../../services/roomsService.ts";
 import { deleteRoom } from "../../../services/roomsService.ts";
 
-export default function AdminRooms() {
+export default function AdminRoom() {
     const navigate = useNavigate();
 
     const [rooms, setRooms] = useState<RoomsDto[]>([]);
@@ -86,13 +86,13 @@ export default function AdminRooms() {
                             <td>
                                 <button
                                     className="btn btn-sm btn-primary me-2"
-                                    onClick={() => navigate(`/admin/roomEdit/${room.id}`)}
+                                    onClick={() => navigate(`/admin/AdminRoomEdit/${room.id}`)}
                                 >
                                     <FaEdit />
                                 </button>
                                 <button
                                     className="btn btn-sm btn-danger"
-                                    onClick={() => handleDelete(room.id)}
+                                    onClick={() => handleDelete(room.id!)}
                                 >
                                     <FaTrash />
                                 </button>

@@ -39,9 +39,9 @@ import AdminNewsEdit from "./pages/Admin/AdminNews/AdminNewsEdit";
 import AdminVisits from "./pages/Admin/AdminVisits/AdminVisits";
 import AdminVisitsEdit from "./pages/Admin/AdminVisits/AdminVisitsEdit";
 import AdminVisitStats from "./pages/Admin/AdminVisitStats/AdminVisitStats";
-import AdminRooms from "./pages/Admin/AdminRooms/AdminRooms";
-import AdminRoomCreate from "./pages/Admin/AdminRooms/AdminRoomCreate";
-import AdminRoomEdit from "./pages/Admin/AdminRooms/AdminRoomEdit";
+import AdminRoom from "./pages/Admin/AdminRoom/AdminRoom";
+import AdminRoomCreate from "./pages/Admin/AdminRoom/AdminRoomCreate";
+import AdminRoomEdit from "./pages/Admin/AdminRoom/AdminRoomEdit";
 import './App.css';
 
 function App() {
@@ -152,8 +152,6 @@ function App() {
                                 <AdminDoctorCreate />
                             </ProtectedRoute>
                         } />
-
-
                         <Route path="/admin/specializations" element={
                             <ProtectedRoute role="3">
                                 <AdminSpecializations />
@@ -184,14 +182,24 @@ function App() {
                                 <AdminPatientsCreate />
                             </ProtectedRoute>
                         } />
+                        <Route path="/admin/adminRoom" element={
+                            <ProtectedRoute role="3">
+                                <AdminRoom />
+                            </ProtectedRoute>
+                        } />
                         <Route path="/admin/adminRoomCreate" element={
                             <ProtectedRoute role="3">
                                 <AdminRoomCreate />
                             </ProtectedRoute>
                         } />
-                        <Route path="/admin/RoomEdit/:id" element={
+                        <Route path="/admin/AdminRoomEdit/:id" element={
                             <ProtectedRoute role="3">
                                 <AdminRoomEdit />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/admin/adminNews" element={
+                            <ProtectedRoute role="3">
+                                <AdminNews />
                             </ProtectedRoute>
                         } />
                         <Route path="/admin/adminNewsEdit" element={

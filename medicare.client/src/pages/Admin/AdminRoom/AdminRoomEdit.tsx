@@ -40,7 +40,7 @@ export default function RoomEdit() {
             try {
                 await updateAdminRoom(room);
                 alert("Rooms updated successfully");
-                navigate("/admin/rooms");
+                navigate("/admin/adminRoom");
             } catch (err: any) {
                 alert("Error updating rooms: " + err.message);
             }
@@ -60,7 +60,7 @@ export default function RoomEdit() {
                         {/* Room Number */}
                         <div className="col-md-6">
                             <label className="form-label"><FaUser className="me-2" />Room Number</label>
-                            <input type="text" name="roomNumber" value={room.roomNumber} onChange={handleChange} className="form-control" required />
+                            <input type="number" name="roomNumber" value={room.roomNumber ?? undefined} onChange={handleChange} className="form-control" required />
                         </div>
 
                         {/* Room Type */}
@@ -77,10 +77,10 @@ export default function RoomEdit() {
                                 name="specializations"
                                 options={specializations}
                                 getOptionLabel={(spec) => spec.specializationName}
-                                getOptionValue={(spec) => spec.id}
+                                getOptionValue={(spec) => spec.id.toString()}
                                 value={room.specializations}
                                 onChange={(selected) => {
-                                    setRoom({ ...room, specializations: selected ?? [] });
+                                    setRoom({ ...room, specializations: selected ? [...selected] : [] });
                                 }}
                             />
                         </div>
