@@ -7,7 +7,6 @@ import { FaCalendarAlt } from "react-icons/fa";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 
-
 const DoctorVisit = () => {
     const [visits, setVisits] = useState<VisitsResponseDto[]>([]);
     const [filteredVisits, setFilteredVisits] = useState<VisitsResponseDto[]>([]);
@@ -18,7 +17,7 @@ const DoctorVisit = () => {
     const [selectedVisit, setSelectedVisit] = useState<VisitsResponseDto | null>(null);
 
     const [searchName, setSearchName] = useState("");
-    const [upcomingOnly, setUpcomingOnly] = useState(true);
+    const [upcomingOnly, setUpcomingOnly] = useState(false);
 
     useEffect(() => {
         getDoctorVisits()
@@ -288,8 +287,6 @@ const DoctorVisit = () => {
                         </Button>
                     </Modal.Footer>
                 </Modal>
-
-
             </div>
         </div>
     );

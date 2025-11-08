@@ -12,6 +12,17 @@ export interface VisitsResponseDto {
     prescriptionText?: string;
     visitNotes?: string;
 }
+export interface VisitsUpdateDto {
+    id: number;
+    visitDate: string;
+    visitTime: string;
+    status: string;
+    reason: string;
+    additionalNotes?: string;
+    prescriptionText?: string;
+    visitNotes?: string;
+}
+
 export interface TodayVisitsDto {
     id: number;
     visitTime: string;

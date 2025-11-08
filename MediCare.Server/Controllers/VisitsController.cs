@@ -22,6 +22,44 @@ namespace MediCare.Server.Controllers
         }
 
         /// <summary>
+        /// Retrieves all visits from the database with related doctor, patient, room, and specialization information.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint returns a list of <see cref="VisitResponseDto"/> objects. 
+        /// Each visit includes details such as date, time, doctor name, patient name, specialization, room, status, reason, 
+        /// and any additional notes.
+        /// </remarks>
+        /// <returns>
+        /// A list of visits wrapped in an <see cref="ActionResult"/>. 
+        /// Returns HTTP 200 (OK) with the list of visits.
+        /// </returns>
+        [HttpGet]
+        public async Task<ActionResult<List<VisitResponseDto>>> GetVisits()
+        {
+            var visits = await context.Visits
+                .Include(v => v.Doctor)
+                    .ThenInclude(d => d.Specializations)
+                .Include(v => v.Patient)
+                .Include(v => v.Room)
+                .Select(visit => new VisitResponseDto
+                {
+                    ID = visit.ID,
+                    VisitDate = visit.VisitDate,
+                    VisitTime = visit.VisitTime,
+                    DoctorName = $"{visit.Doctor.Name} {visit.Doctor.Surname}",
+                    Specialization = visit.Specialization.SpecializationName,
+                    PatientName = $"{visit.Patient.Name} {visit.Patient.Surname}",
+                    Room = visit.Room.RoomType,
+                    Status = visit.Status.ToString(),
+                    Reason = visit.Reason.ToString(),
+                    AdditionalNotes = visit.AdditionalNotes
+                })
+                .ToListAsync();
+
+            return Ok(visits);
+        }
+
+        /// <summary>
         /// Retrieves a single visit by its ID, including doctor, patient, room, and specialization details.
         /// </summary>
         /// <param name="id">The unique identifier of the visit.</param>
@@ -49,7 +87,9 @@ namespace MediCare.Server.Controllers
                 Room = visit.Room.RoomType,
                 Status = visit.Status.ToString(),
                 Reason = visit.Reason.ToString(),
-                AdditionalNotes = visit.AdditionalNotes
+                AdditionalNotes = visit.AdditionalNotes,
+                VisitNotes = visit.VisitNotes,
+                PrescriptionText = visit.PrescriptionText
             });
         }
 
@@ -61,11 +101,13 @@ namespace MediCare.Server.Controllers
         /// <returns>A list of <see cref="VisitTimeDto"/> objects with time and room info.</returns>
         [HttpGet("visitsTime")]
         public async Task<ActionResult<List<VisitTimeDto>>> GetVisitsTime(
-           [FromQuery] int id,
-           [FromQuery] DateOnly date)
+            [FromQuery] int id,
+            [FromQuery] DateOnly date)
         {
             var visitsTime = await context.Visits
-                .Where(v => v.DoctorID == id && v.VisitDate == date)
+                .Where(v => v.DoctorID == id
+                         && v.VisitDate == date
+                         && v.Status != VisitStatus.Cancelled)
                 .Select(v => new VisitTimeDto
                 {
                     VisitTime = v.VisitTime,
@@ -215,6 +257,57 @@ namespace MediCare.Server.Controllers
         }
 
         /// <summary>
+        /// Updates an existing visit record in the database.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint allows administrators to modify selected fields of a visit, including:
+        /// - Date and time of the visit
+        /// - Status (Scheduled, Completed, Cancelled)
+        /// - Reason (Consultation, Follow-up, Prescription, Checkup)
+        /// - Additional notes, prescription text, and visit notes
+        ///
+        /// The doctor, patient, room, and specialization associations remain unchanged.
+        /// </remarks>
+        /// <param name="id">The unique identifier of the visit to update. Must match the ID in the request body.</param>
+        /// <param name="dto">The <see cref="VisitEditDto"/> containing updated visit details.</param>
+        /// <returns>
+        /// Returns HTTP 204 (No Content) if the update succeeds.  
+        /// Returns HTTP 400 (Bad Request) if the ID does not match or if invalid status/reason values are provided.  
+        /// Returns HTTP 404 (Not Found) if the visit with the given ID does not exist.
+        /// </returns>
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> UpdateVisit(int id, [FromBody] VisitEditDto dto)
+        {
+            if (id != dto.ID)
+                return BadRequest("ID mismatch");
+
+            var visit = await context.Visits.FindAsync(id);
+            if (visit == null)
+                return NotFound();
+
+            visit.VisitDate = DateOnly.FromDateTime(dto.VisitDate);
+            visit.VisitTime = TimeOnly.Parse(dto.VisitTime);
+            visit.AdditionalNotes = dto.AdditionalNotes;
+
+            if (Enum.TryParse<VisitStatus>(dto.Status, out var status))
+                visit.Status = status;
+            else
+                return BadRequest("Invalid status value");
+
+            if (Enum.TryParse<VisitReason>(dto.Reason, out var reason))
+                visit.Reason = reason;
+            else
+                return BadRequest("Invalid reason value");
+
+            visit.PrescriptionText = dto.PrescriptionText;
+            visit.VisitNotes = dto.VisitNotes;
+
+            await context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        /// <summary>
         /// Marks a visit as started and completed by updating notes and prescription.
         /// </summary>
         /// <param name="id">The visit ID.</param>
@@ -310,11 +403,12 @@ namespace MediCare.Server.Controllers
             if (!patientExists)
                 return NotFound($"Patient with ID {dto.PatientID} not found.");
 
-            // Check doctor appointment conflicts
+            // Check doctor appointment conflicts (ignore cancelled visits)
             bool doctorConflict = await context.Visits.AnyAsync(v =>
                 v.DoctorID == dto.DoctorID &&
                 v.VisitDate == dto.VisitDate &&
-                v.VisitTime == dto.VisitTime);
+                v.VisitTime == dto.VisitTime &&
+                v.Status != VisitStatus.Cancelled);
 
             if (doctorConflict)
                 return Conflict("This doctor already has a visit scheduled at the given time.");
@@ -326,11 +420,12 @@ namespace MediCare.Server.Controllers
             if (!roomValid)
                 return BadRequest("Selected room is not valid for this specialization.");
 
-            // Check room collision
+            // Check room collision (ignore cancelled visits)
             bool roomConflict = await context.Visits.AnyAsync(v =>
                 v.RoomID == dto.RoomID &&
                 v.VisitDate == dto.VisitDate &&
-                v.VisitTime == dto.VisitTime);
+                v.VisitTime == dto.VisitTime &&
+                v.Status != VisitStatus.Cancelled);
 
             if (roomConflict)
                 return Conflict("This room is already occupied at the given time.");
@@ -400,7 +495,7 @@ namespace MediCare.Server.Controllers
             if (!doctor.Specializations.Any(s => s.ID == specId))
                 return BadRequest("This doctor does not have the selected specialization.");
 
-            // download rooms assigned to this specialization
+            // get rooms assigned to this specialization
             var rooms = await context.SpecializationRooms
                 .Where(sr => sr.SpecializationID == specId)
                 .Select(sr => sr.Room)
@@ -421,10 +516,12 @@ namespace MediCare.Server.Controllers
                 var slotStartMinutes = current.Hour * 60 + current.Minute;
                 var slotEndMinutes = slotStartMinutes + 30;
 
+                // only uncancelled visits block the slot
                 var occupiedRoomIds = await context.Visits
                     .Where(v =>
                         roomIds.Contains(v.RoomID) &&
                         v.VisitDate == date &&
+                        v.Status != VisitStatus.Cancelled &&
                         (v.VisitTime.Hour * 60 + v.VisitTime.Minute) < slotEndMinutes &&
                         ((v.VisitTime.Hour * 60 + v.VisitTime.Minute) + 30) > slotStartMinutes
                     )
@@ -552,6 +649,22 @@ namespace MediCare.Server.Controllers
             public string? VisitNotes { get; set; }
             public string? PrescriptionText { get; set; }
         }
+
+        /// <summary>
+        /// DTO representing edit data for a visit.
+        /// </summary>
+        public class VisitEditDto
+        {
+            public int ID { get; set; }
+            public DateTime VisitDate { get; set; }
+            public string VisitTime { get; set; } = string.Empty;
+            public string? AdditionalNotes { get; set; }
+            public required string Status { get; set; }
+            public required string Reason { get; set; }
+            public string? VisitNotes { get; set; }
+            public string? PrescriptionText { get; set; }
+        }
+
         /// <summary>
         /// DTO representing today's visits for a doctor.
         /// </summary>

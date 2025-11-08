@@ -34,6 +34,11 @@ import SpecializationEdit from "./pages/Admin/AdminSpecializations/Specializatio
 import AdminPatients from "./pages/Admin/AdminPatients/AdminPatients";
 import PatientEdit from "./pages/Admin/AdminPatients/PatientEdit";
 import AdminPatientsCreate from "./pages/Admin/AdminPatients/AdminPatientCreate";
+import AdminNews from "./pages/Admin/AdminNews/AdminNews";
+import AdminNewsEdit from "./pages/Admin/AdminNews/AdminNewsEdit";
+import AdminVisits from "./pages/Admin/AdminVisits/AdminVisits";
+import AdminVisitsEdit from "./pages/Admin/AdminVisits/AdminVisitsEdit";
+import AdminVisitStats from "./pages/Admin/AdminVisitStats/AdminVisitStats";
 import AdminRooms from "./pages/Admin/AdminRooms/AdminRooms";
 import AdminRoomCreate from "./pages/Admin/AdminRooms/AdminRoomCreate";
 import AdminRoomEdit from "./pages/Admin/AdminRooms/AdminRoomEdit";
@@ -43,8 +48,9 @@ function App() {
     return (
         <AuthProvider>
             <BrowserRouter>
-                <Routes>01
+                <Routes>
                     <Route path="/" element={<Layout />}></Route>
+
                     <Route element={<MinimalLayout />}>
 
                         <Route path="/aboutUs" element={<AboutUs />} />
@@ -92,10 +98,10 @@ function App() {
 
                         <Route path="/doctor/visits"
                             element={
-                            <ProtectedRoute role="2">
-                                <DoctorVisits />
-                            </ProtectedRoute>
-                        } />
+                                <ProtectedRoute role="2">
+                                    <DoctorVisits />
+                                </ProtectedRoute>
+                            } />
 
                         <Route path="/doctorAppointments"
                             element={
@@ -117,16 +123,15 @@ function App() {
                         } />
 
 
-                     <Route path="/doctors" element={<DoctorsList />} />
-                    <Route path="/appointments" element={<Appointments />} />
-                    <Route path="/booking-success" element={<BookingSuccessPage />} />
+                        <Route path="/doctors" element={<DoctorsList />} />
+                        <Route path="/appointments" element={<Appointments />} />
+                        <Route path="/booking-success" element={<BookingSuccessPage />} />
 
-                    <Route path="/doctorInfo/:id" element={<DoctorInfo />} />
-                    <Route path="*" element={<NotFoundPage />} />
-                   <Route path="/unauthorized" element={<UnauthorizedPage />} />
+                        <Route path="/doctorInfo/:id" element={<DoctorInfo />} />
+                        <Route path="*" element={<NotFoundPage />} />
+                        <Route path="/unauthorized" element={<UnauthorizedPage />} />
                         <Route path="/server-error" element={<ServerErrorPage />} />
-
-
+  
                         <Route path="/admin" element={
                             <ProtectedRoute role="3">
                                 <AdminDashboard />
@@ -153,7 +158,7 @@ function App() {
                             <ProtectedRoute role="3">
                                 <AdminSpecializations />
                             </ProtectedRoute>
-                            } />
+                        } />
                         <Route path="/admin/specializationEdit/:id" element={
                             <ProtectedRoute role="3">
                                 <SpecializationEdit />
@@ -179,11 +184,6 @@ function App() {
                                 <AdminPatientsCreate />
                             </ProtectedRoute>
                         } />
-                        <Route path="/admin/rooms" element={
-                            <ProtectedRoute role="3">
-                                <AdminRooms />
-                            </ProtectedRoute>
-                        } />
                         <Route path="/admin/adminRoomCreate" element={
                             <ProtectedRoute role="3">
                                 <AdminRoomCreate />
@@ -192,6 +192,36 @@ function App() {
                         <Route path="/admin/RoomEdit/:id" element={
                             <ProtectedRoute role="3">
                                 <AdminRoomEdit />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/admin/adminNewsEdit" element={
+                            <ProtectedRoute role="3">
+                                <AdminNewsEdit />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/admin/adminNewsEdit/:id" element={
+                            <ProtectedRoute role="3">
+                                <AdminNewsEdit />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/admin/adminVisits" element={
+                            <ProtectedRoute role="3">
+                                <AdminVisits />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/admin/adminVisitsEdit" element={
+                            <ProtectedRoute role="3">
+                                <AdminVisitsEdit />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/admin/adminVisitsEdit/:id" element={
+                            <ProtectedRoute role="3">
+                                <AdminVisitsEdit />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/admin/adminVisitStats" element={
+                            <ProtectedRoute role="3">
+                                <AdminVisitStats />
                             </ProtectedRoute>
                         } />
                     </Route>

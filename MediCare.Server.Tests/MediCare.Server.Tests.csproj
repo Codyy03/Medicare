@@ -33,5 +33,6 @@
   <ItemGroup>
     <ProjectReference Include="..\MediCare.Server\MediCare.Server.csproj" />
   </ItemGroup>
+  
 
 </Project>
