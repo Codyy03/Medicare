@@ -111,8 +111,21 @@ namespace MediCare.Server.Data
             });
 
             modelBuilder.Entity<SpecializationRoom>()
-                .HasKey(sr => new { sr.SpecializationID, sr.RoomID });
+                .HasKey(sr => new { sr.RoomID, sr.SpecializationID });
+
+            modelBuilder.Entity<SpecializationRoom>()
+                .HasOne(sr => sr.Room)
+                .WithMany(r => r.SpecializationRooms)
+                .HasForeignKey(sr => sr.RoomID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<SpecializationRoom>()
+                .HasOne(sr => sr.Specialization)
+                .WithMany(s => s.SpecializationRooms)
+                .HasForeignKey(sr => sr.SpecializationID)
+                .OnDelete(DeleteBehavior.Cascade);
         }
+
         #endregion
 
         #region Indexes and TimeZone

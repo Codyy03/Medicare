@@ -7,9 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using static MediCare.Server.Entities.Enums;
-
-namespace MediCare.Server.Controllers
-{
     [ApiController]
     [Route("api/[controller]")]
     public class AdminPatientsController : ControllerBase
@@ -204,4 +201,3 @@ namespace MediCare.Server.Controllers
         [Required]
         public Status Status { get; set; }
     }
-}

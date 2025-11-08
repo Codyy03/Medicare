@@ -34,6 +34,9 @@ import SpecializationEdit from "./pages/Admin/AdminSpecializations/Specializatio
 import AdminPatients from "./pages/Admin/AdminPatients/AdminPatients";
 import PatientEdit from "./pages/Admin/AdminPatients/PatientEdit";
 import AdminPatientsCreate from "./pages/Admin/AdminPatients/AdminPatientCreate";
+import AdminRooms from "./pages/Admin/AdminRooms/AdminRooms";
+import AdminRoomCreate from "./pages/Admin/AdminRooms/AdminRoomCreate";
+import AdminRoomEdit from "./pages/Admin/AdminRooms/AdminRoomEdit";
 import './App.css';
 
 function App() {
@@ -41,10 +44,9 @@ function App() {
         <AuthProvider>
             <BrowserRouter>
                 <Routes>01
-                    <Route path="/" element={<Layout />}>
-                    </Route>
-
+                    <Route path="/" element={<Layout />}></Route>
                     <Route element={<MinimalLayout />}>
+
                         <Route path="/aboutUs" element={<AboutUs />} />
                         <Route path="/contact" element={<Contact />} />
                         <Route path="/allNews" element={<AllNews />} />
@@ -177,8 +179,23 @@ function App() {
                                 <AdminPatientsCreate />
                             </ProtectedRoute>
                         } />
-                </Route>
-            </Routes>
+                        <Route path="/admin/rooms" element={
+                            <ProtectedRoute role="3">
+                                <AdminRooms />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/admin/adminRoomCreate" element={
+                            <ProtectedRoute role="3">
+                                <AdminRoomCreate />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/admin/RoomEdit/:id" element={
+                            <ProtectedRoute role="3">
+                                <AdminRoomEdit />
+                            </ProtectedRoute>
+                        } />
+                    </Route>
+                </Routes>
             </BrowserRouter>
         </AuthProvider>
     );
