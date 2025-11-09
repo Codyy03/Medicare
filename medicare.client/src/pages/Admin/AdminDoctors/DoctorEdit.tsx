@@ -21,35 +21,18 @@ export default function DoctorEdit() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch(`https://localhost:7014/api/doctors/${id}`)
-            .then((res) => {
-                if (!res.ok) throw new Error("Doctor not found");
-                return res.json();
-            })
-            .then((data) => setDoctor(data))
-            .catch((err) => console.error(err))
-            .finally(() => setLoading(false));
-    }, [id]);
-
-    useEffect(() => {
         Promise.all([
-            fetch(`https://localhost:7014/api/doctors/${id}`).then(res => res.json()),
+            fetch(`https://localhost:7014/api/AdminDoctors/doctorAdmin/${id}`).then(res => res.json()),
             getSpecializationNames()
         ])
             .then(([doctorData, specs]) => {
-                const specializationIds = specs
-                    .filter((spec: SpecializationsNamesID) =>
-                        doctorData.specializations.includes(spec.specializationName)
-                    )
-                    .map((spec: SpecializationsNamesID) => spec.id);
-
-
                 setSpecializations(specs);
-                setDoctor({ ...doctorData, specializations: specializationIds });
+                setDoctor(doctorData);
             })
             .catch(console.error)
             .finally(() => setLoading(false));
     }, [id]);
+
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         if (!doctor) return;

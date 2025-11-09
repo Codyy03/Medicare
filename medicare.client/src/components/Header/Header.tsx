@@ -54,12 +54,6 @@ export default function Header() {
                                 </a>
                             ))}
                         </div>
-                        <form className="d-flex search-form">
-                            <input className="form-control form-control-sm me-2" type="search" placeholder="Find..." />
-                            <button className="btn btn-light btn-sm search-btn" type="submit">
-                                <i className="bi bi-search"></i>
-                            </button>
-                        </form>
                     </div>
                 </div>
             </div>

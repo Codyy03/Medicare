@@ -97,10 +97,16 @@ export default function PatientEdit() {
                         {/* Status */}
                         <div className="col-md-6">
                             <label className="form-label"><FaUserCheck className="me-2" />Status</label>
-                            <select name="status" value={patient.status} onChange={handleChange} className="form-select">
-                                <option value="Active">Active</option>
-                                <option value="Inactive">Inactive</option>
+                            <select
+                                name="status"
+                                value={patient.status}
+                                onChange={(e) => setPatient({ ...patient, status: parseInt(e.target.value) })}
+                                className="form-select"
+                            >
+                                <option value={0}>Active</option>
+                                <option value={1}>Inactive</option>
                             </select>
+
                         </div>
                     </div>
 

@@ -87,7 +87,7 @@ export default function RoomEdit() {
                     </div>
 
                     <div className="d-flex justify-content-between mt-4">
-                        <button type="button" className="btn btn-outline-secondary" onClick={() => navigate("/admin/rooms")}>
+                        <button type="button" className="btn btn-outline-secondary" onClick={() => navigate("/admin/adminRoom")}>
                             <FaArrowLeft className="me-2" /> Back
                         </button>
                         <button type="submit" className="btn btn-primary">

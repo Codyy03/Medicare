@@ -222,7 +222,7 @@ namespace MediCare.Server.Controllers
 
             if (doctor == null) return NotFound();
 
-            var today = new DateOnly(2025, 11, 6);
+            var today = DateOnly.FromDateTime(DateTime.Today);
 
             var visits = await context.Visits
                 .Where(v => v.DoctorID == doctor.ID && v.VisitDate == today && v.Status == VisitStatus.Scheduled)

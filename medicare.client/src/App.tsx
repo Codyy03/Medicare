@@ -131,7 +131,7 @@ function App() {
                         <Route path="*" element={<NotFoundPage />} />
                         <Route path="/unauthorized" element={<UnauthorizedPage />} />
                         <Route path="/server-error" element={<ServerErrorPage />} />
-  
+
                         <Route path="/admin" element={
                             <ProtectedRoute role="3">
                                 <AdminDashboard />

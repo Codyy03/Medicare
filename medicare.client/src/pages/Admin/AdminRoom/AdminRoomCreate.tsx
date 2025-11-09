@@ -64,7 +64,7 @@ export default function AdminPatientsCreate() {
             try {
                 const response = await createAdminRoom(form);
                 alert("Succes! " + response.data);
-                navigate("/admin/rooms");
+                navigate("/admin/adminRoom");
             }
             catch (err: any) {
                 alert(err.response.data.message);

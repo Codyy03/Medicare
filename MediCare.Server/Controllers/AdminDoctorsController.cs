@@ -24,6 +24,44 @@ namespace MediCare.Server.Controllers
         }
 
         /// <summary>
+        /// Retrieves a specific doctor by their unique identifier.
+        /// </summary>
+        /// <param name="id">The ID of the doctor to retrieve.</param>
+        /// <returns>
+        /// A 200 OK response with the <see cref="DoctorDto"/> if found; 
+        /// otherwise, a 404 Not Found response.
+        /// </returns>
+        [HttpGet("doctorAdmin/{id}")]
+        public async Task<ActionResult<DoctoAdminrDto>> GetDoctor(int id)
+        {
+            var doctor = await context.Doctors
+                .Include(d => d.Specializations)
+                .Where(d => d.ID == id)
+                .Select(d => new DoctoAdminrDto
+                {
+                    ID = d.ID,
+                    Name = d.Name,
+                    Surname = d.Surname,
+                    Email = d.Email,
+                    PhoneNumber = d.PhoneNumber,
+                    StartHour = d.StartHour,
+                    EndHour = d.EndHour,
+                    Facility = d.Facility,
+                    DoctorDescription = d.DoctorDescription,
+                    Specializations = d.Specializations
+                        .Select(ds => ds.ID)
+                        .ToList(),
+                    Role = (int)d.Role
+                })
+                .FirstOrDefaultAsync();
+
+            if (doctor == null)
+                return NotFound();
+
+            return Ok(doctor);
+        }
+
+        /// <summary>
         /// Updates an existing doctor record with new details.
         /// Only accessible by users with the Admin role.
         /// </summary>
@@ -175,12 +213,16 @@ namespace MediCare.Server.Controllers
     {
         [Required]
         public required string Name { get; set; }
+
         [Required]
         public required string Surname { get; set; }
+
         [Required, EmailAddress]
         public required string Email { get; set; }
+
         [Phone]
         public required string PhoneNumber { get; set; }
+
         [Required]
         public required string Password { get; set; }
 
@@ -201,5 +243,24 @@ namespace MediCare.Server.Controllers
 
         [Required]
         public Role Role { get; set; } = Role.Doctor;
+    }
+
+    /// <summary>
+    /// Data Transfer Object (DTO) for returning doctor information.
+    /// Excludes sensitive fields such as password hash.
+    /// </summary>
+    public class DoctoAdminrDto
+    {
+        public int ID { get; set; }
+        public required string Name { get; set; }
+        public required string Surname { get; set; }
+        public required string Email { get; set; }
+        public required string PhoneNumber { get; set; }
+        public TimeOnly StartHour { get; set; }
+        public TimeOnly EndHour { get; set; }
+        public string? Facility { get; set; }
+        public string? DoctorDescription { get; set; }
+        public List<int> Specializations{ get; set; } = new();
+        public int Role { get; set; }
     }
 }

@@ -33,7 +33,7 @@ public class AdminRoomsController : ControllerBase
             ID = r.ID,
             RoomNumber = r.RoomNumber,
             RoomType = r.RoomType,
-            specializations = r.SpecializationRooms
+            Specializations = r.SpecializationRooms
                 .Select(sr => new SpecializationDto
                 {
                     ID = sr.Specialization.ID,
@@ -77,7 +77,7 @@ public class AdminRoomsController : ControllerBase
 
         context.Rooms.Add(room);
         await context.SaveChangesAsync();
-        foreach (SpecializationDto specialization in model.specializations)
+        foreach (SpecializationDto specialization in model.Specializations)
         {
             var SpecializationRoom = new SpecializationRoom
             {
@@ -110,7 +110,7 @@ public class AdminRoomsController : ControllerBase
             ID = room.ID,
             RoomNumber = room.RoomNumber,
             RoomType = room.RoomType,
-            specializations = room.SpecializationRooms
+            Specializations = room.SpecializationRooms
             .Select(sr => new SpecializationDto
             {
                 ID = sr.Specialization.ID,
@@ -144,7 +144,7 @@ public class AdminRoomsController : ControllerBase
 
         context.SpecializationRooms.RemoveRange(room.SpecializationRooms);
 
-        foreach (var spec in model.specializations)
+        foreach (var spec in model.Specializations)
         {
             var specRoom = new SpecializationRoom
             {
@@ -163,7 +163,7 @@ public class AdminRoomsController : ControllerBase
         public int ID { get; set; }
         public int RoomNumber { get; set; }
         public string RoomType { get; set; }
-        public List<SpecializationDto> specializations { get; set; } = new();
+        public List<SpecializationDto> Specializations { get; set; } = new();
     }
 
     public class SpecializationDto
