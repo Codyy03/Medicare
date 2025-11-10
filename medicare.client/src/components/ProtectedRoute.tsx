@@ -4,10 +4,10 @@ import type { JSX } from "react";
 
 interface ProtectedRouteProps {
     children: JSX.Element;
-    role?: string;
+    role?: string | string[]; // mo¿na podaæ jedn¹ rolê albo listê ról
 }
 
-export default function ProtectedRoute({ children }: ProtectedRouteProps) {
+export default function ProtectedRoute({ children, role }: ProtectedRouteProps) {
     const { userName, userRole, loading } = useAuth();
 
     if (loading) {
@@ -15,11 +15,11 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     }
 
     if (!userName) {
-        return <Navigate to="/login/patient" replace />;
+        return <Navigate to="/" replace />;
     }
 
-    if (userRole) {
-        const allowedRoles = Array.isArray(userRole) ? userRole : [userRole];
+    if (role) {
+        const allowedRoles = Array.isArray(role) ? role : [role];
         if (!allowedRoles.includes(userRole || "")) {
             return <Navigate to="/unauthorized" replace />;
         }

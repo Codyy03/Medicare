@@ -66,7 +66,7 @@ function App() {
                         <Route
                             path="/personalData"
                             element={
-                                <ProtectedRoute role="1">
+                                <ProtectedRoute role="Patient">
                                     <PatientProfile />
                                 </ProtectedRoute>
                             }
@@ -75,14 +75,20 @@ function App() {
                         <Route
                             path="/resetPasswordPatient"
                             element={
-                                <ProtectedRoute role="1">
+                                <ProtectedRoute role="Patient">
                                     <PatientsResetPassword />
                                 </ProtectedRoute>
                             }
                         />
 
                         <Route path="/patient/visits" element={
-                            <ProtectedRoute role="1">
+                            <ProtectedRoute role="Patient">
+                                <PatientVisits />
+                            </ProtectedRoute>
+                        } />
+
+                        <Route path="/patient/visits" element={
+                            <ProtectedRoute role="Patient">
                                 <PatientVisits />
                             </ProtectedRoute>
                         } />
@@ -90,7 +96,7 @@ function App() {
                         <Route
                             path="/personalDataDoctor"
                             element={
-                                <ProtectedRoute role="2">
+                                <ProtectedRoute role="Doctor">
                                     <DoctorProfile />
                                 </ProtectedRoute>
                             }
@@ -98,31 +104,25 @@ function App() {
 
                         <Route path="/doctor/visits"
                             element={
-                                <ProtectedRoute role="2">
+                                <ProtectedRoute role="Doctor">
                                     <DoctorVisits />
                                 </ProtectedRoute>
                             } />
 
                         <Route path="/doctorAppointments"
                             element={
-                                <ProtectedRoute role="2">
+                                <ProtectedRoute role="Doctor">
                                     <DoctorAppointments />
                                 </ProtectedRoute>
                             } />
 
                         <Route path="/resetPasswordDoctor"
                             element={
-                                <ProtectedRoute role="2">
+                                <ProtectedRoute role="Doctor">
                                     <DoctorsResetPassword />
                                 </ProtectedRoute>
                             } />
-                        <Route path="/patient/visits" element={
-                            <ProtectedRoute role="1">
-                                <PatientVisits />
-                            </ProtectedRoute>
-                        } />
-
-
+ 
                         <Route path="/doctors" element={<DoctorsList />} />
                         <Route path="/appointments" element={<Appointments />} />
                         <Route path="/booking-success" element={<BookingSuccessPage />} />
@@ -133,105 +133,106 @@ function App() {
                         <Route path="/server-error" element={<ServerErrorPage />} />
 
                         <Route path="/admin" element={
-                            <ProtectedRoute role="3">
+                            <ProtectedRoute role="Admin">
                                 <AdminDashboard />
                             </ProtectedRoute>
                         } />
                         <Route path="/admin/doctors" element={
-                            <ProtectedRoute role="3">
+                            <ProtectedRoute role="Admin">
                                 <AdminDoctors />
                             </ProtectedRoute>
                         } />
                         <Route path="/admin/doctorEdit/:id" element={
-                            <ProtectedRoute role="3">
+                            <ProtectedRoute role="Admin">
                                 <DoctorEdit />
                             </ProtectedRoute>
                         } />
                         <Route path="/admin/adminDoctorCreate" element={
-                            <ProtectedRoute role="3">
+                            <ProtectedRoute role="Admin">
                                 <AdminDoctorCreate />
                             </ProtectedRoute>
                         } />
                         <Route path="/admin/specializations" element={
-                            <ProtectedRoute role="3">
+                            <ProtectedRoute role="Admin">
                                 <AdminSpecializations />
                             </ProtectedRoute>
                         } />
                         <Route path="/admin/specializationEdit/:id" element={
-                            <ProtectedRoute role="3">
+                            <ProtectedRoute role="Admin">
                                 <SpecializationEdit />
                             </ProtectedRoute>
                         } />
                         <Route path="/admin/specializationCreate" element={
-                            <ProtectedRoute role="3">
+                            <ProtectedRoute role="Admin">
                                 <SpecializationEdit />
                             </ProtectedRoute>
                         } />
                         <Route path="/admin/patients" element={
-                            <ProtectedRoute role="3">
+                            <ProtectedRoute role="Admin">
                                 <AdminPatients />
                             </ProtectedRoute>
                         } />
                         <Route path="/admin/patientEdit/:id" element={
-                            <ProtectedRoute role="3">
+                            <ProtectedRoute role="Admin">
                                 <PatientEdit />
                             </ProtectedRoute>
                         } />
                         <Route path="/admin/adminPatientCreate" element={
-                            <ProtectedRoute role="3">
+                            <ProtectedRoute role="Admin">
                                 <AdminPatientsCreate />
                             </ProtectedRoute>
                         } />
                         <Route path="/admin/adminRoom" element={
-                            <ProtectedRoute role="3">
+                            <ProtectedRoute role="Admin">
                                 <AdminRoom />
                             </ProtectedRoute>
                         } />
                         <Route path="/admin/adminRoomCreate" element={
-                            <ProtectedRoute role="3">
+                            <ProtectedRoute role="Admin">
                                 <AdminRoomCreate />
                             </ProtectedRoute>
                         } />
                         <Route path="/admin/AdminRoomEdit/:id" element={
-                            <ProtectedRoute role="3">
+                            <ProtectedRoute role="Admin">
                                 <AdminRoomEdit />
                             </ProtectedRoute>
                         } />
                         <Route path="/admin/adminNews" element={
-                            <ProtectedRoute role="3">
+                            <ProtectedRoute role="Admin">
                                 <AdminNews />
                             </ProtectedRoute>
                         } />
                         <Route path="/admin/adminNewsEdit" element={
-                            <ProtectedRoute role="3">
+                            <ProtectedRoute role="Admin">
                                 <AdminNewsEdit />
                             </ProtectedRoute>
                         } />
                         <Route path="/admin/adminNewsEdit/:id" element={
-                            <ProtectedRoute role="3">
+                            <ProtectedRoute role="Admin">
                                 <AdminNewsEdit />
                             </ProtectedRoute>
                         } />
                         <Route path="/admin/adminVisits" element={
-                            <ProtectedRoute role="3">
+                            <ProtectedRoute role="Admin">
                                 <AdminVisits />
                             </ProtectedRoute>
                         } />
                         <Route path="/admin/adminVisitsEdit" element={
-                            <ProtectedRoute role="3">
+                            <ProtectedRoute role="Admin">
                                 <AdminVisitsEdit />
                             </ProtectedRoute>
                         } />
                         <Route path="/admin/adminVisitsEdit/:id" element={
-                            <ProtectedRoute role="3">
+                            <ProtectedRoute role="Admin">
                                 <AdminVisitsEdit />
                             </ProtectedRoute>
                         } />
                         <Route path="/admin/adminVisitStats" element={
-                            <ProtectedRoute role="3">
+                            <ProtectedRoute role="Admin">
                                 <AdminVisitStats />
                             </ProtectedRoute>
                         } />
+
                     </Route>
                 </Routes>
             </BrowserRouter>
