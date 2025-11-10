@@ -7,6 +7,9 @@ using System.Text.Json.Serialization;
 
 namespace MediCare.Server.Controllers.Admin
 {
+    /// <summary>
+    /// Admin-only API controller for managing medical specializations.
+    /// Provides endpoints restricted to users with the Admin role.
     [ApiController]
     [Route("api/admin/[controller]")]
     [Authorize(Roles = "Admin")]

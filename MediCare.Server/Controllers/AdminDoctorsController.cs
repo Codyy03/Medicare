@@ -11,6 +11,10 @@ using static MediCare.Server.Entities.Enums;
 
 namespace MediCare.Server.Controllers
 {
+    /// <summary>
+    /// Admin-only API controller for managing doctors in the MediCare system.
+    /// Provides endpoints to create, update, and delete doctor records.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class AdminDoctorsController : ControllerBase

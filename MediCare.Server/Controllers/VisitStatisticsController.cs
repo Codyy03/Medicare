@@ -5,6 +5,11 @@ using static MediCare.Server.Entities.Enums;
 
 namespace MediCare.Server.Controllers
 {
+    /// <summary>
+    /// API controller for retrieving statistical data about medical visits in the MediCare system.
+    /// Provides endpoints for aggregated summaries, daily trends, top doctors, and specialization-based statistics.
+    /// Useful for dashboards, KPI monitoring, and analytical reports.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class VisitStatisticsController : ControllerBase

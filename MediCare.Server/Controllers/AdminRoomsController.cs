@@ -4,6 +4,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+/// <summary>
+/// Admin-only API controller for managing rooms in the MediCare system.
+/// Provides endpoints to create, update, retrieve, and delete room records,
+/// including their associated specializations.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class AdminRoomsController : ControllerBase

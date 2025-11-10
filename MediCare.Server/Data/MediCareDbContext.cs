@@ -3,6 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using static MediCare.Server.Entities.Enums;
 namespace MediCare.Server.Data
 {
+    /// <summary>
+    /// Entity Framework Core database context for the MediCare system.
+    /// Defines DbSet properties for all entities and configures relationships,
+    /// indexes, seeds, and other model behaviors.
+    /// </summary>
     public class MediCareDbContext : DbContext
     {
         public MediCareDbContext(DbContextOptions<MediCareDbContext> options) : base(options) { }
@@ -16,6 +21,9 @@ namespace MediCare.Server.Data
         public DbSet<NewsItem> NewsItems { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
 
+        /// <summary>
+        /// Configures entity relationships, indexes, seeds, and other model behaviors.
+        /// </summary>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             HandleOneToOne(modelBuilder);
@@ -390,6 +398,11 @@ namespace MediCare.Server.Data
             );
         }
 
+        /// <summary>
+        /// Seeds initial data for the SpecializationRoom join table.
+        /// Establishes relationships between rooms and their associated medical specializations.
+        /// Used to define which rooms are dedicated to which types of consultations.
+        /// </summary>
         void SpecializationRoomSeeds(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<SpecializationRoom>().HasData(

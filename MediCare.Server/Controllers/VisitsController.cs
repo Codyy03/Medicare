@@ -8,6 +8,10 @@ using static MediCare.Server.Entities.Enums;
 
 namespace MediCare.Server.Controllers
 {
+    /// <summary>
+    /// API controller for managing medical visits in the MediCare system.
+    /// Provides endpoints to schedule, retrieve, update, and cancel patient visits.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class VisitsController : ControllerBase

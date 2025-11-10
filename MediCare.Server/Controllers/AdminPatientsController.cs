@@ -6,6 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using static MediCare.Server.Entities.Enums;
+
+/// <summary>
+/// Admin-only API controller for managing patients in the MediCare system.
+/// Provides endpoints to create, update, retrieve, and delete patient records.
+/// Access to these endpoints is restricted to users with the Admin role.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class AdminPatientsController : ControllerBase

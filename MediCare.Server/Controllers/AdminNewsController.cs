@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MediCare.Server.Controllers
 {
+    /// <summary>
+    /// Admin-only API controller for managing news items in the MediCare system.
+    /// Provides endpoints to create and update news records.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class AdminNewsController : ControllerBase

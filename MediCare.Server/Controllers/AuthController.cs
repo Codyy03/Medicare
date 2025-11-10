@@ -5,6 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MediCare.Server.Controllers
 {
+    /// <summary>
+    /// API controller responsible for authentication and token management in the MediCare system.
+    /// Provides endpoints for refreshing JWT access tokens using valid refresh tokens.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
