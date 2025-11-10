@@ -9,7 +9,7 @@ namespace MediCare.Server.Entities
 
         [Required, StringLength(255)]
         public required string SpecializationName { get; set; }
-        
+
         [Required]
         public required string SpecializationDescription { get; set; }
 

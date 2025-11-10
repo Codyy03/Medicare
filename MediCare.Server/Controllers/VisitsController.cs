@@ -4,7 +4,6 @@ using MediCare.Server.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using static MediCare.Server.Controllers.VisitsController;
 using static MediCare.Server.Entities.Enums;
 
 namespace MediCare.Server.Controllers
@@ -196,7 +195,7 @@ namespace MediCare.Server.Controllers
                 AdditionalNotes = visit.AdditionalNotes,
                 PrescriptionText = visit.PrescriptionText,
                 VisitNotes = visit.VisitNotes
-                
+
             }).ToList();
 
             return Ok(result);
@@ -347,10 +346,10 @@ namespace MediCare.Server.Controllers
 
             if (visit == null) return NotFound();
 
-            if (visit.Status == VisitStatus.Completed || visit.Status == VisitStatus.Cancelled) 
+            if (visit.Status == VisitStatus.Completed || visit.Status == VisitStatus.Cancelled)
                 return BadRequest();
 
-            visit.Status = VisitStatus.Cancelled; 
+            visit.Status = VisitStatus.Cancelled;
             await context.SaveChangesAsync();
 
             VisitResponseDto dto = new VisitResponseDto
@@ -608,8 +607,8 @@ namespace MediCare.Server.Controllers
         /// DTO representing a doctor's visit time and assigned room.
         /// Used when fetching occupied slots for a given doctor and date.
         public class VisitTimeDto
-        { 
-            public required TimeOnly VisitTime {  get; set; }
+        {
+            public required TimeOnly VisitTime { get; set; }
             public string Room { get; set; } = string.Empty;
         }
 

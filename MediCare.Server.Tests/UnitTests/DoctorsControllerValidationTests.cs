@@ -1,7 +1,4 @@
 ﻿using MediCare.Server.Controllers;
-using System;
-using System.Collections.Generic;
-using Xunit;
 
 namespace MediCare.Server.Tests.UnitTests
 {

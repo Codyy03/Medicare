@@ -1,7 +1,6 @@
 ﻿using MediCare.Server.Data;
 using MediCare.Server.Entities;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 
 namespace MediCare.Server.Controllers
 {
@@ -16,6 +15,12 @@ namespace MediCare.Server.Controllers
             this.context = context;
         }
 
+        /// <summary>
+        /// Creates a new news item in the system.
+        /// Accepts a <see cref="NewsDto"/> object in the request body and saves it to the database.
+        /// Returns 204 No Content if successful.
+        /// </summary>
+        /// <param name="dto">The data transfer object containing news details.</param>
         [HttpPost("createNews")]
         public async Task<IActionResult> CreateNews([FromBody] NewsDto dto)
         {
@@ -34,12 +39,19 @@ namespace MediCare.Server.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Updates an existing news item by its ID.
+        /// Accepts a <see cref="NewsDto"/> object in the request body and applies changes to the database.
+        /// Returns 200 OK with the updated news data if successful, or 404 Not Found if the item does not exist.
+        /// </summary>
+        /// <param name="id">The unique identifier of the news item to update.</param>
+        /// <param name="dto">The data transfer object containing updated news details.</param>
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateNews(int id, [FromBody] NewsDto dto)
         {
             var news = await context.NewsItems.FindAsync(id);
 
-            if (news == null) 
+            if (news == null)
                 return NotFound();
 
             news.Title = dto.Title;
@@ -59,14 +71,18 @@ namespace MediCare.Server.Controllers
 
         }
 
-        public class NewsDto 
+        /// <summary>
+        /// Data Transfer Object (DTO) representing a news item.
+        /// Used for creating and updating news records without exposing entity internals.
+        /// </summary>
+        public class NewsDto
         {
             public int Id { get; set; }
             public required string Title { get; set; }
 
             public required string Description { get; set; }
 
-            public string ImageURL { get; set; }
+            public string? ImageURL { get; set; }
 
             public DateTime Date { get; set; }
         }

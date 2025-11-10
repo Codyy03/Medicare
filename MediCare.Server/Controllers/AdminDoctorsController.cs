@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using static MediCare.Server.Entities.Enums;
 using static MediCare.Server.Controllers.DoctorsController;
+using static MediCare.Server.Entities.Enums;
 
 namespace MediCare.Server.Controllers
 {
@@ -260,7 +260,7 @@ namespace MediCare.Server.Controllers
         public TimeOnly EndHour { get; set; }
         public string? Facility { get; set; }
         public string? DoctorDescription { get; set; }
-        public List<int> Specializations{ get; set; } = new();
+        public List<int> Specializations { get; set; } = new();
         public int Role { get; set; }
     }
 }

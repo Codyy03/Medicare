@@ -1,6 +1,5 @@
 ﻿using MediCare.Server.Entities;
 using MediCare.Server.Tests.TestInfrastructure;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 using System.Net.Http.Json;

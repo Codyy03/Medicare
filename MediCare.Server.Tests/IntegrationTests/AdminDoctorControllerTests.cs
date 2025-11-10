@@ -1,14 +1,9 @@
 ﻿using MediCare.Server.Controllers;
 using MediCare.Server.Tests.TestInfrastructure;
 using Microsoft.AspNetCore.Mvc.Testing;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
 using static MediCare.Server.Controllers.DoctorsController;
 
 namespace MediCare.Server.Tests.Controllers
@@ -68,7 +63,7 @@ namespace MediCare.Server.Tests.Controllers
                 PhoneNumber = "123457777",
                 Password = "Test1234!",
                 StartHour = new TimeOnly(8, 0),
-                EndHour = new TimeOnly(16, 0), 
+                EndHour = new TimeOnly(16, 0),
                 Facility = "sddfs",
                 DoctorDescription = "suer",
                 SpecializationIds = new List<int> { 1 }

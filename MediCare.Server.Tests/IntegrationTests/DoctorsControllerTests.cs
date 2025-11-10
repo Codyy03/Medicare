@@ -1,6 +1,4 @@
-﻿using MediCare.Server.Entities;
-using MediCare.Server.Helpers;
-using MediCare.Server.Tests.TestInfrastructure;
+﻿using MediCare.Server.Tests.TestInfrastructure;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 using System.Net.Http.Headers;
@@ -191,7 +189,7 @@ public class DoctorsControllerTests : IClassFixture<WebApplicationFactory<Progra
         var dto = await response.Content.ReadFromJsonAsync<DoctorDto>();
 
         Assert.NotNull(dto);
-        Assert.Equal(1, dto!.ID);                
+        Assert.Equal(1, dto!.ID);
         Assert.Equal("John", dto.Name);
         Assert.Equal("Smith", dto.Surname);
         Assert.Equal("john.smith@medicare.com", dto.Email);

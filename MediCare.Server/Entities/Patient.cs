@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using static MediCare.Server.Entities.Enums;
 
 namespace MediCare.Server.Entities
@@ -11,13 +10,13 @@ namespace MediCare.Server.Entities
 
         [Required, StringLength(11)]
         public required string PESEL { get; set; }
-        
+
         [Required, StringLength(50)]
         public required string Name { get; set; }
-       
+
         [Required, StringLength(50)]
         public required string Surname { get; set; }
-    
+
         public required DateTime Birthday { get; set; }
 
         [Required, StringLength(255)]

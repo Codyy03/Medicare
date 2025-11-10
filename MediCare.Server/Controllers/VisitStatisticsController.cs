@@ -1,5 +1,4 @@
 ﻿using MediCare.Server.Data;
-using MediCare.Server.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using static MediCare.Server.Entities.Enums;

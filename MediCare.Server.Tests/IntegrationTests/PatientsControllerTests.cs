@@ -1,5 +1,4 @@
-﻿using MediCare.Server.Controllers;
-using MediCare.Server.Entities;
+﻿using MediCare.Server.Entities;
 using MediCare.Server.Tests.TestInfrastructure;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;

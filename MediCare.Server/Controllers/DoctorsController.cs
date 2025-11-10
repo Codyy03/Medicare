@@ -1,17 +1,12 @@
 ﻿using MediCare.Server.Data;
 using MediCare.Server.Entities;
 using MediCare.Server.Helpers;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel.DataAnnotations;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using System.Text.RegularExpressions;
-using static MediCare.Server.Entities.Enums;
 
 namespace MediCare.Server.Controllers
 {
@@ -95,7 +90,7 @@ namespace MediCare.Server.Controllers
                     Facility = d.Facility,
                     DoctorDescription = d.DoctorDescription,
                     Specializations = d.Specializations
-                        .Select(s => s.SpecializationName) 
+                        .Select(s => s.SpecializationName)
                         .ToList()
                 });
 
@@ -329,7 +324,7 @@ namespace MediCare.Server.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (userId == null) 
+            if (userId == null)
                 return Unauthorized();
 
 
@@ -470,7 +465,7 @@ namespace MediCare.Server.Controllers
                 errors.Add("Phone number is required.");
                 return errors;
             }
-            
+
             if (!Regex.IsMatch(phoneNumber, @"^\d+$"))
             {
                 errors.Add("Phone number must contain only digits.");
@@ -514,7 +509,7 @@ namespace MediCare.Server.Controllers
         /// </summary>
         /// <param name="surname">The surname to validate.</param>
         /// <returns>A list of validation error messages, or empty if valid.</returns>
-        public  List<string> ValidateSurname(string surname)
+        public List<string> ValidateSurname(string surname)
         {
             var errors = new List<string>();
 

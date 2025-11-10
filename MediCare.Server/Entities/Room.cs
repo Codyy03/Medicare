@@ -8,7 +8,7 @@ namespace MediCare.Server.Entities
 
         [Required]
         public int RoomNumber { get; set; }
-      
+
         [Required, StringLength(255)]
         public string RoomType { get; set; } = string.Empty;
 

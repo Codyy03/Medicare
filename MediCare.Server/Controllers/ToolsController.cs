@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MediCare.Server.Helpers;
+﻿using MediCare.Server.Helpers;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MediCare.Server.Controllers
 {

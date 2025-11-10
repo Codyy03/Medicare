@@ -1,8 +1,4 @@
-﻿using System;
-using Xunit;
-using System.Linq;
-using System.Collections.Generic;
-using MediCare.Server.Controllers;
+﻿using MediCare.Server.Controllers;
 
 namespace MediCare.Server.Tests.UnitTests
 {

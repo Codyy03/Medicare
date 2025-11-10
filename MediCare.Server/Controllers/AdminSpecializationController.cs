@@ -9,12 +9,16 @@ namespace MediCare.Server.Controllers.Admin
 {
     [ApiController]
     [Route("api/admin/[controller]")]
-    [Authorize(Roles = "Admin")] 
+    [Authorize(Roles = "Admin")]
     public class SpecializationsController : ControllerBase
     {
         private readonly MediCareDbContext _context;
         public SpecializationsController(MediCareDbContext context) => _context = context;
 
+        /// <summary>
+        /// Retrieves all specializations from the system.
+        /// </summary>
+        /// <returns>A list of <see cref="SpecializationDto"/> objects.</returns>
         [HttpGet]
         public async Task<ActionResult<List<SpecializationDto>>> GetAll()
         {
@@ -30,6 +34,11 @@ namespace MediCare.Server.Controllers.Admin
             return Ok(list);
         }
 
+        /// <summary>
+        /// Retrieves a specialization by its unique identifier.
+        /// </summary>
+        /// <param name="id">The ID of the specialization to retrieve.</param>
+        /// <returns>A <see cref="SpecializationDto"/> if found, or 404 Not Found if not.</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<SpecializationDto>> GetById(int id)
         {
@@ -48,6 +57,11 @@ namespace MediCare.Server.Controllers.Admin
             return Ok(spec);
         }
 
+        /// <summary>
+        /// Creates a new specialization record.
+        /// </summary>
+        /// <param name="dto">The DTO containing specialization details.</param>
+        /// <returns>The created specialization as <see cref="SpecializationDto"/>.</returns>
         [HttpPost]
         public async Task<ActionResult<SpecializationDto>> Create([FromBody] SpecializationCreateDto dto)
         {
@@ -83,7 +97,12 @@ namespace MediCare.Server.Controllers.Admin
             return CreatedAtAction(nameof(GetById), new { id = entity.ID }, result);
         }
 
-
+        /// <summary>
+        /// Updates an existing specialization record.
+        /// </summary>
+        /// <param name="id">The ID of the specialization to update.</param>
+        /// <param name="dto">The DTO containing updated specialization details.</param>
+        /// <returns>204 No Content if successful, or 404 Not Found if not.</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] SpecializationUpdateDto dto)
         {
@@ -101,6 +120,11 @@ namespace MediCare.Server.Controllers.Admin
             return NoContent();
         }
 
+        /// <summary>
+        /// Deletes a specialization by its unique identifier.
+        /// </summary>
+        /// <param name="id">The ID of the specialization to delete.</param>
+        /// <returns>204 No Content if successful, or 404 Not Found if not.</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -113,6 +137,10 @@ namespace MediCare.Server.Controllers.Admin
         }
     }
 
+    /// <summary>
+    /// Data Transfer Object (DTO) representing a specialization.
+    /// Used for returning specialization details to clients.
+    /// </summary>
     public class SpecializationDto
     {
         [JsonPropertyName("id")]
@@ -128,6 +156,9 @@ namespace MediCare.Server.Controllers.Admin
         public string? SpecializationDescription { get; set; }
     }
 
+    /// <summary>
+    /// DTO used for creating a new specialization.
+    /// </summary>
     public class SpecializationCreateDto
     {
         [JsonPropertyName("specializationName")]
@@ -140,6 +171,9 @@ namespace MediCare.Server.Controllers.Admin
         public string? SpecializationDescription { get; set; }
     }
 
+    /// <summary>
+    /// DTO used for updating an existing specialization.
+    /// </summary>
     public class SpecializationUpdateDto
     {
         [JsonPropertyName("id")]

@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
-using MediCare.Server.Helpers;
+﻿using MediCare.Server.Helpers;
+using Microsoft.Extensions.Configuration;
 
 public static class TestJwtTokenHelper
 {

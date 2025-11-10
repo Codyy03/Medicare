@@ -1,20 +1,18 @@
 ﻿using MediCare.Server.Controllers.Admin;
-using MediCare.Server.Entities;
 using MediCare.Server.Tests.TestInfrastructure;
 using Microsoft.AspNetCore.Mvc.Testing;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace MediCare.Server.Tests.Controllers
 {
     public class AdminSpecializationsControllerTests : IClassFixture<WebApplicationFactory<Program>>
     {
+        /// <summary>
+        /// Ensures that the GET /api/admin/specializations endpoint
+        /// returns 200 OK and a non-empty list of specialization DTOs.
+        /// </summary>
         [Fact]
         public async Task GetSpecializations_ReturnOk()
         {
@@ -48,6 +46,10 @@ namespace MediCare.Server.Tests.Controllers
             });
         }
 
+        /// <summary>
+        /// Ensures that the GET /api/admin/specializations/{id} endpoint
+        /// returns 200 OK and a valid specialization DTO for the given ID.
+        /// </summary>
         [Fact]
         public async Task GetSpecialization_ReturnOk()
         {

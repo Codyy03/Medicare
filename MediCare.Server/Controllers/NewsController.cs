@@ -62,7 +62,7 @@ namespace MediCare.Server.Controllers
 
             // if the user provided a month and year, we filter only those records
             if (month.HasValue && year.HasValue)
-                query = query.Where(x => x.Date.Month== month.Value && x.Date.Year == year.Value);
+                query = query.Where(x => x.Date.Month == month.Value && x.Date.Year == year.Value);
 
             //Sorting depending on the 'sort' parameter
             if (Equals("asc", StringComparison.OrdinalIgnoreCase))
@@ -105,7 +105,7 @@ namespace MediCare.Server.Controllers
         /// A 200 OK response with the <see cref="NewsItem"/> if found; otherwise, a 404 Not Found response.
         /// </returns>
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<NewsItem>> GetNewsItem(int id) 
+        public async Task<ActionResult<NewsItem>> GetNewsItem(int id)
         {
             NewsItem? newsItem = await context.NewsItems.FindAsync(id);
 

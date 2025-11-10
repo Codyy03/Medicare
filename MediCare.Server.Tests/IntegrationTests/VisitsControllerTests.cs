@@ -1,14 +1,10 @@
-﻿using MediCare.Server.Entities;
-using MediCare.Server.Tests.TestInfrastructure;
+﻿using MediCare.Server.Tests.TestInfrastructure;
 using Microsoft.AspNetCore.Mvc.Testing;
-using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using static MediCare.Server.Controllers.AdminNewsController;
 using static MediCare.Server.Controllers.VisitsController;
 using static MediCare.Server.Entities.Enums;
 
@@ -298,9 +294,9 @@ namespace MediCare.Server.Tests.Controllers
                 VisitTime = new TimeOnly(10, 0),
                 DoctorID = 1,
                 PatientID = 1,
-                SpecializationID = 1, 
-                RoomID = 1,          
-                Reason = 1,           
+                SpecializationID = 1,
+                RoomID = 1,
+                Reason = 1,
                 AdditionalNotes = "Test visit"
             };
 

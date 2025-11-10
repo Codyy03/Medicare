@@ -1,6 +1,5 @@
 ﻿using MediCare.Server.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
 using static MediCare.Server.Entities.Enums;
 namespace MediCare.Server.Data
 {
@@ -76,7 +75,7 @@ namespace MediCare.Server.Data
         {
             modelBuilder.Entity<RefreshToken>()
                 .HasOne(rt => rt.Patient)
-                .WithOne(p => p.RefreshToken) 
+                .WithOne(p => p.RefreshToken)
                 .HasForeignKey<RefreshToken>(rt => rt.PatientID);
 
             modelBuilder.Entity<RefreshToken>()

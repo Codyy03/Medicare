@@ -1,7 +1,6 @@
 ﻿using MediCare.Server.Data;
 using MediCare.Server.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediCare.Server.Controllers
@@ -70,7 +69,6 @@ namespace MediCare.Server.Controllers
 
             return Ok(new { accessToken, refreshToken = newRefreshToken });
         }
-
 
         /// <summary>
         /// DTO used when requesting a new access token using a refresh token.
