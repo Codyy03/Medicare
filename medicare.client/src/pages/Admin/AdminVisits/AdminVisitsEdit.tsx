@@ -20,6 +20,7 @@ export default function AdminVisitsEdit() {
     });
 
     const [loading, setLoading] = useState(true);
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
     useEffect(() => {
         if (!id) { setLoading(false); return; }
@@ -43,8 +44,48 @@ export default function AdminVisitsEdit() {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
         setVisit(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
+    function validate(): boolean {
+        const newErrors: { [key: string]: string } = {};
+
+        if (!visit.visitDate) {
+            newErrors.visitDate = "Visit date is required.";
+        } else if (new Date(visit.visitDate) < new Date(new Date().toISOString().split("T")[0])) {
+            newErrors.visitDate = "Visit date cannot be in the past.";
+        }
+
+        if (!visit.visitTime) {
+            newErrors.visitTime = "Visit time is required.";
+        }
+
+        const allowedStatuses = ["Scheduled", "Completed", "Cancelled"];
+        if (!allowedStatuses.includes(visit.status)) {
+            newErrors.status = "Invalid status selected.";
+        }
+
+        const allowedReasons = ["Consultation", "FollowUp", "Prescription", "Checkup"];
+        if (!allowedReasons.includes(visit.reason)) {
+            newErrors.reason = "Invalid reason selected.";
+        }
+
+        // Walidacja d³ugoœci pól tekstowych
+        if (visit.additionalNotes && visit.additionalNotes.length > 500) {
+            newErrors.additionalNotes = "Additional notes cannot exceed 500 characters.";
+        }
+        if (visit.prescriptionText && visit.prescriptionText.length > 500) {
+            newErrors.prescriptionText = "Prescription text cannot exceed 500 characters.";
+        }
+        if (visit.visitNotes && visit.visitNotes.length > 500) {
+            newErrors.visitNotes = "Visit notes cannot exceed 500 characters.";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!validate()) return;
+
         try {
             await updateVisit(visit.id, {
                 ...visit,
@@ -73,9 +114,10 @@ export default function AdminVisitsEdit() {
                                 name="visitDate"
                                 value={visit.visitDate}
                                 onChange={handleChange}
-                                className="form-control"
+                                className={`form-control ${errors.visitDate ? "is-invalid" : ""}`}
                                 required
                             />
+                            {errors.visitDate && <div className="invalid-feedback">{errors.visitDate}</div>}
                         </div>
                         <div className="col-md-6">
                             <label className="form-label"><FaCalendar className="me-2" />Time</label>
@@ -84,9 +126,10 @@ export default function AdminVisitsEdit() {
                                 name="visitTime"
                                 value={visit.visitTime}
                                 onChange={handleChange}
-                                className="form-control"
+                                className={`form-control ${errors.visitTime ? "is-invalid" : ""}`}
                                 required
                             />
+                            {errors.visitTime && <div className="invalid-feedback">{errors.visitTime}</div>}
                         </div>
 
                         <div className="col-md-6">
@@ -95,13 +138,14 @@ export default function AdminVisitsEdit() {
                                 name="status"
                                 value={visit.status}
                                 onChange={handleChange}
-                                className="form-select"
+                                className={`form-select ${errors.status ? "is-invalid" : ""}`}
                                 required
                             >
                                 <option value="Scheduled">Scheduled</option>
                                 <option value="Completed">Completed</option>
                                 <option value="Cancelled">Cancelled</option>
                             </select>
+                            {errors.status && <div className="invalid-feedback">{errors.status}</div>}
                         </div>
 
                         <div className="col-md-6">
@@ -110,7 +154,7 @@ export default function AdminVisitsEdit() {
                                 name="reason"
                                 value={visit.reason}
                                 onChange={handleChange}
-                                className="form-select"
+                                className={`form-select ${errors.reason ? "is-invalid" : ""}`}
                                 required
                             >
                                 <option value="Consultation">Consultation</option>
@@ -118,6 +162,7 @@ export default function AdminVisitsEdit() {
                                 <option value="Prescription">Prescription</option>
                                 <option value="Checkup">Checkup</option>
                             </select>
+                            {errors.reason && <div className="invalid-feedback">{errors.reason}</div>}
                         </div>
 
                         <div className="col-md-12">
@@ -126,9 +171,10 @@ export default function AdminVisitsEdit() {
                                 name="additionalNotes"
                                 value={visit.additionalNotes ?? ""}
                                 onChange={handleChange}
-                                className="form-control"
+                                className={`form-control ${errors.additionalNotes ? "is-invalid" : ""}`}
                                 rows={3}
                             />
+                            {errors.additionalNotes && <div className="invalid-feedback">{errors.additionalNotes}</div>}
                         </div>
 
                         <div className="col-md-12">
@@ -137,9 +183,10 @@ export default function AdminVisitsEdit() {
                                 name="prescriptionText"
                                 value={visit.prescriptionText ?? ""}
                                 onChange={handleChange}
-                                className="form-control"
+                                className={`form-control ${errors.prescriptionText ? "is-invalid" : ""}`}
                                 rows={2}
                             />
+                            {errors.prescriptionText && <div className="invalid-feedback">{errors.prescriptionText}</div>}
                         </div>
 
                         <div className="col-md-12">
@@ -148,9 +195,10 @@ export default function AdminVisitsEdit() {
                                 name="visitNotes"
                                 value={visit.visitNotes ?? ""}
                                 onChange={handleChange}
-                                className="form-control"
+                                className={`form-control ${errors.visitNotes ? "is-invalid" : ""}`}
                                 rows={2}
                             />
+                            {errors.visitNotes && <div className="invalid-feedback">{errors.visitNotes}</div>}
                         </div>
                     </div>
 

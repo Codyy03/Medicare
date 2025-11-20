@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaUserMd, FaAlignLeft, FaSave, FaArrowLeft } from "react-icons/fa";
-import { getAdminSpecialization, updateAdminSpecialization, createAdminSpecialization } from "../../../services/specializationsService";
+import { getAdminSpecialization, updateAdminSpecialization, createAdminSpecialization, getAdminSpecializations } from "../../../services/specializationsService";
 import type { Specialization } from "../../../interfaces/specialization.types";
 
 export default function SpecializationEdit() {
@@ -9,10 +9,21 @@ export default function SpecializationEdit() {
     const navigate = useNavigate();
     const isEdit = !!id && !isNaN(Number(id));
 
-    const [specialization, setSpecialization] = useState<Specialization>({ id: 0, specializationName: "", specializationHighlight: "", specializationDescription: "" });
+    const [specialization, setSpecialization] = useState<Specialization>({
+        id: 0,
+        specializationName: "",
+        specializationHighlight: "",
+        specializationDescription: ""
+    });
     const [loading, setLoading] = useState(isEdit);
+    const [errors, setErrors] = useState<{ specializationName?: string }>({});
+    const [existingNames, setExistingNames] = useState<string[]>([]);
 
     useEffect(() => {
+        getAdminSpecializations()
+            .then(data => setExistingNames(data.map((s: Specialization) => s.specializationName.toLowerCase())))
+            .catch(err => console.error(err));
+
         if (!isEdit) { setLoading(false); return; }
         (async () => {
             try {
@@ -31,14 +42,34 @@ export default function SpecializationEdit() {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
         setSpecialization(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
+    function validate(): boolean {
+        const newErrors: { specializationName?: string } = {};
+        const name = specialization.specializationName.trim().toLowerCase();
+
+        if (!name) {
+            newErrors.specializationName = "Specialization name is required.";
+        } else if (existingNames.includes(name) && (!isEdit || name !== specialization.specializationName.toLowerCase())) {
+            newErrors.specializationName = "Specialization name already exists. Please choose a different name.";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!validate()) return;
+
         try {
             if (isEdit) {
                 await updateAdminSpecialization(specialization.id, specialization);
                 alert("Specialization updated");
             } else {
-                await createAdminSpecialization({ specializationName: specialization.specializationName, specializationHighlight: specialization.specializationHighlight, specializationDescription: specialization.specializationDescription });
+                await createAdminSpecialization({
+                    specializationName: specialization.specializationName,
+                    specializationHighlight: specialization.specializationHighlight,
+                    specializationDescription: specialization.specializationDescription
+                });
                 alert("Specialization created");
             }
             navigate("/admin/specializations");
@@ -58,15 +89,35 @@ export default function SpecializationEdit() {
                     <div className="row g-3">
                         <div className="col-md-6">
                             <label className="form-label"><FaUserMd className="me-2" />Name</label>
-                            <input type="text" name="specializationName" value={specialization.specializationName} onChange={handleChange} className="form-control" required />
+                            <input
+                                type="text"
+                                name="specializationName"
+                                value={specialization.specializationName}
+                                onChange={handleChange}
+                                className={`form-control ${errors.specializationName ? "is-invalid" : ""}`}
+                                required
+                            />
+                            {errors.specializationName && <div className="invalid-feedback">{errors.specializationName}</div>}
                         </div>
                         <div className="col-md-6">
                             <label className="form-label"><FaAlignLeft className="me-2" />Highlight</label>
-                            <input type="text" name="specializationHighlight" value={specialization.specializationHighlight ?? ""} onChange={handleChange} className="form-control" />
+                            <input
+                                type="text"
+                                name="specializationHighlight"
+                                value={specialization.specializationHighlight ?? ""}
+                                onChange={handleChange}
+                                className="form-control"
+                            />
                         </div>
                         <div className="col-md-12">
                             <label className="form-label"><FaAlignLeft className="me-2" />Description</label>
-                            <textarea name="specializationDescription" value={specialization.specializationDescription ?? ""} onChange={handleChange} className="form-control" rows={4} />
+                            <textarea
+                                name="specializationDescription"
+                                value={specialization.specializationDescription ?? ""}
+                                onChange={handleChange}
+                                className="form-control"
+                                rows={4}
+                            />
                         </div>
                     </div>
 
