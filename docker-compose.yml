@@ -1,0 +1,48 @@
+version: '3.9'
+
+services:
+  backend:
+    image: cr1spyyyy/medicare-backend:latest
+    ports:
+      - "5187:5187"
+      - "7014:7014"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: "http://+:5187;https://+:7014"
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
+      ASPNETCORE_Kestrel__Certificates__Default__Password: password
+    volumes:
+      - ./https:/https:ro
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      image: cr1spyyyy/medicare-frontend:latest
+    ports:
+      - "3000:3000"
+    environment:
+      VITE_API_URL: https://localhost:7014/api
+    depends_on:
+      - backend
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: medicare
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db/init/medicare_dump.sql:/docker-entrypoint-initdb.d/medicare_dump.sql
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
