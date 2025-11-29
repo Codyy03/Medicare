@@ -54,7 +54,7 @@ export default function AdminRoom() {
     return (
         <div className="container py-4">
             <div className="d-flex justify-content-between align-items-center mb-3">
-                <h2 className="text-center flex-grow-1">Patients Management</h2>
+                <h2 className="text-center flex-grow-1">Rooms Management</h2>
                 <button
                     className="btn btn-success ms-3"
                     onClick={() => navigate("/admin/adminRoomCreate")}
