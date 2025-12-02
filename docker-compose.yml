@@ -17,8 +17,7 @@ services:
       - db
 
   frontend:
-    build:
-      image: cr1spyyyy/medicare-frontend:latest
+    image: cr1spyyyy/medicare-frontend:latest
     ports:
       - "3000:3000"
     environment:
