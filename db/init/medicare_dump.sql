@@ -342,7 +342,6 @@ COPY public."NewsItems" ("ID", "Title", "Description", "ImageURL", "Date") FROM 
 2	Flu Vaccination Campaign	Get your flu shot before the season starts. No appointment needed.	https://i.ibb.co/BHxNtvLj/vaccination.jpg	2025-11-12 01:00:00+01
 3	Healthy Eating Workshop	Learn how to prepare balanced meals with our nutritionist. Free entry.	https://i.ibb.co/HTVch19N/healthy-eating.jpg	2025-09-25 02:00:00+02
 4	World Diabetes Day Awareness	Educational lectures and free glucose testing for all visitors.	https://i.ibb.co/1VTGg5c/diabetes.jpg	2025-11-14 01:00:00+01
-5	nigga	ANNOUCEMENT		2025-11-12 01:00:00+01
 \.
 
 
