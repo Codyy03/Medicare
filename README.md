@@ -1,69 +1,80 @@
-# React + TypeScript + Vite
+# MediCare
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**MediCare** is a project that supports the operation of medical facilities.
 
-Currently, two official plugins are available:
+The system enables the management of patients, doctors, rooms, and appointments, and also provides an administration panel and statistics.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## Technologies
+- **Backend:** ASP.NET Core, Entity Framework Core, PostgreSQL, JWT
+- **Frontend:** React, TypeScript, Bootstrap, Axios, Vite
+- **Tests:** xUnit (unit + integration)
+- **DevOps:** Docker, GitHub Actions, Swagger
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Project structure
+- `medicare.client` – frontend application (React + TS)
+- `MediCare.Server` – backend API (ASP.NET Core)
+- `MediCare.ServerTests` – unit and integration tests
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- ## Run locally
+### Backend
+```bash
+cd MediCare.Server
+dotnetbuild
+dotnet runes
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Access:
+- Frontend: http://localhost:3000
+- Backend API: https://localhost:7014/swagger
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- ## Launch in Docker
 ```
+git clone https://github.com/Codyy03/Medicare.git
+cd Medicare
+docker compose up -d
+```
+
+Access:
+- Frontend: http://localhost:3000
+- Backend API: https://localhost:7014/swagger
+
+## Database
+![Entity Diagram](docs/diagrams/er-diagram.png)
+
+## Security
+- JWT-based authorization (access + refresh tokens)
+- User roles: Admin, Doctor, Patient
+- Data validation on the backend and frontend
+
+## Tests
+- Unit tests – data validation (passwords, PESEL, work hours)
+- Integration tests – full API scenarios (patients, appointments, doctors)
+- Test infrastructure – EmptyDbFactory, SeededDbFactory, TestJwtTokenHelper
+
+## Application Appearance
+Below are sample MediCare system screens:
+
+- ## User not logged in
+![Login screen](docs/screens/login.png)
+![Appointment booking panel](docs/screens/appointments.png)
+![Doctor overview panel](docs/screens/doctorsList.png)
+
+- ## Patient logged in
+![Patient appointment booking panel](docs/screens/booking-visit.png)
+![Patient profile editing panel](docs/screens/profile-edit.png)
+![Patient visit panel](docs/screens/visit-list.png)
+
+- ## Doctor
+![Doctor visit panel](docs/screens/doctors-visits-all.png)
+![Data editing panel Doctor](docs/screens/doctor-profile-edit.png)
+
+- ## Admin
+![Admin dashboard](docs/screens/admin-panel.png)
+![News management panel](docs/screens/admin-news.png)
+![News addition panel](docs/screens/admin-news-add.png)
+![News editing panel](docs/screens/admin-news-edit.png)
+![News editing panel](docs/screens/admin-stats.png)
