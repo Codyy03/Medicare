@@ -28,7 +28,7 @@ dotnet runes
 ```
 
 Access:
-- Frontend: http://localhost:3000
+- Frontend: http://localhost:5187
 - Backend API: https://localhost:7014/swagger
 
 - ## Launch in Docker
@@ -41,6 +41,7 @@ docker compose up -d
 Access:
 - Frontend: http://localhost:3000
 - Backend API: https://localhost:7014/swagger
+- pgAdmin: http://localhost:8080
 
 ## Database
 ![Entity Diagram](docs/diagrams/er-diagram.png)
