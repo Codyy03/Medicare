@@ -145,7 +145,8 @@ namespace MediCare.Server.Controllers
                 .Where(v => v.DoctorID == doctor.ID)
                 .Include(v => v.Patient)
                 .Include(v => v.Room)
-                .OrderBy(v => v.VisitDate)
+                .OrderByDescending(v => v.VisitDate)
+                .ThenByDescending(v => v.VisitTime)
                 .ToListAsync();
 
             var result = visits.Select(visit => new DoctorVisitsDto
